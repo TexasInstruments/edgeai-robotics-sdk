@@ -8,7 +8,7 @@ ROS_VER          ?= 1
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER           = 9.0.0.7
+SDK_VER           = 9.0.0
 TIVA_LIB_VER     ?= 9.0.0
 RPMSG_LIB_VER    ?= 0.6.2
 
@@ -263,16 +263,20 @@ rosbag_download: check_data_dir
 	@rm -f $(DATA_DIR)/$(ROSBAG_FILE)
 
 vl_data_download: check_data_dir
+ifneq ($(SOC),am62a)
 	@wget -O $(DATA_DIR)/$(VISLOC_DATA_FILE) "$(VISLOC_DATA_URL)"
 	@rm -rf  $(DATA_DIR)/visual_localization_data
 	@tar xzf $(DATA_DIR)/$(VISLOC_DATA_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(VISLOC_DATA_FILE)
+endif
 
 vl_model_download: check_data_dir
+ifneq ($(SOC),am62a)
 	@wget -O $(DATA_DIR)/$(VISLOC_MODEL_FILE) "$(VISLOC_MODEL_URL)"
 	@rm -rf  $(DATA_DIR)/visual_localization_model
 	@tar xzf $(DATA_DIR)/$(VISLOC_MODEL_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(VISLOC_MODEL_FILE)
+endif
 
 lidar2d_download: check_data_dir
 	@wget -O $(DATA_DIR)/$(LIDAR2D_FILE) "$(LIDAR2D_LOC_URL)"
