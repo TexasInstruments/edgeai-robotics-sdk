@@ -3,9 +3,9 @@
 
 ## Set Up Docker Environment on the Target
 
-In the ROS 1 Docker container environment, ROS Noetic, necessary libraries and tools are installed.
+In the ROS 1 Docker container environment, ROS {{ROS1_DISTRO}}, necessary libraries and tools are installed.
 
-1. To generate the scripts for building and running a Docker image for ROS 1 Noetic:
+1. To generate the scripts for building and running a Docker image for ROS 1 {{ROS1_DISTRO}}:
     ```
     root@am6x-sk:~/j7ros_home$ make scripts ROS_VER=1
     ```
@@ -43,7 +43,7 @@ In the ROS 1 Docker container environment, ROS Noetic, necessary libraries and t
 
 You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_home` as the working directory.
 
-1. To generate the scripts for building and running a Docker image for ROS 1 Noetic:
+1. To generate the scripts for building and running a Docker image for ROS 1 {{ROS1_DISTRO}}:
     ```
     user@pc:~/j7ros_home$ make scripts ROS_VER=1
     ```
@@ -57,7 +57,7 @@ You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_hom
     ```
     user@pc:~/j7ros_home$ ./docker_build_ros1.sh
     ```
-    It may take some time to build the Docker image. Once the "docker run" completes, the resulting Docker image can be listed with `docker images`.
+    It may take some time building the Docker image. Once the "docker run" completes, the resulting Docker image can be listed with `docker images`.
 
 3. ROS network setting: We need to set up two environment variables that will be passed to the Docker container and used to configure ROS network settings. Please update the following two lines in `setup_env_pc.sh`:
     ```

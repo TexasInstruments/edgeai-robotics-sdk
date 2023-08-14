@@ -34,7 +34,7 @@
 perf_stats_path=/opt/edgeai-gst-apps/scripts/perf_stats/bin/Release/perf_stats
 
 # disable Neo-DLR phone-home feature
-echo '{"enable_phone_home": false}' > /usr/local/lib/python3.8/dist-packages/dlr/counter/ccm_config.json
+# echo '{"enable_phone_home": false}' > /usr/local/lib/python3.8/dist-packages/dlr/counter/ccm_config.json
 
 if [ -f "$perf_stats_path" ]; then
     ln -snf /opt/edgeai-gst-apps/scripts/perf_stats/bin/Release/perf_stats /usr/local/bin/perf_stats

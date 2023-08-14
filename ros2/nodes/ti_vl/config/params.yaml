@@ -1,0 +1,93 @@
+vl:
+    ros__parameters:
+        # input foramt
+        
+        # 0 - VX_DF_IMAGE_U8
+        # 1 - VX_DF_IMAGE_NV12
+        # 2 - VX_DF_IMAGE_UYVY
+        # Should be 1 or 2
+        input_format:             2
+
+        # LDC LUT definition
+        lut_file_path:            /opt/robotics_sdk/ros2/nodes/ti_vl/ldc_lut/zero_768x384_LUT.bin
+
+        # location of network
+        dl_model_path:            /root/j7ros_home/data/visual_localization_model/dkaze_768x384_inference_tvm-dlr
+
+        # location of top-view image
+        top_view_img_path:        /root/j7ros_home/data/visual_localization_data/map/topview_gt_0532.yuv
+
+        # location of voxel info
+        input_voxel_info_path:    /root/j7ros_home/data/visual_localization_data/map/map_voxel.bin
+
+        # location of map feature points
+        input_map_feat_pt_path:   /root/j7ros_home/data/visual_localization_data/map/map_feat.bin
+
+        # location of map feature descriptors
+        input_map_feat_desc_path: /root/j7ros_home/data/visual_localization_data/map/map_desc.bin
+
+        # location of input upsampling weight
+        input_upsample_wt_path:   /root/j7ros_home/data/visual_localization_data/map/weights.bin
+
+        # location of input upsampling bias
+        input_upsample_bias_path: /root/j7ros_home/data/visual_localization_data/map/bias.bin
+
+        # input data width in pixels
+        width:                    768
+
+        # input data height in lines
+        height:                   384
+
+        # output width
+        out_width:                2048
+
+        # output height
+        out_height:               1024
+
+        # Score threshold for picking good points
+        score_th:                 128
+
+        # map related parameters
+        # max number of frame features
+        max_frame_feat:           1000
+
+        # number of voxels
+        num_voxels:               111556
+
+        # number of features in a map
+        num_map_feat:             13718
+
+        # initial pose estimate used in campling the map data
+        init_pose_est:            [-156.546, 0.0, -132.51]
+
+        # should be consistant with scale of filter coefficients passed through file input_upsampling_weight
+        filter_scale_pw2:          8
+
+        # should be consistant with scale of descriptors present in input_map_feat_desc_file
+        hi_res_desc_scale_pw2:     0
+
+        # interactive mode
+        is_interactive:            0
+
+        # To enable showing output on display when display_option = 1
+        display_option:            1
+
+        # pipeline depth
+        pipeline_depth:            4
+
+        # Flag to indicate if the graph should be exported
+        #  0 - disable
+        #  1 - enable
+        exportGraph:               0
+
+        # Real-time logging enable.
+        #  0 - disable
+        #  1 - enable
+        rtLogEnable:               0
+
+        # log level for the app
+        # 0 - DEBUG: Used to show general debug messages
+        # 1 - INFO: Used to show run-time processing debug
+        # 2 - WARN: Used to warning developers of possible issues
+        # 3 - ERROR: Used for most errors
+        log_level:                 1

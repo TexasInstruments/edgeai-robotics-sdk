@@ -87,7 +87,7 @@ function(build_lib)
         VERSION "${version}"
         COMPATIBILITY AnyNewerVersion
     )
-    
+
     # Create config file
     configure_package_config_file(${TI_ROS_ROOT_DIR}/cmake/ti_core_config.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${lib}Config.cmake
@@ -96,7 +96,7 @@ function(build_lib)
     )
 
     # install the package configuration files
-    install(FILES 
+    install(FILES
       ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
       DESTINATION ${CONFIG_PACKAGE_LOCATION}

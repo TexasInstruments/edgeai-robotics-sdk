@@ -8,13 +8,12 @@ ROS_VER          ?= 1
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER           = 8.6.1
-SDK_VER_MAJOR     = 8.6
-TIVA_LIB_VER     ?= ${SDK_VER_MAJOR}.0
-RPMSG_LIB_VER    ?= 0.5.2
+SDK_VER           = 9.0.0.7
+TIVA_LIB_VER     ?= 9.0.0
+RPMSG_LIB_VER    ?= 0.6.2
 
 # Set the operating variables based on the ROS version specified
-ROS_DISTRO        = foxy
+ROS_DISTRO        = humble
 WORK_DIR          = j7ros_home
 REPO_NAME         = robotics_sdk
 WS_NAME           = ros_ws
@@ -60,12 +59,12 @@ ENV_FILE_PATH     = $(DOCKER_DIR)/$(ENV_FILE)
 ROSBAG_FILE       = ros-bag_2020_1109.tar.gz
 DLRT_LIBS_FILE    = dlrt-libs-aarch64-ubuntu18.04_8.0.tar.gz
 VISLOC_DATA_FILE  = visual-localization-data_2022_0908.tar.gz
-VISLOC_MODEL_FILE = visual-localization-model_8.6.tar.gz
-ifeq ($(SOC), j721s2)
-	VISLOC_MODEL_FILE = visual-localization-model-j721s2_8.6.tar.gz
-endif
-ifeq ($(SOC), j784s4)
-	VISLOC_MODEL_FILE = visual-localization-model-j721s2_8.6.tar.gz
+ifeq ($(SOC),j721e)
+	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
+else ifeq ($(SOC),j721s2)
+	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
+else ifeq ($(SOC),j784s4)
+	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
 endif
 LIDAR2D_FILE      = lidar2d_2021_0521.tar.gz
 CALIB_IMGS_FILE   = calib-images-example_2021_0422.tar.gz
@@ -93,15 +92,16 @@ ip_show:
 	@echo "$(J7_IP_ADDR)"
 
 info:
-	$(info PLATFORM         = $(PLATFORM))
-	$(info WORK_DIR         = $(WORK_DIR))
-	$(info REPO_NAME        = $(REPO_NAME))
-	$(info WORK_PATH_HOST   = $(WORK_PATH_HOST))
-	$(info REPO_PATH        = $(REPO_PATH))
-	$(info ROS_SRC_DIR      = $(ROS_SRC_DIR))
-	$(info DATA_DIR         = $(DATA_DIR))
-	$(info DOCKER_DIR       = $(DOCKER_DIR))
-	$(info SCRIPTS_DIR      = $(SCRIPTS_DIR))
+	$(info PLATFORM          = $(PLATFORM))
+	$(info WORK_DIR          = $(WORK_DIR))
+	$(info REPO_NAME         = $(REPO_NAME))
+	$(info WORK_PATH_HOST    = $(WORK_PATH_HOST))
+	$(info REPO_PATH         = $(REPO_PATH))
+	$(info ROS_SRC_DIR       = $(ROS_SRC_DIR))
+	$(info DATA_DIR          = $(DATA_DIR))
+	$(info DOCKER_DIR        = $(DOCKER_DIR))
+	$(info SCRIPTS_DIR       = $(SCRIPTS_DIR))
+	$(info VISLOC_MODEL_FILE = $(VISLOC_MODEL_FILE))
 
 ## Docker
 # generate "docker build" script
@@ -195,7 +195,6 @@ endif
 	@echo "docker run -it --rm \\"                            >> $(TGT_NAME)
 	@echo "    -v $(WORK_PATH_HOST):/root/$(WORK_DIR) \\"     >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "    -v /:/host:ro \\"                              >> $(TGT_NAME)
 	@echo "    -v $(REPO_PATH):$(REPO_PATH) \\"               >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), j7)
@@ -203,7 +202,6 @@ ifeq ($(PLATFORM), j7)
 	@echo "    -v /opt/edgeai-gst-apps:/opt/edgeai-gst-apps \\"     >> $(TGT_NAME)
 	@echo "    -v /opt/imaging:/opt/imaging \\"               >> $(TGT_NAME)
 	@echo "    -v /opt/model_zoo:/opt/model_zoo \\"           >> $(TGT_NAME)
-	@echo "    -v /usr/include/dlpack:/usr/include/dlpack \\" >> $(TGT_NAME)
 endif
 	@echo "    -v /dev:/dev \\"                               >> $(TGT_NAME)
 	@echo "    --privileged \\"                               >> $(TGT_NAME)

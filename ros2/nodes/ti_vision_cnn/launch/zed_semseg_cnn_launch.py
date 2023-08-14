@@ -16,10 +16,10 @@ def get_launch_file(pkg, file_name):
     return os.path.join(pkg_dir, 'launch', file_name)
 
 def generate_launch_description():
-    # video_id: when camera recognized as /dev/videoX, set video_id = X
-    video_id_arg = DeclareLaunchArgument(
-        'video_id',
-        default_value='2'
+    # cam_id: when the camera is recognized as /dev/video-usb-camX, set cam_id = X
+    cam_id_arg = DeclareLaunchArgument(
+        'cam_id',
+        default_value='0'
     )
 
     # ZED camera serial number
@@ -49,14 +49,14 @@ def generate_launch_description():
     zed_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(get_launch_file('zed_capture', 'zed_capture_remap_launch.py')),
         launch_arguments={
-            "video_id": LaunchConfiguration('video_id'),
+            "cam_id": LaunchConfiguration('cam_id'),
             "zed_sn_str": LaunchConfiguration('zed_sn'),
             'topic_ns_right': 'camera',
         }.items()
     )
 
     ld = LaunchDescription()
-    ld.add_action(video_id_arg)
+    ld.add_action(cam_id_arg)
     ld.add_action(zed_sn_arg)
     ld.add_action(exportPerfStats_arg)
     ld.add_action(lut_file_path_arg)

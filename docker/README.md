@@ -41,14 +41,28 @@ The SD card image contains Processor SDK Linux and libraries that are necessary 
 
 ### Ubuntu PC
 
-A Ubuntu PC is required for visualization of ROS topics published from the SK board. We have tested only with native x86_64 Ubuntu PCs and have **not** tested with any other Ubuntu systems: including Ubuntu virtual machines and Docker Desktop on Mac or Windows.
+A Ubuntu PC is required for visualization of ROS topics published from the TI EdgeAI Starter Kit (SK) board. We have tested only with native x86_64 Ubuntu PCs and have **not** tested with any other Ubuntu systems: including Ubuntu virtual machines and Docker Desktop on Mac or Windows.
 
-It is assumed that a matching ROS distro (either ROS 1 Noetic or ROS 2 Foxy) is installed on the remote Ubuntu PC, either in the host Ubuntu filesystem natively or in a Docker container. In case you want to install ROS natively on the remote Ubuntu filesystem:
+```{only} tag_ros1n2
+It is assumed that a matching ROS distro (either ROS 1 {{ROS1_DISTRO}} or ROS 2 {{ROS2_DISTRO}}) is installed on the remote Ubuntu PC, either in the host Ubuntu filesystem natively or in a Docker container. In case you want to install ROS natively on the remote Ubuntu filesystem:
 
-- For ROS Noetic installation steps, please refer to [this ROS wiki page](http://wiki.ros.org/noetic/Installation/Ubuntu).
-- For ROS 2 Foxy installation steps, please refer to [this ROS 2 documentation](https://docs.ros.org/en/foxy/Installation.html).
+- For ROS {{ROS1_DISTRO}} installation steps, please refer to [this ROS wiki page](http://wiki.ros.org/noetic/Installation/Ubuntu).
+- For ROS 2 {{ROS2_DISTRO}} installation steps, please refer to [this ROS 2 documentation](https://docs.ros.org/en/foxy/Installation.html).
+```
 
-We also provide Dockerfiles (`docker/Dockerfile.x86_64.{noetic,foxy}`) that can build and run on the remote Ubuntu PC for both ROS Noetic and ROS 2 Foxy, with detailed steps for setting up the Docker environment on the remote PC. For installation of Docker on the Ubuntu PC, the following links may be useful:
+```{only} tag_ros2only
+It is assumed that a matching ROS distro (ROS 2 {{ROS2_DISTRO}}) is installed on the remote Ubuntu PC, either in the host Ubuntu filesystem natively or in a Docker container. In case you want to install ROS natively on the remote Ubuntu filesystem:
+
+- For ROS 2 {{ROS2_DISTRO}} installation steps, please refer to [this ROS 2 documentation](https://docs.ros.org/en/foxy/Installation.html).
+```
+
+```{only} tag_ros1n2
+We also provide Dockerfiles (`docker/Dockerfile.x86_64.{noetic,humble}`) that can build and run on the remote Ubuntu PC for both ROS {{ROS1_DISTRO}} and ROS 2 {{ROS2_DISTRO}}, with detailed steps for setting up the Docker environment on the remote PC. For installation of Docker on the Ubuntu PC, the following links may be useful:
+```
+
+```{only} tag_ros2only
+We also provide Dockerfiles (`docker/Dockerfile.x86_64.humble`) that can build and run on the remote Ubuntu PC for ROS 2 {{ROS2_DISTRO}}, with detailed steps for setting up the Docker environment on the remote PC. For installation of Docker on the Ubuntu PC, the following links may be useful:
+```
 
 - [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 - [Manage Docker as a non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
@@ -56,19 +70,19 @@ We also provide Dockerfiles (`docker/Dockerfile.x86_64.{noetic,foxy}`) that can 
 ### Cameras
 
 ```{only} tag_j7x
-The Robotics SDK provides camera ROS nodes for [ZED stereo camera](https://www.stereolabs.com/zed/), USB mono cameras (Logitech C270, C920, C922), and CSI cameras including [OV5640](https://www.leopardimaging.com/product/cmos-sensor-modules/mipi-camera-modules/li-am65x-csi2) and [IMX219](https://www.raspberrypi.com/products/camera-module-v2/). All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
+The Robotics SDK provides camera ROS nodes for [ZED stereo camera](https://www.stereolabs.com/zed/), USB mono cameras (Logitech C270, C920, C922, and others), and CSI cameras including IMX219 and IMX390. All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
 
 - For configuration of a stereo camera, please see [ros1/drivers/zed_capture/README](../ros1/drivers/zed_capture/README.md).
 - For configuration of a USB mono camera, please see [ros1/drivers/mono_capture/README](../ros1/drivers/mono_capture/README.md).
-- For configuration of CSI cameras, please see [this section of Edge AI SDK documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#hardware-setup).
-- For GStreamer camera ROS node (USB cameras are also supported), please see [ros1/drivers/gscam/README_TI](../ros1/drivers/gscam/README_TI.md) and [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
+- For configuration of CSI cameras, please see [this section of Processor SDK Linux documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#hardware-setup).
+- For GStreamer camera ROS node (USB cameras are also supported), please see [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
 ```
 ```{only} tag_am62a
-The Robotics SDK provides camera ROS nodes for USB mono cameras (Logitech C270, C920, C922) and CSI cameras including [OV5640](https://www.leopardimaging.com/product/cmos-sensor-modules/mipi-camera-modules/li-am65x-csi2) and [IMX219](https://www.raspberrypi.com/products/camera-module-v2/). All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
+The Robotics SDK provides camera ROS nodes for USB mono cameras (Logitech C270, C920, C922) and CSI cameras including IMX219 and IMX390. All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
 
 - For configuration of a USB mono camera, please see [ros1/drivers/mono_capture/README](../ros1/drivers/mono_capture/README.md).
-- For configuration of CSI cameras, please see [this section of Edge AI SDK documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#hardware-setup).
-- For GStreamer camera ROS node (USB cameras are also supported), please see [ros1/drivers/gscam/README_TI](../ros1/drivers/gscam/README_TI.md) and [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
+- For configuration of CSI cameras, please see [this section of Processor SDK Linux documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#hardware-setup).
+- For GStreamer camera ROS node (USB cameras are also supported), please see [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
 ```
 
 ## Set Up Development Environment on the Target
@@ -77,13 +91,13 @@ The Robotics SDK provides camera ROS nodes for USB mono cameras (Logitech C270, 
 <figcaption>Figure 1. Robotics SDK Setup and Installation Steps</figcaption>
 <br />
 
-Figure 1 shows the hardware setup and high-level installation steps on the target SK board and the Ubuntu PC. The target SK board and the remote Ubuntu PC are assumed to be connected on the same network through Ethernet or WiFi connectivity. For details on how to set up the WiFi on the SK board, please refer to {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/wifi_oob_demo.html)'.format(SDK_VER)}}.
+Figure 1 shows the hardware setup and high-level installation steps on the target SK board and the Ubuntu PC. The target SK board and the remote Ubuntu PC are assumed to be connected on the same network through Ethernet or WiFi connectivity. For details on how to set up the WiFi on the SK board, please refer to {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/edgeai_docs/devices/TDA4VM/linux/wifi_oob_demo.html)'.format(SDK_VER)}}.
 
 ### Build SD Card
 
 1. From the Ubuntu PC, download the **SD card image (`tisdk-edgeai-image-<platform>-evm.wic.xz`)** from Processor SDK Linux (using the links provided in Section 1.2).
 
-2. Flash the downloaded image to an SD card (minimum 32GB, high-performance) using the Balena Etcher tool. For detailed instructions, please refer to {{'[this section](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/getting_started.html#software-setup)'.format(SDK_VER)}}.
+2. Flash the downloaded image to an SD card (minimum 32GB, high-performance) using the Balena Etcher tool. For detailed instructions, please refer to {{'[this section](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#software-setup)'.format(SDK_VER)}}.
 
 ````{note}
 The etcher image is created for 16 GB SD cards. If you are using a larger SD card, it is highly recommended to expand the root filesystem to use the full SD card capacity using the following steps on the Ubuntu PC.
@@ -113,7 +127,7 @@ sudo resize2fs /dev/sdX2
     ```{tip}
     It is recommended to use a *static* IP for the SK board to make ROS network setting easy.
     ```
-    <!-- You can consider using VS Code with "remote development extension pack" for a better experience, in a similar way as described in {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/getting_started.html#connect-remotely)'.format(SDK_VER)}}. -->
+    <!-- You can consider using VS Code with "remote development extension pack" for a better experience, in a similar way as described in {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#connect-remotely)'.format(SDK_VER)}}. -->
 
 ### Initial Setup for the Robotics SDK
 
@@ -127,13 +141,13 @@ This script takes care of:
 - Cloning the main GIT repository for Robotics SDK under `/opt/robotics_sdk`
 - Setting up the folders for evaluating the Robotics SDK under `$HOME/j7ros_home`
 - Downloading ROSBAG and other data files
-- Downloading several deep-learning models from the edge AI model zoo. You can also use the model downloader tool (please refer to {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/common/inference_models.html)'.format(SDK_VER)}}.
+- Downloading several deep-learning models from the edge AI model zoo. You can also use the model downloader tool (please refer to {{'[this section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/edgeai_docs/common/inference_models.html)'.format(SDK_VER)}}).
 
 #### On the Remote Ubuntu PC
 In a similar way, you can use a script to set up on the remote Ubuntu PC for visualization:
 ```
 user@pc:~$ wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
-user@pc:~$ source ./init_setup.sh REL.08.06.01
+user@pc:~$ source ./init_setup.sh REL.09.00.00
 ```
 
 ````{note}
@@ -149,20 +163,27 @@ The Robotics SDK runs in a Docker container environment on the Processor SDK Lin
 
 First, following [this link](https://docs.docker.com/get-started/#test-docker-installation), please check that Docker and network work correctly on the target SK board.
 
+```{only} tag_ros1n2
 The following two sections describe the Docker environment setup, details of building, and running apps under Docker, for ROS 1 and ROS 2, respectively. Please note that it will take several minutes to build the Docker image. The Docker image built can be listed with `docker images`.
 
-- [Docker Setup for ROS 1 Noetic](./setting_docker_ros1.md)
-- [Docker Setup for ROS 2 Foxy](./setting_docker_ros2.md)
+- [Docker Setup for ROS 1 {{ROS1_DISTRO}}](./setting_docker_ros1.md)
+- [Docker Setup for ROS 2 {{ROS2_DISTRO}}](./setting_docker_ros2.md)
+```
+```{only} tag_ros2only
+The following section describes the Docker environment setup, details of building, and running apps under Docker. Please note that it will take several minutes to build the Docker image. The Docker image built can be listed with `docker images`.
 
+- [Docker Setup for ROS 2 {{ROS2_DISTRO}}](./setting_docker_ros2.md)
+```
 
 ```{note}
-**Proxy Network**: If the board running the Docker container is behind a proxy server, the default settings for downloading files and installing packages via `apt-get` may not work. If you are running the board from TI network, docker_build and docker_run scripts will automatically detect and configure necessary proxy settings.
+**Proxy Network**: If the board running the Docker container is behind a proxy server, the default settings for downloading files and installing packages via `apt-get` may not work, and proper settings for proxy should be established for building and running the SDK Docker image.
 ```
 
 ```{tip}
-**Docker Run**: After "docker build" is completed, it is important to use `docker_run_rosX.sh` script to start a Docker container, since the script includes all the necessary settings to leverage all the cores and hardware accelerators of the processor. Please note that `docker_run_rosX.sh` includes `--rm` argument by default. Just remove `--rm` argument in `docker_run_rosX.sh` in case you want to do "docker commit" after exiting a Docker container. A short information about several useful Docker commands is provided in {{'[this link](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/docker_environment.html#additional-docker-commands)'.format(SDK_VER)}}.
+**Docker Run**: After "docker build" is completed, it is important to use `docker_run_rosX.sh` script to start a Docker container, since the script includes all the necessary settings to leverage all the cores and hardware accelerators of the processor. Please note that `docker_run_rosX.sh` includes `--rm` argument by default. Just remove the `--rm` argument in `docker_run_rosX.sh` in case you want to do "docker commit" after exiting a Docker container. A short information about several useful Docker commands is provided in {{'[this link](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/edgeai_docs/devices/TDA4VM/linux/docker_environment.html#additional-docker-commands)'.format(SDK_VER)}}.
 ```
 
+`````{only} tag_ros1n2
 ````{tip}
 **Switching between ROS 1 and ROS 2 Docker Containers**: When the applications are built under the ROS 1 container, two directories, `{build, devel}` are created under **ros_ws** directory under target host and similarly `{build, install, log}` directories are created when applications are built under ROS 2 container. Since the containers share the common space `ros_ws` on target host Linux filesystem, these directories need to be removed if switching between ROS 1 and ROS 2 containers. Alternatively, we can create different folders for each of ROS distro and apply soft-links as shown below as example before running "docker run" script.
 
@@ -177,3 +198,4 @@ $ROS_WS/install -> $ROS_WS/devel_foxy
 $ROS_WS/log -> $ROS_WS/log_foxy
 ```
 ````
+`````

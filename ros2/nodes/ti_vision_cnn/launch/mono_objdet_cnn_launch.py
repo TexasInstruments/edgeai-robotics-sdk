@@ -12,7 +12,8 @@ from launch.substitutions import LaunchConfiguration
 image_format = 2
 enable_ldc_node = 1
 lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
-dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+# dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
 # dl_model_path = "/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"
 
 def get_launch_file(pkg, file_name):

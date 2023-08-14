@@ -2,17 +2,13 @@
 
 Performance statistics logging is turned on by setting a launch parameter, `exportPerfStats` to 1.
 
-## ROSBAG, 15 FPS
+## C920 UCB Camera, 30 FPS
 
-**Source**: "rosbag play" and a demo ROS node are running in the ROS 1 Docker container on the target SK board. ROSBAG (zed1_2020-11-09-18-01-08.bag, 1280x720) is played back at 15 FPS.
+**Source**: live C920 USB camera, 1280x720 in MJPG mode, at 30 FPS. "gscam2" ROS node and a demo ROS node are running in the ROS 2 Docker container on the target SK board.
 
-[To be Added].
+Demo | FPS| Total time (ms)| Preproc time (ms)| Inference time (ms)| A53 Load (%)| DDR Read BW (MB/s)| DDR Write BW (MB/s)| DDR Total BW (MB/s)| C71_1 Load (%)| MCU1_0 Load (%)| MSC_0 (%)| MSC_1 (%)| VISS (%)| NF (%)| LDC (%)
+----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----
+ti_vision_cnn (semseg)| 23.49| 42.5763| 15.2609| 36.2415| 54.20| 3227| 2464| 5691| 80.78| 0.80| 9.13| 0| 0| 0| 6.75
+ti_vision_cnn (objdet)| 28.79| 34.7379| 3.4872| 14.0175| 42.80| 1292| 754| 2046| 37.13| 0.79| 10.74| 0| 0| 0| 7.23
 
-**Note**: "A72 Load (%)" are for dual A72 cores in a scale of 100%. For example, 100% A72 loading means that two A72 cores are fully loaded.
-
-
-## Live C920 Webcam, 30 FPS
-
-**Source**: live C920 webcam, 1280x720 in MJPG mode, at 30 FPS. "gscam" ROS node and a demo ROS node are running in the ROS 1 Docker container on the target SK board.
-
-[To be Added].
+**Note**: "A53 Load (%)" are for dual A53 cores in a scale of 100%. For example, 100% A53 loading means that two A53 cores are fully loaded.

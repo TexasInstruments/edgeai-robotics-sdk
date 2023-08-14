@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+## Release 9.0.0 (2023-08-11)
+
+- Added support for SK-AM62A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_00_00/AM62A/docs/). The Robotics SDK now supports four TI Processor platforms: SK-AM62A, SK-TDA4VM, SK_AM68A, and SK-AM69A.
+- Migrated ROS 2 to Humble and it is operating in Ubuntu 22.04 Docker container.
+- ROS 1 support is not included in 9.0.0 release. However, ROS 1 Noetic is still supported on the four TI platforms with Robotics SDK 8.6.1.
+- Support for IMX390 FPD-link CSI camera is added in `gscam2` and `ti_vision_cnn` processing chain in ROS 2.
+- The default 2D object detection model has been changed to TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320.
+
 ## Release 8.6.1 (2023-05-31)
 
 - The Robotics SDK now supports two additional platforms: SK-AM68 and SK-AM69, as well as SK-TDA4VM.

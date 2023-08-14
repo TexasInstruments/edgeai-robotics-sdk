@@ -8,6 +8,8 @@ from launch.substitutions import TextSubstitution
 from launch.substitutions import LaunchConfiguration
 
 dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+# dl_model_path = "/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"
+# dl_model_path = "/opt/model_zoo/ONR-OD-8220-yolox-s-lite-mmdet-coco-640x640"
 
 def generate_launch_description():
     ld = LaunchDescription()

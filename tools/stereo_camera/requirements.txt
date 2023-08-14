@@ -1,6 +1,5 @@
 # Run below to install dependencies
 # python3 -m pip install -r requirements.txt
-numpy
-rospkg
+opencv-python<4.3 # 3.4.18.65 in Ubuntu 22.04
 configparser
 argparse

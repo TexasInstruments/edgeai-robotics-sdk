@@ -21,7 +21,7 @@ Additionally, when configured, the output disparity map and the rectified right 
 <figcaption>Figure 1. Stereo demo: block diagram</figcaption>
 <br />
 
-## Run the Application in ROS 1
+<!-- ## Run the Application in ROS 1
 
 ### Run the Stereo Demo
 
@@ -56,7 +56,7 @@ roslaunch ti_sde zed_sde_pcl.launch video_id:=x zed_sn:=SNxxxxx
 **[Visualization on Ubuntu PC]** To display the point-cloud data using RViz on PC, run:
 ```
 roslaunch ti_viz_nodes rviz_sde_pcl.launch
-```
+``` -->
 
 ## Run the Application in ROS 2
 
@@ -65,7 +65,7 @@ roslaunch ti_viz_nodes rviz_sde_pcl.launch
 **[SK]** For setting up the ROS 2 environment on the target, please follow [Docker Setup for ROS 2](../../../docker/setting_docker_ros2.md).
 To process the image stream from a ZED stereo camera, replace the launch file with `zed_sde_launch.py`:
 ```
-ros2 launch ti_sde zed_sde_launch.py video_id:=x zed_sn:=SNxxxxx
+ros2 launch ti_sde zed_sde_launch.py cam_id:=x zed_sn:=SNxxxxx
 ```
 <!-- To launch `ti_sde` node with playing back a ROSBAG file, run the following inside the Docker container on the target:
 ```
@@ -83,7 +83,7 @@ ros2 launch ti_viz_nodes rviz_sde_launch.py
 
 **[SK]** To launch the `ti_sde` node with point-cloud enabled on a ZED stereo camera input, run the following command inside the Docker container on the target:
 ```
-ros2 launch ti_sde zed_sde_pcl_launch.py video_id:=x zed_sn:=SNxxxxx
+ros2 launch ti_sde zed_sde_pcl_launch.py cam_id:=x zed_sn:=SNxxxxx
 ```
 <!-- run the following inside the Docker container on the target:
 ```

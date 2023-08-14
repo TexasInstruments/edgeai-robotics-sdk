@@ -28,7 +28,7 @@ Mono Camera Tools and Capture Node
     ```
     For examples of how to use the tool, please refer to `$SDK_DIR/tools/mono_camera/calib_C920.sh`.
 
-2. **Rectification Map Generatio**n: A Python tool is provided for generating rectification map: `$SDK_DIR/tools/mono_camera/generate_rect_map_mono.py`. This tool takes the `camera_info` YAML file as input and generates a binary file for undistortion/rectification look-up-table (LUT). The generated LUT is required for offloading the undistortion/rectification processes to J7 VPAC/LDC hardware accelerator. Below is the usage of the tool.
+2. **Rectification Map Generatio**n: A Python tool is provided for generating rectification map: `$SDK_DIR/tools/mono_camera/generate_rect_map_mono.py`. This tool takes the `camera_info` YAML file as input and generates a binary file for undistortion/rectification look-up-table (LUT). The generated LUT is required for offloading the undistortion/rectification processes to the VPAC/LDC hardware accelerator. Below is the usage of the tool.
 
     ```
     usage: generate_rect_map_mono.py [-h] [--input INPUT] [--name NAME]
@@ -50,7 +50,7 @@ This ROS node has only been tested with Logitech C920 and C270 webcams in 'YUYV'
 
 ### Usage
 1. Build the USB mono camera ROS node
-    ```
+    ```sh
     cd $ROS_WS
     # ROS 1
     catkin_make --source /opt/robotics_sdk/ros1 --force-cmake
@@ -61,7 +61,7 @@ This ROS node has only been tested with Logitech C920 and C270 webcams in 'YUYV'
     ```
 
 2. Launch the mono camera node
-    ```
+    ```sh
     # ROS 1
     roslaunch mono_capture mono_capture.launch
     # ROS 2
@@ -73,7 +73,7 @@ This ROS node has only been tested with Logitech C920 and C270 webcams in 'YUYV'
 | Parameter   | Description                                                                | Value                  |
 |-------------|----------------------------------------------------------------------------|------------------------|
 | model_str   | Camera model string                                                        | string                 |
-| video_id    | Camera device number. Set `device_id = X` if the device shows up as `/dev/videoX` on the target with TI Edge AI | string |
+| cam_id      | Camera ID number. Set `cam_id = X` if the device shows up as `/dev/video-usb-camX` on the target with TI Edge AI | string |
 | camera_mode | Camera mode                                                                | 'FHD' (1920x1080)      |
 |             |                                                                            | 'HD' (1280x720)        |
 |             |                                                                            | 'VGA' (640x480)        |

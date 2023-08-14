@@ -204,7 +204,7 @@ int main(int argc, char **argv)
         rclcpp::NodeOptions nodeOptions{};
 
         /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_sigint = false;
+        initOptions.shutdown_on_signal = false;
 
         rclcpp::init(argc, argv, initOptions);
 

@@ -161,6 +161,10 @@ def main(camera_info_file, camera_mode, camera_name, new_image_size=None):
             new_image_size = (width, height)
         alpha = 1.0
         fov_scale = np.float64(1.0)
+        # opencv-python<4.3 required (specified in requirements.txt).
+        # default version 4.5.4 in Ubuntu 22.04 is not compatible and
+        # fisheye.estimateNewCameraMatrixForUndistortRectify() outputs
+        # a wrong camera matrix for the example IMX390 camera_info.
         new_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(K, D, image_size, R=np.eye(3), balance=alpha, new_size=new_image_size, fov_scale=fov_scale)
         map_x, map_y = cv2.fisheye.initUndistortRectifyMap(K, D, R=np.eye(3), P=new_K, size=new_image_size, m1type=cv2.CV_32FC1)
 

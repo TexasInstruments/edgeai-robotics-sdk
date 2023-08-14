@@ -64,7 +64,7 @@ if (NOT "$ENV{TIDL_PACKAGE_ROOT}" STREQUAL "")
         "Copied TIDL_PACKAGE_ROOT from environment variable")
 else()
     # tidl_j7 -> tidl_j7_<version> should be extablished in the root filesystem
-    set(TIDL_PACKAGE_ROOT tidl_j7/ti_dl)
+    set(TIDL_PACKAGE_ROOT tidl_j7/arm-tidl/rt)
 endif()
 
 set(CGT7X_ROOT          ti-cgt-c7000_1.4.2.LTS)
@@ -195,8 +195,8 @@ add_definitions(
 # TIOVX, VISION_APPS, PTK_DEMOS: include folders
 set(TIOVX_INCLUDE_DIRS
     ${PSDK_DIR}/tiovx/include
-    ${PSDK_DIR}/tiovx/kernels_j7/include
-    ${PSDK_DIR}/tiovx/tiovx_dev/kernels_j7/include
+    ${PSDK_DIR}/imaging/kernels/include
+    ${PSDK_DIR}/tidl_j7/arm-tidl/tiovx_kernels/include
     ${PSDK_DIR}/tiovx/utils/include/
     ${PSDK_DIR}/tiovx/kernels/include/
 )
@@ -219,6 +219,7 @@ set(TIADALG_INCLUDE_DIRS
 
 set(VISION_APP_INCLUDE_DIRS
     ${PSDK_DIR}/vision_apps
+    ${PSDK_DIR}/imaging
     ${PSDK_DIR}/vision_apps/kernels/img_proc/include
     ${PSDK_DIR}/vision_apps/kernels/img_proc/host
     ${PSDK_DIR}/vision_apps/kernels/stereo/include
@@ -235,6 +236,7 @@ set(OTHER_INCLUDE_DIRS
     ${PSDK_DIR}/${CGT7X_ROOT}/host_emulation/include/C7100
     ${PSDK_DIR}/j7_c_models/include
     ${PSDK_DIR}/ivision
+    ${PSDK_DIR}/app_utils
 )
 
 include_directories(

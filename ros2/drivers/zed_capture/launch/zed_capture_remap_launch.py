@@ -13,7 +13,7 @@ from launch.substitutions import LaunchConfiguration
 # undistortion/rectification look-up table files for LDC hardware accelerator
 
 def finalize_node(context, *args, **kwargs):
-    device_name = "/dev/video" + LaunchConfiguration('video_id').perform(context)
+    device_name = "/dev/video-usb-cam" + LaunchConfiguration('cam_id').perform(context)
     zed_sn_str  = LaunchConfiguration("zed_sn_str").perform(context)
     camera_mode = LaunchConfiguration("camera_mode").perform(context)
     camera_info_base = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
@@ -60,11 +60,11 @@ def finalize_node(context, *args, **kwargs):
 
 
 def generate_launch_description():
-    # video_id
-    video_id = DeclareLaunchArgument(
-        name="video_id",
-        default_value="2",
-        description="Video device ID",
+    # cam_id
+    cam_id = DeclareLaunchArgument(
+        name="cam_id",
+        default_value="0",
+        description="USB camera ID",
     )
 
     # ZED camera serial number string
@@ -112,7 +112,7 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription()
-    ld.add_action(video_id)
+    ld.add_action(cam_id)
     ld.add_action(zed_sn_str)
     ld.add_action(camera_mode)
     ld.add_action(frame_rate)

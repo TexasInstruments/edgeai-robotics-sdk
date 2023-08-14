@@ -1,7 +1,7 @@
 Stereo Camera Calibration
 ==========================
 
-The relative positions of left and right cameras can slightly change over time. In such cases, the factory calibration data for a ZED camera cannot be used, and it is necessary to recalibrate the ZED camera to update camera parameters and stereo rectification tables. For this purpose, we provide three OpenCV based python scripts. Note that these scripts are designed to run on Ubuntu PC. Although these scripts are tested with ZED cameras, they can be adapted for calibrating other stereo cameras with minor changes if needed.
+The relative positions of left and right cameras can slightly change over time. In such cases, the factory calibration data for a ZED camera cannot be used, and it is necessary to recalibrate the ZED camera to update camera parameters and stereo rectification tables. For this purpose, we provide three OpenCV-based Python scripts. Note that these scripts are designed to run on Ubuntu PC. Although these scripts are tested with ZED cameras, they can be adapted for calibrating other stereo cameras with minor changes if needed.
 
 ## Stereo Camera Capture
 
@@ -18,7 +18,7 @@ optional arguments:
     -d DEVNUM, --device DEVNUM    Device number, e.g., 0 for /dev/video0, 2 for /dev/video2.
 ```
 
-It is recommended to use a 9x7 checkerboard chart. The checker board chart can be downloaded from [calib.io](https://calib.io). To ensure a good calibration, capture multiple snapshots, ideally more than 20. Present the checkerboard chart in various poses, covering different locations within the field of view and at different distances from the camera. Keep the camera in the same position while moving the checkerboard around. Avoid poses where the checkerboard angle is too close to 90 degrees.
+It is recommended to use a 9x7 checkerboard chart. The checker board chart can be downloaded from [calib.io](https://calib.io). To ensure good calibration, capture multiple snapshots, ideally more than 20. Present the checkerboard chart in various poses, covering different locations within the field of view and at different distances from the camera. Keep the camera in the same position while moving the checkerboard around. Avoid poses where the checkerboard angle is too close to 90 degrees.
 
 The following figures depict examples of good and bad poses.
 
@@ -33,7 +33,7 @@ The following figures depict examples of good and bad poses.
 <figcaption>Figure 1. Good or Bad checkerboard poses: From left to right, good, good, fair, bad and bad.</figcaption>
 <br />
 
-Once `stereo_capture.py` is launched, both left and right image sequences will be displayed in the same window. To save each image snapshot, position the mouse over the image window and press the 's' key. The left and right images will be saved in `PATH/imageL` and `PATH/imageR`, respectively, where `PATH` is the directory specified when launched. After capturing all the images, press 'q' to exit. The following figures shows the examples of checkerboard snapshots.
+Once `stereo_capture.py` is launched, both left and right image sequences will be displayed in the same window. To save each image snapshot, position the mouse over the image window and press the 's' key. The left and right images will be saved in `PATH/imageL` and `PATH/imageR`, respectively, where `PATH` is the directory specified when launched. After capturing all the images, press 'q' to exit. The following figures show the examples of checkerboard snapshots.
 
 <!-- <p align="center">
     <img src="docs/leftImage01.png" width="350"> <img src="docs/rightImage01.png" width="350">
@@ -51,9 +51,9 @@ Once `stereo_capture.py` is launched, both left and right image sequences will b
 With multiple stereo images with the checkerboard chart, we can now ready to run stereo camera calibration.
 
 ```
-usage: python3 stereo_calibration.py [-h] [-p PATH] [-m CAM_MODE] [-w WIDTH] [-h HEIGHT] [-s SIZE]
+Usage: python3 stereo_calibration.py [-h] [-p PATH] [-m CAM_MODE] [-w WIDTH] [-h HEIGHT] [-s SIZE]
 
-optional arguments:
+Optional Arguments:
     -h, --help                    Show this help message and exit.
     -p PATH, --path PATH          Path to the directory where snapshots are stored for calibration.
                                   Left and right images are saved in PATH/imageL and PATH/imageR, respectively.
@@ -61,6 +61,8 @@ optional arguments:
     -c COLUMN, --column COLUMN    Checkerboard width in terms of the number of control points
     -r ROW, --row ROW             Checkerboard height in terms of the number of control points
     -s SIZE, --size SIZE          Checkerboard grid size in mm
+
+Usage Example: See stereo_calibration.sh
 ```
 
 It first detects the corner points from all the saved left and right images. The figures below show the detected corner points from the left and right pairs. It is not always successful in detecting the corner points from all images; it may fail sometimes for certain images. Additionally, even though all the control points are detected from a left and right pair, the order of the corner points may not be correct. To account for potential errors in corner point detection, it is recommended to save 3 or 4 additional stereo image pairs when capturing snapshots with `stereo_capture.py`.
@@ -76,7 +78,7 @@ It first detects the corner points from all the saved left and right images. The
 <figcaption>Figure 3. Detected corner points.</figcaption>
 <br />
 
-After detecting the corner points from all images, the camera calibration for left and right images, and the stereo rectification are performed. After the calibration, the following steps are carried out:
+After detecting the corner points from all images, the camera calibration for left and right images, and the stereo rectification are performed. After the calibration, the tool performs the following steps:
 
 1. Prints the calibration errors, e.g.,
     ```text
@@ -89,11 +91,11 @@ After detecting the corner points from all images, the camera calibration for le
     ```
     If one of errors is larger than 1.0, it is recommended to redo calibration. There are a couple of main reasons that cause high RMS error. First of all, ensure that the checkerboard were placed at various distances from camera and various positions. Otherwise, it is recommended to capture stereo images again. Second, verify that the order of detected corner points is correct. Such images are detected and discarded after the corner point detection, but there may still be some remaining. For the stereo depth engine (SDE), the RMS error less than 0.5 is recommended.
 
-2. Create camera info YAML files for left and right cameras, e.g.,  `custom_CAMMODE_camera_info_left.yaml` and `custom_CAMMODE_camera_info_right.yaml`, and save them in the `zed_capture/config` directory.
+2. Creates camera info YAML files for left and right cameras, e.g., `custom_CAMMODE_camera_info_left.yaml` and `custom_CAMMODE_camera_info_right.yaml`, and saves them under `zed_capture/config` folder.
 
-3. Create LDC look-up-tables for left adn right cameras, e.g., `custom_CAMMODE_LUT_left.bin` and `custom_CAMMODE_LUT_right.bin`, and save them in the `zed_capture/config` directory. These tables can be used for the SDE application on J7.
+3. Creates LDC look-up-tables for left adn right cameras, e.g., `custom_CAMMODE_LUT_left.bin` and `custom_CAMMODE_LUT_right.bin`, and saves them under `zed_capture/config` folder. These tables can be used for the SDE application on the target.
 
-4. Create a stereo remap table, `stereoMap.xml` in the format that the OpenCV rectification can read, and save it in the `PATH` directory, which is one specified when launched.
+4. Creates a stereo remap table, `stereoMap.xml` in the format that the OpenCV rectification can read, and saves it under `PATH` which is one specified when the tool is launched.
 
 ## Stereo Camera Calibration Test
 

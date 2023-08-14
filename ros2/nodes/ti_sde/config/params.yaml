@@ -112,16 +112,16 @@ sde:
         # merge node in multi-layer SDE
         # TIVX_TARGET_DSP1
         # TIVX_TARGET_DSP2
-        # TIVX_TARGET_A72_0
-        # TIVX_TARGET_A72_1
-        disp_merge_deploy_core:             TIVX_TARGET_A72_0
+        # TIVX_TARGET_MPU_0
+        # TIVX_TARGET_MPU_1
+        disp_merge_deploy_core:             TIVX_TARGET_MPU_0
 
         # holing filling node in multi-layer SDE
         # TIVX_TARGET_DSP1
         # TIVX_TARGET_DSP2
-        # TIVX_TARGET_A72_0
-        # TIVX_TARGET_A72_1
-        hole_filling_deploy_core:           TIVX_TARGET_A72_0
+        # TIVX_TARGET_MPU_0
+        # TIVX_TARGET_MPU_1
+        hole_filling_deploy_core:           TIVX_TARGET_MPU_0
 
         # point cloud creation node in detection
         # TIVX_TARGET_DSP1
@@ -131,7 +131,7 @@ sde:
         # OG map creation node in detection
         # TIVX_TARGET_DSP1
         # TIVX_TARGET_DSP2
-        # TIVX_TARGET_A72_0
-        # TIVX_TARGET_A72_1
-        triang_deploy_core:                 TIVX_TARGET_A72_0
+        # TIVX_TARGET_MPU_0
+        # TIVX_TARGET_MPU_1
+        triang_deploy_core:                 TIVX_TARGET_MPU_0
 

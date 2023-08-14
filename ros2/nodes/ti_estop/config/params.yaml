@@ -165,14 +165,14 @@ estop:
 
         # Core deployment
         # merge node in multi-layer SDE
-        disp_merge_deploy_core:             TIVX_TARGET_A72_0
+        disp_merge_deploy_core:             TIVX_TARGET_MPU_0
 
         # holing filling node in multi-layer SDE
-        hole_filling_deploy_core:           TIVX_TARGET_A72_0
+        hole_filling_deploy_core:           TIVX_TARGET_MPU_0
 
         # point cloud creation node in detection
-        pc_deploy_core:                     TIVX_TARGET_A72_0
+        pc_deploy_core:                     TIVX_TARGET_MPU_0
 
         # OG map creation node in detection
-        og_deploy_core:                     TIVX_TARGET_A72_0
+        og_deploy_core:                     TIVX_TARGET_MPU_0
 

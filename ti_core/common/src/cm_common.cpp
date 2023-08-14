@@ -80,21 +80,21 @@ const char *CM_getCoreName(const char *appCoreName)
     {
         return TIVX_TARGET_DSP_C7_1;
     }
-    else if (!strcmp(appCoreName, "TIVX_TARGET_A72_0"))
+    else if (!strcmp(appCoreName, "TIVX_TARGET_MPU_0"))
     {
-        return TIVX_TARGET_A72_0;
+        return TIVX_TARGET_MPU_0;
     }
-    else if (!strcmp(appCoreName, "TIVX_TARGET_A72_1"))
+    else if (!strcmp(appCoreName, "TIVX_TARGET_MPU_1"))
     {
-        return TIVX_TARGET_A72_1;
+        return TIVX_TARGET_MPU_1;
     }
-    else if (!strcmp(appCoreName, "TIVX_TARGET_A72_2"))
+    else if (!strcmp(appCoreName, "TIVX_TARGET_MPU_2"))
     {
-        return TIVX_TARGET_A72_2;
+        return TIVX_TARGET_MPU_2;
     }
-    else if (!strcmp(appCoreName, "TIVX_TARGET_A72_3"))
+    else if (!strcmp(appCoreName, "TIVX_TARGET_MPU_3"))
     {
-        return TIVX_TARGET_A72_3;
+        return TIVX_TARGET_MPU_3;
     }
     else if (!strcmp(appCoreName, "TIVX_TARGET_IPU1_0"))
     {

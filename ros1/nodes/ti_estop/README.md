@@ -19,7 +19,7 @@ This demonstrates the 3D obstacle detection application using the disparity map 
 * 3D Obstacle Detection Processing
   - This process outputs the 3D bounding box coordinates of the detected obstacles. First, it creates 3D point cloud using the disparity map and the camera parameters. Note that it maps only pixels that belongs to particular classes, e.g., car, pedestrian, bicycle, rider, etc. into the 3D space. Then it projects the 3D point cloud on a 2D occupancy grid map. Finally it detects individual obstacles by grouping closely-located occupied cells with an identical class using a "connected component analysis" algorithm.
 
-## Run the Application in ROS 1
+<!-- ## Run the Application in ROS 1
 
 **[SK]** For setting up the ROS 1 environment on target, please follow [Docker Setup for ROS 1](../../../docker/setting_docker_ros1.md). To launch `ti_estop` node with playing back a ROSBAG file, run the following command inside the Docker container on the target:
 ```
@@ -40,14 +40,15 @@ roslaunch ti_estop rviz_estop.launch
 The ego-centric occupancy grid map is created based on 3D bounding boxes. To visualize OG map along with 3D bounding box image, run
 ```
 roslaunch ti_estop rviz_estop_ogmap.launch
-```
+``` -->
 
 ## Run the Application in ROS 2
 
 **[SK]** For setting up the ROS 2 environment on the target, please follow [Docker Setup for ROS 2](../../../docker/setting_docker_ros2.md). To process the image stream from a ZED stereo camera:
 ```
-ros2 launch ti_estop zed_estop_launch.py video_id:=x zed_sn:=SNxxxxx
+ros2 launch ti_estop zed_estop_launch.py cam_id:=x zed_sn:=SNxxxxx
 ```
+
 <!-- To launch `ti_estop` node with playing back a ROSBAG file, run the following inside the Docker container on the target:
 ```
 ros2 launch ti_estop bag_estop_launch.py

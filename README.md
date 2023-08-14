@@ -5,29 +5,38 @@
 [Robotics SDK Git Repository](https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/about/)
 
 ## User Guide Documentation
+
 ```{only} tag_j7x
-- {{'[TDA4VM](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/TDA4VM/docs/index.html)'.format(SDK_VER)}}
-- {{'[AM68A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM68A/docs/index.html)'.format(SDK_VER)}}
-- {{'[AM69A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM69A/docs/index.html)'.format(SDK_VER)}}
+- {{'[Robotics SDK for TDA4VM](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/TDA4VM/docs/index.html)'.format(SDK_VER)}}
+- {{'[Robotics SDK for AM68A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM68A/docs/index.html)'.format(SDK_VER)}}
+- {{'[Robotics SDK for AM69A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM69A/docs/index.html)'.format(SDK_VER)}}
 ```
 ```{only} tag_am62a
-- {{'[AM62A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM62A/docs/index.html)'.format(SDK_VER)}}
+- {{'[Robotics SDK for AM62A](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/{}/AM62A/docs/index.html)'.format(SDK_VER)}}
 ```
 
 ## Overview
 
-The Jacinto Robotics SDK provides a robotics software development environment for TI Jacinto and Sitara Processors. It also offers software building blocks and example demos that can be leveraged in robotics software development. The SDK runs in Docker container environments on:
-
 ```{only} tag_j7x
+The Robotics SDK provides a robotics software development environment for TI Jacinto Processors. It also offers software building blocks and example demos that can be leveraged in robotics software development. The SDK runs in Docker container environments on:
+
 - [Processor SDK Linux for TDA4VM {{RELEASE}}](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-SK-TDA4VM)
 - [Processor SDK Linux for AM68A {{RELEASE}}](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM68A)
 - [Processor SDK Linux for AM69A {{RELEASE}}](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM69A)
 ```
+
 ```{only} tag_am62a
+The Robotics SDK provides a robotics software development environment for TI Sitara Processors. It also offers software building blocks and example demos that can be leveraged in robotics software development. The SDK runs in Docker container environments on:
+
 - [Processor SDK Linux for AM62A {{RELEASE}}](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM62A)
 ```
 
-In the next section, you will find detailed steps for setting up Docker container environments for ROS Noetic and ROS 2 Foxy on the Processor SDK Linux for Edge AI. The Robotics SDK allows:
+```{only} tag_ros1n2
+In the next section, you will find detailed steps for setting up Docker container environments for ROS {{ROS1_DISTRO}} and ROS 2 {{ROS2_DISTRO}} on the Processor SDK Linux for Edge AI. The Robotics SDK allows:
+```
+```{only} tag_ros2only
+In the next section, you will find detailed steps for setting up Docker container environments for ROS 2 {{ROS2_DISTRO}} on the Processor SDK Linux for Edge AI. The Robotics SDK allows:
+```
 
 - Optimized software implementation of computation-intensive software building blocks (including deep-learning, vision, perception, mapping and localization) on deep-learning core (C7x/MMA), DSP cores, hardware accelerators built-in on the processors.
 - Application software development on the target using libraries optimized on the TI Processor along with many open-source libraries and packages including, for example, OpenCV, Point-Cloud Library (PCL), and more.
@@ -35,7 +44,7 @@ In the next section, you will find detailed steps for setting up Docker containe
 Figure 1 shows the software libraries and components provided by the Robotics SDK.
 
 ![](docs/tiovx_ros_sw_stack.png)
- <figcaption>Figure 1. Robotics SDK: Software Stack (Note: hardware diagram varies depending on the device.) </figcaption>
+ <figcaption>Figure 1. Robotics SDK: Software Stack (Note: hardware diagram varies depending on the platform.) </figcaption>
  <br />
 
 ### TI Vision Apps Library
@@ -75,13 +84,11 @@ The following ROS nodes for cameras have been tested and are supported by the SD
 - [USB Stereo Camera Capture Node for ZED Cameras](ros1/drivers/zed_capture/README.md)
 - [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
 - [GStreamer-based Camera Capture Node](ros1/drivers/gscam/README_TI.md)
-- [mmWave Radar Driver Node](docs/radar_driver_node.md)
 - [RealSense Camera Node](docs/realsense_driver_node.md)
 ```
 ```{only} tag_am62a
 - [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
 - [GStreamer-based Camera Capture Node](ros1/drivers/gscam/README_TI.md)
-- [mmWave Radar Driver Node](docs/radar_driver_node.md)
 ```
 
 ## Demo Applications
@@ -93,16 +100,15 @@ The SDK supports the following out-of-box demo applications:
 - [Semantic Segmentation CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README.md)
 - [Object Detection CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README_objdet.md)
 - [3D Obstacle Detection Accelerated on SDE and C7x/MMA](ros1/nodes/ti_estop/README.md)
-- [Vision Object Detection with 3D Spatial Information](ros1/nodes/ti_objdet_range/README.md)
 - [Visual Localization Accelerated on C7x/MMA](ros1/nodes/ti_vl/README.md)
-- [2D Lidar SLAM (open-source)](ros1/slam/README.md)
-- [AprilTag Detection (open-source)](docs/april_tag.md)
+<!-- - [2D Lidar SLAM (open-source)](ros1/slam/README.md)
+- [AprilTag Detection (open-source)](docs/april_tag.md) -->
 ```
 ```{only} tag_am62a
 - [Semantic Segmentation CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README.md)
 - [Object Detection CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README_objdet.md)
-- [2D Lidar SLAM (open-source)](ros1/slam/README.md)
-- [AprilTag Detection (open-source)](docs/april_tag.md)
+<!-- - [2D Lidar SLAM (open-source)](ros1/slam/README.md)
+- [AprilTag Detection (open-source)](docs/april_tag.md) -->
 ```
 ![](ros1/nodes/ti_vision_cnn/docs/objdet_rviz.png)
 ![](ros1/nodes/ti_estop/docs/estop_rviz.png)
@@ -113,10 +119,10 @@ The SDK supports the following out-of-box demo applications:
 ## Scope of Robotics SDK
 
 ```{only} tag_j7x
-![](docs/sdk_scope_j7x_08_06_01.png)
+![](docs/sdk_scope_j7x_09_00_00.png)
 ```
 ```{only} tag_am62a
-![](docs/sdk_scope_am62a_08_06_01.png)
+![](docs/sdk_scope_am62a_09_00_00.png)
 ```
 
 ## Limitations and Known Issues

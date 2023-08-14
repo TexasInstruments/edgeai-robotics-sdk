@@ -14,7 +14,7 @@ For this demo, we provide the data set that has been created using Carla simulat
 <figcaption>Figure 1. Visual Localization demo: block diagram</figcaption>
 <br />
 
-## How to Run the Application in ROS 1
+<!-- ## Run the Application in ROS 1
 
 ### Run the Visual Localization Demo
 **[J7]** For setting up the ROS 1 environment on J7 host, please follow [Docker Setup for ROS 1](../../../docker/setting_docker_ros1.md). To launch `ti_vl` node with playing back a ROSBAG file, run the following inside the Docker container on J7 target:
@@ -26,21 +26,22 @@ roslaunch ti_vl bag_visloc.launch
 To display the top-down image with overlaid vehicle trajectory and pose in 3D space using RViz on PC, run:
 ```
 roslaunch ti_viz_nodes rviz_visloc.launch
-```
+``` -->
 
-<!-- ## How to Run the Application in ROS 2
+## Run the Application in ROS 2
 
 ### Run the Visual Localization Demo
 **[J7]** For setting up the ROS 2 environment on J7 host, please follow [Docker Setup for ROS 2](../../../docker/setting_docker_ros2.md). To launch `ti_vl` node with playing back a ROSBAG file, run the following inside the Docker container on J7 target:
 ```
-ros2 launch ti_vl bag_visloc_launch.py
+ros2 launch ti_vl bag_rosbag_launch.py
 ```
+
 **[Visualization on Ubuntu PC]** For setting up the ROS 2 environment on remote PC, please follow [Docker Setup for ROS 2](../../../docker/setting_docker_ros2.md).
 
 To display the top-down image with overlaid vehicle trajectory and pose in 3D space using RViz on PC, run:
 ```
 ros2 launch ti_viz_nodes rviz_visloc_launch.py
-``` -->
+```
 
 ## Launch File Parameters
 

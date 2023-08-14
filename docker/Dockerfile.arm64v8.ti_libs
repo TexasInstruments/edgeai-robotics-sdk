@@ -67,23 +67,28 @@ COPY lib_gstreamer-1.0/* /usr/lib/aarch64-linux-gnu/gstreamer-1.0/
 COPY include/processor_sdk /usr/include/processor_sdk
 RUN ln -s /usr/lib/libtivision_apps.so.$TIVA_LIB_VER /usr/lib/libtivision_apps.so && \
     ln -s /usr/lib/libvx_tidl_rt.so.1.0 /usr/lib/libvx_tidl_rt.so && \
+    ln -s /usr/lib/libtidl_onnxrt_EP.so.1.0 /usr/lib/libtidl_onnxrt_EP.so && \
     ln -s /usr/lib/libti_rpmsg_char.so.$RPMSG_LIB_VER /usr/lib/libti_rpmsg_char.so.0 && \
     ln -s /usr/lib/libti_rpmsg_char.so.0 /usr/lib/libti_rpmsg_char.so
 
-# install dl-inferer
-ADD install_dl_inferer.sh /usr/bin/
-RUN /usr/bin/install_dl_inferer.sh && \
-    rm -rf /opt/edgeai-dl-inferer && \
-    rm -rf /usr/include/dlpack
+# install OS-RT libs and install dl-inferer
+ENV SOC=$SOC_NAME
+ADD install_apps_utils.sh install_osrt.sh /usr/bin/
+WORKDIR /opt
+RUN /usr/bin/install_apps_utils.sh && \
+    /usr/bin/install_osrt.sh && \
+    git clone --single-branch --branch develop https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
+    #==> git clone --single-branch --branch EDGEAI_APP_STACK_09_00_00_00 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
+    /opt/edgeai-dl-inferer/scripts/build_dl_inferer.sh && \
+    rm -rf /opt/edgeai-apps-utils && \
+    rm -rf /opt/edgeai-dl-inferer
 
 # install edgeai-tiovx-kernels
-ENV SOC=$SOC_NAME
 ADD install_tiovx_kernels.sh /usr/bin/
 RUN /usr/bin/install_tiovx_kernels.sh && \
     rm -rf /opt/edgeai-tiovx-kernels
 
 # install edgeai-tiovx-modules
-ENV SOC=$SOC_NAME
 ADD install_tiovx_modules.sh /usr/bin/
 RUN /usr/bin/install_tiovx_modules.sh && \
     rm -rf /opt/edgeai-tiovx-modules
@@ -96,7 +101,7 @@ RUN /usr/bin/install_gst_plugins.sh && \
 # install python modules for DL RT
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-gi && \
-    python3 -m pip install PyYAML
+    python3 -m pip install --no-cache-dir PyYAML
 
 # install ti-gpio-cpp
 ADD install_ti_gpio_libs.sh /usr/bin/

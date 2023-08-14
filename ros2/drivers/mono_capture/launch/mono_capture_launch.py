@@ -22,7 +22,7 @@ def finalize_node(context, *args, **kwargs):
     topic_ns          = LaunchConfiguration("topic_ns").perform(context)
     image_topic       = topic_ns + "/image_raw"
     camera_info_topic = topic_ns + "/camera_info"
-    device_name       = "/dev/video" + LaunchConfiguration("video_id").perform(context)
+    device_name       = "/dev/video-usb-cam" + LaunchConfiguration("cam_id").perform(context)
 
     params = [
         {
@@ -56,12 +56,12 @@ def generate_launch_description():
         description='Camera model string'
     )
 
-    # video_id: arg that can be set from the command line or a default will be used
-    video_id = DeclareLaunchArgument(
-        name="video_id",
-        default_value=TextSubstitution(text="2"),
-        description="""to find your device name, use ls /dev/video*
-                       and look for the name begin with video"""
+    # cam_id: arg that can be set from the command line or a default will be used
+    cam_id = DeclareLaunchArgument(
+        name="cam_id",
+        default_value=TextSubstitution(text="0"),
+        description="""to find your device name, use ls /dev/video-usb-cam*
+                       and look for the name begin with video-usb"""
     )
 
     # camera_mode: arg that can be set from the command line or a default will be used
@@ -93,7 +93,7 @@ def generate_launch_description():
     )
 
     ld.add_action(model_str)
-    ld.add_action(video_id)
+    ld.add_action(cam_id)
     ld.add_action(camera_mode)
     ld.add_action(frame_rate)
     ld.add_action(encoding)

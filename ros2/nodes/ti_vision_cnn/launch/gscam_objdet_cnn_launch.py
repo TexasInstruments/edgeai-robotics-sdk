@@ -12,7 +12,8 @@ from launch.substitutions import LaunchConfiguration
 image_format = 1
 enable_ldc_node = 1
 lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
-dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+# dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
 # dl_model_path = "/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"
 
 def get_launch_file(pkg, file_name):
@@ -20,10 +21,16 @@ def get_launch_file(pkg, file_name):
     return os.path.join(pkg_dir, 'launch', file_name)
 
 def generate_launch_description():
-    video_id_arg = DeclareLaunchArgument(
-        'video_id',
-        default_value='2',
+    cam_id_arg = DeclareLaunchArgument(
+        'cam_id',
+        default_value='0',
         description='ID of the video device to use.'
+    )
+
+    framerate_arg = DeclareLaunchArgument(
+        'framerate',
+        default_value='30',
+        description='framerate.'
     )
 
     exportPerfStats_arg = DeclareLaunchArgument(
@@ -71,11 +78,14 @@ def generate_launch_description():
     cam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(get_launch_file('gscam2', 'v4l_mjpg_launch.py')),
         launch_arguments={
-            "video_id": LaunchConfiguration('video_id'),
+            "cam_id": LaunchConfiguration('cam_id'),
+            "framerate": LaunchConfiguration('framerate'),
         }.items()
     )
 
     ld = LaunchDescription()
+    ld.add_action(cam_id_arg)
+    ld.add_action(framerate_arg)
     ld.add_action(exportPerfStats_arg)
     ld.add_action(exportPerfStats_str_arg)
     ld.add_action(detVizThreshold_arg)

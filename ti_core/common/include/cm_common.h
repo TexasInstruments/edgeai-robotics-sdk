@@ -71,6 +71,14 @@
 
 #include <TI/tivx.h>
 #include <TI/j7_tidl.h>
+#include <TI/hwa_kernels.h>
+#include <TI/dl_kernels.h>
+#include <TI/hwa_vpac_ldc.h>
+#include <TI/hwa_vpac_msc.h>
+#include <TI/hwa_vpac_viss.h>
+#include <TI/hwa_vpac_nf.h>
+#include <TI/hwa_dmpac_dof.h>
+#include <TI/hwa_dmpac_sde.h>
 
 #if !defined(SOC_AM62A) && !defined(SOC_AM62)
 #include <perception/perception.h>
@@ -359,6 +367,7 @@ vx_int32  CM_fill1DTensorFrom2Bin(vx_tensor        in_tensor,
                                   const vx_char  * in_file2);
 
 
+#if !defined(SOC_AM62A) && !defined(SOC_AM62)
 /**
  * \brief Function to extract point cloud (XYZRGB) data from an OpenVX user data object.
  *        When copyPointFlag = 1, copy points to outPcData. Otherwise, only get numPoints.
@@ -379,7 +388,6 @@ vx_int32  CM_fill1DTensorFrom2Bin(vx_tensor        in_tensor,
  * \ingroup group_ticore_common
  */
 
-#if !defined(SOC_AM62A) && !defined(SOC_AM62)
 vx_status CM_extractPointCloudData(uint8_t                  *outPcData,
                                    const vx_user_data_object pointCloud,
                                    uint32_t                  pointSize,

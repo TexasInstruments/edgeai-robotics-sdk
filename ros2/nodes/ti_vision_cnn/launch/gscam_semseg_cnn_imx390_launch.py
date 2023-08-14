@@ -19,15 +19,15 @@ def get_launch_file(pkg, file_name):
     return os.path.join(pkg_dir, 'launch', file_name)
 
 def generate_launch_description():
-    video_id_arg = DeclareLaunchArgument(
-        'video_id',
-        default_value='2',
+    cam_id_arg = DeclareLaunchArgument(
+        'cam_id',
+        default_value='0',
         description='video ID of the camera'
     )
 
     subdev_id_arg = DeclareLaunchArgument(
         'subdev_id',
-        default_value='2',
+        default_value='0',
         description='subdev ID of the camera'
     )
 
@@ -67,13 +67,13 @@ def generate_launch_description():
     cam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(get_launch_file('gscam2', 'v4l_imx390_launch.py')),
         launch_arguments={
-            "video_id": LaunchConfiguration('video_id'),
+            "cam_id": LaunchConfiguration('cam_id'),
             "subdev_id": LaunchConfiguration('subdev_id'),
         }.items()
     )
 
     ld = LaunchDescription()
-    ld.add_action(video_id_arg)
+    ld.add_action(cam_id_arg)
     ld.add_action(subdev_id_arg)
     ld.add_action(exportPerfStats_arg)
     ld.add_action(exportPerfStats_str_arg)

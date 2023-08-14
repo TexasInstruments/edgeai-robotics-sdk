@@ -61,7 +61,7 @@ index 98166b7..70531c3 100644
 +endif()
 diff --git a/README_TI.md b/README_TI.md
 new file mode 100644
-index 0000000..c1da33c
+index 0000000..08d56b2
 --- /dev/null
 +++ b/README_TI.md
 @@ -0,0 +1,136 @@
@@ -88,7 +88,7 @@ index 0000000..c1da33c
 +1. Camera Calibration and Rectification Map Generation: See corresponding parts of [mono_capture/README.md](../mono_capture/README.md).
 +
 +2. Build the ROS node:
-+    ```
++    ```sh
 +    cd $ROS_WS
 +    catkin_make --source /opt/robotics_sdk/ros1
 +    source devel/setup.bash
@@ -97,11 +97,11 @@ index 0000000..c1da33c
 +3. Launch the "gscam" ROS node:
 +Before launching the "gscam", please make sure to update `device` in the launch file to point to correct camera device (`/dev/videoX`).
 +    For capturing in MJPG (motion JPEG) mode,
-+    ```
++    ```sh
 +    roslaunch gscam v4l_mjpg.launch
 +    ```
 +    For capturing in YUYV mode,
-+    ```
++    ```sh
 +    roslaunch gscam v4l_yuv.launch
 +    roslaunch gscam v4l_ov5640.launch # for OV5640 CSI camera
 +    ```
@@ -115,24 +115,24 @@ index 0000000..c1da33c
 +By default, the output topic `raw_image` is published in NV12 color format to make more efficient when the node is integrated with the vision vision CNN processing chain (including `ti_vision_cnn` ROS node) on the target. We provide a launch file for visualization on the remote Ubuntu (included in `ti_viz_nodes` ROS package).
 +
 +In the PC Docker container,
-+```
++```sh
 +roslaunch ti_viz_nodes gscam_nv12.launch
 +```
 +
 +## Usage: IMX219 Camera
 +
 +```{only} tag_j7x
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#rpiv2-imx219-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#rpiv2-imx219-raw-sensor).
 +```
 +```{only} tag_am62a
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/docs/devices/AM62AX/linux/getting_started.html#rpiv2-imx219-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/edgeai_docs/devices/AM62AX/linux/getting_started.html#rpiv2-imx219-raw-sensor).
 +```
 +
 +You can check the device ID and subdev ID for the IMX219 CSI camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
 +
 +### Running gscam with resizing
 +To publish the captured images from the IMX219 camera,
-+```
++```sh
 +roslaunch gscam v4l_imx219.launch device_id:=X subdev_id:=Y
 +```
 +
@@ -143,17 +143,17 @@ index 0000000..c1da33c
 +### Visualization on remote PC
 +
 +For visualization, run the following in the PC Docker container,
-+```
++```sh
 +roslaunch ti_viz_nodes gscam_nv12.launch width:=1280 height:=720
 +```
 +
 +## Usage: IMX390 Camera
 +
 +```{only} tag_j7x
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#imx390-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#imx390-raw-sensor).
 +```
 +```{only} tag_am62a
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/docs/devices/AM62AX/linux/getting_started.html#imx390-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/edgeai_docs/devices/AM62AX/linux/getting_started.html#imx390-raw-sensor).
 +```
 +
 +### Running gscam for raw image capture
@@ -161,7 +161,7 @@ index 0000000..c1da33c
 +You can check the device ID and subdev ID for the IMX390 camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
 +
 +To publish raw images in the native resolution (1936 x 1096),
-+```
++```sh
 +roslaunch gscam v4l_imx390_raw.launch
 +```
 +### Running gscam with rectification and resizing
@@ -170,16 +170,15 @@ index 0000000..c1da33c
 +
 +````{note}
 +`v4l_imx390.launch` has `tiovxldc` in the GStreamer pipeline and
-+`tiovxldc` requires `lut-file`. The LUT file is specific to the camera.
-+As an example, we provide camera calibration data for a fisheye IMX390 camera
-+is provided in the form of camera_info YAML file. To generate the LUT files,
-+please run the following in the Robotics SDK Docker container on the target:
++`tiovxldc` requires a LUT file (specified with `lut-file`). The LUT file is specific to the camera being used.
++As an example, we provide camera calibration data for a fisheye IMX390 camera in the form of camera_info YAML file.
++To generate the LUT files, please run the following in the Robotics SDK Docker container on the target:
 +```
-+$ bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh
++bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh
 +```
 +````
 +
-+```
++```sh
 +# 1080p
 +roslaunch gscam v4l_imx390.launch width:=1920 height:=1080
 +# 720p
@@ -193,7 +192,8 @@ index 0000000..c1da33c
 +### Visualization on remote PC
 +
 +For visualization, run the following in the PC Docker container,
-+```
++
++```sh
 +# native resolution (1936 x 1096)
 +roslaunch ti_viz_nodes gscam_nv12.launch width:=1936 height:=1096
 +# 1080p

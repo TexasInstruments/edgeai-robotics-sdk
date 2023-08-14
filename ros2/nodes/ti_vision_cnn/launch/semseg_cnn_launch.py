@@ -71,7 +71,6 @@ def generate_launch_description():
     dl_model_path = DeclareLaunchArgument(
         name="dl_model_path",
         default_value=TextSubstitution(text="/opt/model_zoo/ONR-SS-8818-deeplabv3lite-mobv2-qat-robokit-768x432"),
-        # default_value=TextSubstitution(text="/opt/model_zoo/ONR-SS-8818-deeplabv3lite-mobv2-qat-robokit-768x432"),
         description='DL model path'
     )
 

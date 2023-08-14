@@ -70,7 +70,8 @@ def generate_launch_description():
     # DL model path
     dl_model_path = DeclareLaunchArgument(
         name="dl_model_path",
-        default_value=TextSubstitution(text="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"),
+        default_value=TextSubstitution(text="/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"),
+        # default_value=TextSubstitution(text="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"),
         # default_value=TextSubstitution(text="/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"),
         description='DL model path'
     )

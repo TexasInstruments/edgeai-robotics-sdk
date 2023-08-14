@@ -110,10 +110,10 @@ index 63ad29c..5f41e23 100644
 \ No newline at end of file
 diff --git a/README_TI.md b/README_TI.md
 new file mode 100644
-index 0000000..ef96a32
+index 0000000..9b370eb
 --- /dev/null
 +++ b/README_TI.md
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,135 @@
 +GStreamer Camera Node for ROS 2
 +===============================
 +This GStreamer based camera ROS node is from [https://github.com/clydemcqueen/gscam2](https://github.com/clydemcqueen/gscam2). Following changes are made to customize for the use cases in the Robotics SDK:
@@ -136,20 +136,20 @@ index 0000000..ef96a32
 +
 +
 +2. Build the ROS node:
-+    ```
++    ```sh
 +    cd $ROS_WS
 +    colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential
 +    source install/setup.bash
 +    ```
 +
 +3. Launch the "gscam2" ROS node:
-+Before launching the "gscam2", please make sure to update `device` in the launch file to point to correct camera device (`/dev/videoX`).
++Before launching the "gscam2", please make sure to update `device` in the launch file to point to correct camera device (`/dev/videoX` or `/dev/video-usb-camX`).
 +    For capturing in MJPG (motion JPEG) mode,
-+    ```
++    ```sh
 +    ros2 launch gscam2 v4l_mjpg_launch.py
 +    ```
 +    For capturing in YUYV mode,
-+    ```
++    ```sh
 +    ros2 launch gscam2 v4l_yuv_launch.py
 +    ros2 launch gscam2 v4l_ov5640_launch.py # for OV5640 CSI camera
 +    ```
@@ -162,75 +162,75 @@ index 0000000..ef96a32
 +By default, the output topic `raw_image` is published in NV12 color format to make more efficient when the node is integrated with the vision vision CNN processing chain (including `ti_vision_cnn` ROS node) on the target. We provide a launch file for visualization on the remote Ubuntu (included in `ti_viz_nodes` ROS package).
 +
 +In the PC ROS2 Docker container,
-+```
++```sh
 +ros2 launch ti_viz_nodes gscam_nv12_launch.py
 +```
 +
 +## Usage: IMX219 Camera
 +
 +```{only} tag_j7x
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#rpiv2-imx219-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#rpiv2-imx219-raw-sensor).
 +```
 +```{only} tag_am62a
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/docs/devices/AM62AX/linux/getting_started.html#rpiv2-imx219-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/edgeai_docs/devices/AM62AX/linux/getting_started.html#rpiv2-imx219-raw-sensor).
 +```
 +
-+You can check the device ID and subdev ID for the IMX219 CSI camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
++You can check the camera ID and subdev ID for the IMX219 CSI camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
 +
 +### Running gscam2 on the target
 +To publish the captured images from the IMX219 camera,
-+```
-+ros2 launch gscam2 v4l_imx219_launch.py device_id:=X subdev_id:=Y
++```sh
++ros2 launch gscam2 v4l_imx219_launch.py cam_id:=X subdev_id:=Y
 +```
 +
 +```{note}
-+The GStreamer pipeline in `v4l_imx219.launch` includes the ISP plugin (tiovxisp) followed by the image scaler plugin (tiovxmultiscaler) to resize the images to the output resolution. The output images are published in NV12 format.
++The GStreamer pipeline in `v4l_imx219_launch.py` includes the ISP plugin (tiovxisp) followed by the image scaler plugin (tiovxmultiscaler) to resize the images to the output resolution. The output images are published in NV12 format.
 +```
 +
 +### Visualization on remote PC
 +
 +For visualization, run the following in the PC Docker container,
-+```
++```sh
 +ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1280 height:=720
 +```
 +
 +## Usage: IMX390 Camera
 +
 +```{only} tag_j7x
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/docs/devices/TDA4VM/linux/getting_started.html#imx390-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/latest/exports/edgeai_docs/devices/TDA4VM/linux/getting_started.html#imx390-raw-sensor).
 +```
 +```{only} tag_am62a
-+Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/docs/devices/AM62AX/linux/getting_started.html#imx390-raw-sensor).
++Please follow [the hardware setup section of Edge AI documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/latest/exports/edgeai_docs/devices/AM62AX/linux/getting_started.html#imx390-raw-sensor).
 +```
 +
 +### Running gscam for raw image capture
 +
-+You can check the device ID and subdev ID for the IMX390 camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
++You can check the camera ID and subdev ID for the IMX390 camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
 +
 +To publish raw images in the native resolution (1936 x 1096),
-+```
-+ros2 launch gscam v4l_imx390_raw_launch.py
++```sh
++ros2 launch gscam v4l_imx390_raw_launch.py cam_id:=X subdev_id:=Y
 +```
 +### Running gscam with rectification and resizing
 +
 +We also provide a launch file that includes rectification and resizing in the GStreamer pipeline.
 +
 +````{note}
-+`v4l_imx390.launch` has `tiovxldc` in the GStreamer pipeline and
-+`tiovxldc` requires `lut-file`. The LUT file is specific to the camera.
++`v4l_imx390_launch.py` has `tiovxldc` in the GStreamer pipeline and
++`tiovxldc` requires a LUT file (specified with `lut-file`). The LUT file is specific to the camera being used.
 +As an example, we provide camera calibration data for a fisheye IMX390 camera
-+is provided in the form of camera_info YAML file. To generate the LUT files,
++in the form of a camera_info YAML file. To generate the LUT files,
 +please run the following in the Robotics SDK Docker container on the target:
-+```
-+$ bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh
++```sh
++bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh
 +```
 +````
 +
-+```
++```sh
 +# 1080p
-+ros2 launch gscam v4l_imx390_launch.py width:=1920 height:=1080
++ros2 launch gscam v4l_imx390_launch.py width:=1920 height:=1080 cam_id:=X subdev_id:=Y
 +# 720p
-+ros2 launch gscam v4l_imx390_launch.py width:=1280 height:=720
++ros2 launch gscam v4l_imx390_launch.py width:=1280 height:=720 cam_id:=X subdev_id:=Y
 +```
 +
 +```{note}
@@ -240,7 +240,8 @@ index 0000000..ef96a32
 +### Visualization on remote PC
 +
 +For visualization, run the following in the PC Docker container,
-+```
++
++```sh
 +# native resolution (1936 x 1096)
 +ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1936 height:=1096
 +# 1080p
@@ -325,7 +326,7 @@ index 0000000..b3ab210
 +       0. ]
 diff --git a/launch/v4l_imx219_launch.py b/launch/v4l_imx219_launch.py
 new file mode 100644
-index 0000000..f104c35
+index 0000000..396bf79
 --- /dev/null
 +++ b/launch/v4l_imx219_launch.py
 @@ -0,0 +1,158 @@
@@ -343,17 +344,17 @@ index 0000000..f104c35
 +def finalize_node(context, *args, **kwargs):
 +
 +    """
-+    You can check the device_id and subdev_id for the IMX219 camera (RPi v2)
++    You can check the cam_id and subdev_id for the IMX219 camera (RPi v2)
 +    attached by running /opt/edgeai-gst-apps/scripts/setup_cameras.sh on the target
 +    host Linux. Accordingly please update the parameters or pass as launch arguments.
 +    """
-+    # Device
-+    device = "/dev/video" + LaunchConfiguration('video_id').perform(context)
++    # Video device
++    device = "/dev/video-rpi-cam" + LaunchConfiguration('cam_id').perform(context)
 +
 +    # Subdev
-+    subdev = "/dev/v4l-subdev" + LaunchConfiguration('subdev_id').perform(context)
++    subdev = "/dev/v4l-rpi-subdev" + LaunchConfiguration('subdev_id').perform(context)
 +
-+    # width and height of the image
++    # Width and height of the image
 +    width = int(LaunchConfiguration('width').perform(context))
 +    height = int(LaunchConfiguration('height').perform(context))
 +
@@ -370,10 +371,10 @@ index 0000000..f104c35
 +    sensor_name = 'SENSOR_SONY_IMX219_RPI'
 +
 +    # DCC VISS binary file
-+    dcc_isp_file = '/opt/imaging/imx219/dcc_viss.bin'
++    dcc_isp_file = '/opt/imaging/imx219/linear/dcc_viss.bin'
 +
 +    # DCC 2A binary file
-+    dcc_2a_file = '/opt/imaging/imx219/dcc_2a.bin'
++    dcc_2a_file = '/opt/imaging/imx219/linear/dcc_2a.bin'
 +
 +    # GStreamer pipeline specified in gscam_config was tested with IMX219 camera.
 +    # Assumes 'edgeai-tiovx-modules' and 'edgeai-gst-plugins' are already installed in target ROS container
@@ -426,15 +427,15 @@ index 0000000..f104c35
 +
 +def generate_launch_description():
 +
-+    video_id_arg = DeclareLaunchArgument(
-+        'video_id',
-+        default_value='2',
++    cam_id_arg = DeclareLaunchArgument(
++        'cam_id',
++        default_value='0',
 +        description='ID of the video device to use.'
 +    )
 +
 +    subdev_id_arg = DeclareLaunchArgument(
 +        'subdev_id',
-+        default_value='2',
++        default_value='0',
 +        description='ID of subdev to use.'
 +    )
 +
@@ -476,7 +477,7 @@ index 0000000..f104c35
 +
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
-+    ld.add_action(video_id_arg)
++    ld.add_action(cam_id_arg)
 +    ld.add_action(subdev_id_arg)
 +    ld.add_action(width_arg)
 +    ld.add_action(height_arg)
@@ -490,7 +491,7 @@ index 0000000..f104c35
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_launch.py b/launch/v4l_imx390_launch.py
 new file mode 100644
-index 0000000..61a0fc4
+index 0000000..39a930c
 --- /dev/null
 +++ b/launch/v4l_imx390_launch.py
 @@ -0,0 +1,174 @@
@@ -517,17 +518,17 @@ index 0000000..61a0fc4
 +    """
 +
 +    """
-+    You can check the device_id and subdev_id for the IMX390 camera
++    You can check the cam_id and subdev_id for the IMX390 camera
 +    attached by running /opt/edgeai-gst-apps/scripts/setup_cameras.sh on the target
 +    host Linux. Accordingly please update the parameters or pass as launch arguments.
 +    """
-+    # Device
-+    device = "/dev/video" + LaunchConfiguration('video_id').perform(context)
++    # Video device
++    device = "/dev/video-imx390-cam" + LaunchConfiguration('cam_id').perform(context)
 +
 +    # Subdev
-+    subdev = "/dev/v4l-subdev" + LaunchConfiguration('subdev_id').perform(context)
++    subdev = "/dev/v4l-imx390-subdev" + LaunchConfiguration('subdev_id').perform(context)
 +
-+    # width and height of the image
++    # Width and height of the image
 +    width = int(LaunchConfiguration('width').perform(context))
 +    height = int(LaunchConfiguration('height').perform(context))
 +
@@ -544,10 +545,10 @@ index 0000000..61a0fc4
 +    sensor_name = 'SENSOR_SONY_IMX390_UB953_D3'
 +
 +    # DCC VISS binary file
-+    dcc_isp_file = '/opt/imaging/imx390/dcc_viss.bin'
++    dcc_isp_file = '/opt/imaging/imx390/linear/dcc_viss.bin'
 +
 +    # DCC 2A binary file
-+    dcc_2a_file = '/opt/imaging/imx390/dcc_2a.bin'
++    dcc_2a_file = '/opt/imaging/imx390/linear/dcc_2a.bin'
 +
 +    # camera_info URL: replace with camera_info from camera calibration
 +    camera_info_url = '/opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
@@ -607,15 +608,15 @@ index 0000000..61a0fc4
 +
 +def generate_launch_description():
 +
-+    video_id_arg = DeclareLaunchArgument(
-+        'video_id',
-+        default_value='2',
++    cam_id_arg = DeclareLaunchArgument(
++        'cam_id',
++        default_value='0',
 +        description='ID of the video device to use.'
 +    )
 +
 +    subdev_id_arg = DeclareLaunchArgument(
 +        'subdev_id',
-+        default_value='2',
++        default_value='0',
 +        description='ID of subdev to use.'
 +    )
 +
@@ -657,7 +658,7 @@ index 0000000..61a0fc4
 +
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
-+    ld.add_action(video_id_arg)
++    ld.add_action(cam_id_arg)
 +    ld.add_action(subdev_id_arg)
 +    ld.add_action(width_arg)
 +    ld.add_action(height_arg)
@@ -671,7 +672,7 @@ index 0000000..61a0fc4
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_raw_launch.py b/launch/v4l_imx390_raw_launch.py
 new file mode 100644
-index 0000000..7cb864c
+index 0000000..489322f
 --- /dev/null
 +++ b/launch/v4l_imx390_raw_launch.py
 @@ -0,0 +1,146 @@
@@ -689,17 +690,17 @@ index 0000000..7cb864c
 +def finalize_node(context, *args, **kwargs):
 +
 +    """
-+    You can check the device_id and subdev_id for the IMX390 camera
++    You can check the cam_id and subdev_id for the IMX390 camera
 +    attached by running /opt/edgeai-gst-apps/scripts/setup_cameras.sh on the target
 +    host Linux. Accordingly please update the parameters or pass as launch arguments.
 +    """
-+    # Device
-+    device = "/dev/video" + LaunchConfiguration('video_id').perform(context)
++    # Video device
++    device = "/dev/video-imx390-cam" + LaunchConfiguration('cam_id').perform(context)
 +
 +    # Subdev
-+    subdev = "/dev/v4l-subdev" + LaunchConfiguration('subdev_id').perform(context)
++    subdev = "/dev/v4l-imx390-subdev" + LaunchConfiguration('subdev_id').perform(context)
 +
-+    # width and height of the image
++    # Width and height of the image
 +    width  = 1936
 +    height = 1096
 +
@@ -716,10 +717,10 @@ index 0000000..7cb864c
 +    sensor_name = 'SENSOR_SONY_IMX390_UB953_D3'
 +
 +    # DCC VISS binary file
-+    dcc_isp_file = '/opt/imaging/imx390/dcc_viss.bin'
++    dcc_isp_file = '/opt/imaging/imx390/linear/dcc_viss.bin'
 +
 +    # DCC 2A binary file
-+    dcc_2a_file = '/opt/imaging/imx390/dcc_2a.bin'
++    dcc_2a_file = '/opt/imaging/imx390/linear/dcc_2a.bin'
 +
 +    # camera_info URL: replace with camera_info from camera calibration
 +    camera_info_url = 'file:///opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
@@ -774,15 +775,15 @@ index 0000000..7cb864c
 +
 +def generate_launch_description():
 +
-+    video_id_arg = DeclareLaunchArgument(
-+        'video_id',
-+        default_value='2',
++    cam_id_arg = DeclareLaunchArgument(
++        'cam_id',
++        default_value='0',
 +        description='ID of the video device to use.'
 +    )
 +
 +    subdev_id_arg = DeclareLaunchArgument(
 +        'subdev_id',
-+        default_value='2',
++        default_value='0',
 +        description='ID of subdev to use.'
 +    )
 +
@@ -812,7 +813,7 @@ index 0000000..7cb864c
 +
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
-+    ld.add_action(video_id_arg)
++    ld.add_action(cam_id_arg)
 +    ld.add_action(subdev_id_arg)
 +    ld.add_action(framerate_arg)
 +    ld.add_action(image_encoding_arg)
@@ -824,7 +825,7 @@ index 0000000..7cb864c
 \ No newline at end of file
 diff --git a/launch/v4l_mjpg_launch.py b/launch/v4l_mjpg_launch.py
 new file mode 100644
-index 0000000..3d36b71
+index 0000000..e01ae08
 --- /dev/null
 +++ b/launch/v4l_mjpg_launch.py
 @@ -0,0 +1,110 @@
@@ -842,7 +843,7 @@ index 0000000..3d36b71
 +def finalize_node(context, *args, **kwargs):
 +
 +    # Device
-+    device = "/dev/video" + LaunchConfiguration('video_id').perform(context)
++    device = "/dev/video-usb-cam" + LaunchConfiguration('cam_id').perform(context)
 +
 +    # Framerate
 +    framerate = LaunchConfiguration('framerate')
@@ -898,9 +899,9 @@ index 0000000..3d36b71
 +
 +def generate_launch_description():
 +
-+    video_id_arg = DeclareLaunchArgument(
-+        'video_id',
-+        default_value='2',
++    cam_id_arg = DeclareLaunchArgument(
++        'cam_id',
++        default_value='0',
 +        description='ID of the video device to use.'
 +    )
 +
@@ -930,7 +931,7 @@ index 0000000..3d36b71
 +
 +    # Create the launch description and add the arguments
 +    ld  = LaunchDescription()
-+    ld.add_action(video_id_arg)
++    ld.add_action(cam_id_arg)
 +    ld.add_action(framerate_arg)
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
