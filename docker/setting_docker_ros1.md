@@ -41,6 +41,10 @@ In the ROS 1 Docker container environment, ROS {{ROS1_DISTRO}}, necessary librar
 
 ## Set Up Docker Environment on the Remote PC for Visualization
 
+```{note}
+If your Ubuntu PC (for visualization) uses an Nvidia GPU driver, please ensure that the Nvidia Container Toolkit ("nvidia-docker" or "nvidia-docker2" depending on Ubuntu distro) is installed before running `docker_run_ros1.sh` script. Additionally, when generating scripts, make sure to add the argument `GPUS=y` (see Step 1 below).
+```
+
 You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_home` as the working directory.
 
 1. To generate the scripts for building and running a Docker image for ROS 1 {{ROS1_DISTRO}}:
@@ -176,7 +180,12 @@ In the following, **[SK]** and **[PC]** indicate the steps that should be launch
     ```
     root@am6x-sk:~/j7ros_home$ ./docker_run_ros1.sh roslaunch ti_vision_cnn bag_semseg_cnn.launch
     ```
-    To process the image stream from a ZED stereo camera or USB mono camera, replace the launch file with `zed_semseg_cnn.launch` or `gscam_semseg_cnn.launch` in the above.
+    ```{only} tag_j7x
+    To process the image stream from a ZED stereo camera or a USB mono camera, replace the launch file with `zed_semseg_cnn.launch` or `gscam_semseg_cnn.launch` in the above.
+    ```
+    ```{only} tag_am62a
+    To process the image stream from a USB mono camera, replace the launch file with `gscam_semseg_cnn.launch` in the above.
+    ```
 
 2. **[PC]** For visualization, in the ROS 1 container on the PC::
     ```
@@ -193,7 +202,12 @@ In the following, **[SK]** and **[PC]** indicate the steps that should be launch
     ```
     root@am6x-sk:~/j7ros_home$ ./docker_run_ros1.sh roslaunch ti_vision_cnn bag_objdet_cnn.launch
     ```
-    To process the image stream from a ZED stereo camera or USB mono camera, replace the launch file with `zed_semseg_cnn.launch` or `gscam_semseg_cnn.launch` in the above.
+    ```{only} tag_j7x
+    To process the image stream from a ZED stereo camera or a USB mono camera, replace the launch file with `zed_semseg_cnn.launch` or `gscam_semseg_cnn.launch` in the above.
+    ```
+    ```{only} tag_am62a
+    To process the image stream from a USB mono camera, replace the launch file with `gscam_semseg_cnn.launch` in the above.
+    ```
 
 2. **[PC]** For visualization, in the ROS 1 container on the PC:
     ```

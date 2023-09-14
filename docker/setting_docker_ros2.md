@@ -56,8 +56,10 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     ```
     ````
     ````{only} tag_am62a
+    ```
     root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential --cmake-force-configure
     root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
+    ```
     ````
 
 5. The ROSBAG data downloaded is in ROS 1 specific format, and the format and storage mechanism have changed in ROS 2. To convert the ROS 1 bag data to ROS 2 format, use `rosbags-convert <ros1_bag_name.bag>`. This will create a directory named `<ros_bag_name>` and contain the data under this directory. To convert the downloaded ROSBAG file, run the following inside the ROS 2 Docker container.
@@ -65,7 +67,7 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     ```
     root@j7-docker:~/j7ros_home$ rosbags-convert $WORK_DIR/data/ros_bag/zed1_2020-11-09-18-01-08.bag
     root@j7-docker:~/j7ros_home$ rosbags-convert $WORK_DIR/data/visual_localization_data/ros_bag/carla_768x384_visloc.bag
-   ```
+    ```
     ````
     ````{only} tag_am62a
     ```
@@ -74,6 +76,10 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     ````
 
 ## Set Up Docker Environment on the Remote PC for Visualization
+
+```{note}
+If your Ubuntu PC (for visualization) uses an Nvidia GPU driver, please ensure that the Nvidia Container Toolkit ("nvidia-docker" or "nvidia-docker2" depending on Ubuntu distro) is installed before running `docker_run_ros2.sh` script. Additionally, when generating scripts, make sure to add the argument `GPUS=y` (see Step 1 below).
+```
 
 You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_home` as the working directory.
 
@@ -103,10 +109,6 @@ You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_hom
     root@pc-docker:~/j7ros_home/ros_ws$ colcon build --base-paths src/robotics_sdk/ros2
     root@pc-docker:~/j7ros_home/ros_ws$ source install/setup.bash
     ```
-
-```{note}
-If the Ubuntu PC uses an Nvidia GPU driver, please make sure that the Nvidia Container Toolkit ("nvidia-docker" or "nvidia-docker2" depending on Ubuntu distro) is installed before running `docker_run_ros2.sh` script.
-```
 
 ## Run Demo Applications
 
@@ -171,8 +173,8 @@ It is recommended to launch the demos in two terminals on the target SK board, s
 ```{only} tag_am62a
 | Demo                      | ROSBAG launch command on Target (Terminal 1) | Demo launch command on Target (Terminal 2)  | Launch command on Remote Visualization PC |
 |---------------------------|-------------------------------------------|------------------------------------------------|-------------------------------------------|
-| Semantic Segmentation CNN | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
-| Object Detection CNN      | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Semantic Segmentation CNN | ros2 launch /opt/robotics_sdk/ros2/nodes/ti_sde/launch/rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Object Detection CNN      | ros2 launch /opt/robotics_sdk/ros2/nodes/ti_sde/launch/rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
 ```
 
 ```{tip}
@@ -224,15 +226,14 @@ In the following, **[SK]** and **[PC]** indicate the steps that should be launch
 
 **Run Semantic Segmentation CNN Application**
 
-1. **[SK]** To launch semantic segmentation demo with a ZED stereo camera, run the following launch command **inside** the ROS 2 container:
+1. **[SK]** To launch semantic segmentation demo with a USB mono camera, run the following launch command **inside** the ROS 2 container:
     ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn zed_semseg_cnn_launch.py
+    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py
     ```
     Alternatively, you can run the following directly on the target host Linux:
     ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn zed_semseg_cnn_launch.py
+    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py
     ```
-    To process the image stream from a USB mono camera, replace the launch file with `gscam_semseg_cnn_launch.py` in the above.
 
 2. **[PC]**  For visualization, in the ROS 2 container on the PC:
     ```
@@ -241,15 +242,14 @@ In the following, **[SK]** and **[PC]** indicate the steps that should be launch
 
 **Run Object Detection CNN Application**
 
-1. **[SK]** To launch object detection demo with a ZED stereo camera, run the following launch command **inside** the ROS 2 container:
+1. **[SK]** To launch object detection demo with a USB mono camera, run the following launch command **inside** the ROS 2 container:
     ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn zed_objdet_cnn_launch.py
+    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py
     ```
     Alternatively, you can run the following directly on the target host Linux:
     ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn zed_objdet_cnn_launch.py
+    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py
     ```
-    To process the image stream from a USB mono camera, replace the launch file with `gscam_objdet_cnn_launch.py` in the above.
 
 2. **[PC]**  For visualization, in the ROS 2 container on the PC:
     ```

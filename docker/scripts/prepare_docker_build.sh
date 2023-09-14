@@ -80,7 +80,6 @@ fi
 if [[ "$ARCH" == "aarch64" ]]; then
     source ${SDK_DIR}/docker/scripts/detect_soc.sh
     # Installation of OSRT libs is now part of edgeai-gst-app/scripts/install_dl_inferer.sh
-    # cp -p /opt/edgeai-gst-apps/scripts/install_dl_inferer.sh ${DST_DIR}
     cp -p ${SDK_DIR}/docker/install_osrt.sh ${DST_DIR}
     cp -p /opt/edgeai-gst-apps/scripts/install_apps_utils.sh ${DST_DIR}
     cp -p /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh ${DST_DIR}
@@ -95,7 +94,6 @@ if [[ "$ARCH" == "aarch64" ]]; then
     Lib_files=(
         # Processor SDK libraries
         /usr/lib/libtivision_apps.so.${TIVA_LIB_VER}
-        # /usr/lib/libion.so
         /usr/lib/libti_rpmsg_char.so.${RPMSG_LIB_VER}
         /usr/lib/libtidl_tfl_delegate.so
         /usr/lib/libtidl_onnxrt_EP.so.1.0
