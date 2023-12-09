@@ -63,6 +63,8 @@
 /* Module headers. */
 #include <cm_post_process_image_segmentation.h>
 #include <cm_post_process_image_object_detect.h>
+#include <cm_post_process_pose6D.h>
+
 
 /**
  * \defgroup group_ticore_obj_detect Object Detection post-processing
@@ -89,6 +91,10 @@ CmPostprocessImage* CmPostprocessImage::makePostprocessImageObj(const Postproces
         LOG_INFO("Creating detectionObj...\n");
         cntxt = new CmPostprocessImageObjDetect(config);
     }
+    else if (config.taskType == "object_6d_pose_estimation"){
+        LOG_INFO("Creating Obj6DPose...\n");
+        cntxt = new CmPostprocessImageObject6DPoseEstimation(config);
+    }
     else if (config.taskType == "segmentation")
     {
         cntxt = new CmPostprocessImageSemanticSeg(config);
@@ -111,4 +117,3 @@ CmPostprocessImage::~CmPostprocessImage()
 }
 
 } // namespace ti_core_common
-

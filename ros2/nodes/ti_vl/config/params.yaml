@@ -1,7 +1,7 @@
 vl:
     ros__parameters:
-        # input foramt
-        
+        # input format
+
         # 0 - VX_DF_IMAGE_U8
         # 1 - VX_DF_IMAGE_NV12
         # 2 - VX_DF_IMAGE_UYVY
@@ -11,8 +11,8 @@ vl:
         # LDC LUT definition
         lut_file_path:            /opt/robotics_sdk/ros2/nodes/ti_vl/ldc_lut/zero_768x384_LUT.bin
 
-        # location of network
-        dl_model_path:            /root/j7ros_home/data/visual_localization_model/dkaze_768x384_inference_tvm-dlr
+        # path to the model
+        dl_model_path:            /opt/model_zoo/visloc-7500_onnxrt_carla_edgeai-tv_tiad_dkaze_carla_768x384_model_onnx
 
         # location of top-view image
         top_view_img_path:        /root/j7ros_home/data/visual_localization_data/map/topview_gt_0532.yuv
@@ -73,7 +73,7 @@ vl:
         display_option:            1
 
         # pipeline depth
-        pipeline_depth:            4
+        pipeline_depth:            5
 
         # Flag to indicate if the graph should be exported
         #  0 - disable

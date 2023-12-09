@@ -61,16 +61,7 @@
  */
 
 #include <signal.h>
-
 #include "zed_capture_node.h"
-
-static std::shared_ptr<ZedCameraNode>  zed_ros_node = nullptr;
-
-static void sigHandler(int32_t sig)
-{
-    (void) sig;
-    std::exit(EXIT_SUCCESS);
-}
 
 /**
  * @brief ZED camera ROS node
@@ -78,7 +69,7 @@ static void sigHandler(int32_t sig)
  * @param [in] resolution  Resolution
  * @param [in] frame_rate  Frame rate
  */
-ZedCameraNode::ZedCameraNode(const std::string&         name,
+ZedCameraNode::ZedCameraNode(const std::string& name,
                              const rclcpp::NodeOptions& options):
     Node(name, options)
 {
@@ -126,7 +117,7 @@ ZedCameraNode::ZedCameraNode(const std::string&         name,
     cv::Mat   img_right;
     rclcpp::Rate framerate(frame_rate_);
 
-    while (true)
+    while (rclcpp::ok())
     {
         if (!zed.getImages(img_left, img_right))
         {
@@ -227,17 +218,14 @@ int main(int argc, char** argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
 
         nodeOptions.allow_undeclared_parameters(true);
         nodeOptions.automatically_declare_parameters_from_overrides(true);
 
-        signal(SIGINT, sigHandler);
+        auto zed_ros_node = std::make_shared<ZedCameraNode>("zed_camera", nodeOptions);
 
-        zed_ros_node = std::make_shared<ZedCameraNode>("zed_camera", nodeOptions);
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }
@@ -247,4 +235,3 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 }
-

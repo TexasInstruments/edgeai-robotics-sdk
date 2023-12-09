@@ -17,6 +17,7 @@ if(${BUILD_CORE_NODES})
         common/src/cm_post_process_image.cpp
         common/src/cm_post_process_image_segmentation.cpp
         common/src/cm_post_process_image_object_detect.cpp
+        common/src/cm_post_process_pose6D.cpp
         )
 
     if (NOT ${TARGET_PLATFORM} STREQUAL SITARA)

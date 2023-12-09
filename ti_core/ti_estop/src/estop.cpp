@@ -314,7 +314,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         // Populate infConfig from
-        status = appCntxt->dlInferConfig.getConfig(modelPath, true, 0);
+        status = appCntxt->dlInferConfig.getConfig(modelPath, true, 1);
 
         //==> DEBUG
         //appCntxt->dlInferConfig.dumpInfo();
@@ -419,7 +419,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
         }
     }
 
-    // create graph 
+    // create graph
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         appCntxt->vxGraph = vxCreateGraph(appCntxt->vxContext);
@@ -427,7 +427,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
         {
             LOG_ERROR("vxCreateGraph() failed\n");
             vxStatus = VX_FAILURE;
-        } else 
+        } else
         {
             vxSetReferenceName((vx_reference)appCntxt->vxGraph,
                                "AMR E-Stop Graph");
@@ -447,7 +447,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
     }
 
     /*
-     * 0. Setup all parameters before initializing all nodes 
+     * 0. Setup all parameters before initializing all nodes
      */
     ESTOP_APP_setAllParams(appCntxt);
 
@@ -468,7 +468,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
     }
 
     /*
-     * 3 Setup Semantic Segmentation nodes 
+     * 3 Setup Semantic Segmentation nodes
      */
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
@@ -488,7 +488,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
         appPerfPointSetName(&appCntxt->estopPerf , "Emergency Stop GRAPH");
 
         /*
-         * set up the pipeline. 
+         * set up the pipeline.
          */
         vxStatus = ESTOP_APP_setupPipeline(appCntxt);
 
@@ -555,7 +555,7 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
     return vxStatus;
 }
 
-vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt, 
+vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt,
                                  uint32_t width,
                                  uint32_t height,
                                  double   f,
@@ -581,7 +581,7 @@ vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt,
         appCntxt->width        = ESTOP_APP_MAX_IMAGE_WIDTH;
         appCntxt->distCenterX -= appCntxt->hImgOfst;
     }
- 
+
     if (appCntxt->height > ESTOP_APP_MAX_IMAGE_HEIGHT)
     {
         appCntxt->vImgOfst     =
@@ -593,9 +593,9 @@ vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt,
     return (vx_status)VX_SUCCESS;
 }
 
-vx_status ESTOP_APP_run(ESTOP_APP_Context  *appCntxt, 
+vx_status ESTOP_APP_run(ESTOP_APP_Context  *appCntxt,
                         const vx_uint8     *inputLeftImage,
-                        const vx_uint8     *inputRightImage, 
+                        const vx_uint8     *inputRightImage,
                         vx_uint64           timestamp)
 {
     ESTOP_APP_graphParams  *gpDesc;
@@ -614,9 +614,9 @@ vx_status ESTOP_APP_run(ESTOP_APP_Context  *appCntxt,
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         start = GET_TIME();
-        vxStatus = CM_copyData2Image(inputLeftImage, 
-                                     gpDesc->vxInputLeftImage, 
-                                     appCntxt->hImgOfst, 
+        vxStatus = CM_copyData2Image(inputLeftImage,
+                                     gpDesc->vxInputLeftImage,
+                                     appCntxt->hImgOfst,
                                      appCntxt->vImgOfst);
 
         end   = GET_TIME();
@@ -632,9 +632,9 @@ vx_status ESTOP_APP_run(ESTOP_APP_Context  *appCntxt,
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         start = GET_TIME();
-        vxStatus = CM_copyData2Image(inputRightImage, 
-                                     gpDesc->vxInputRightImage, 
-                                     appCntxt->hImgOfst, 
+        vxStatus = CM_copyData2Image(inputRightImage,
+                                     gpDesc->vxInputRightImage,
+                                     appCntxt->hImgOfst,
                                      appCntxt->vImgOfst);
 
         end   = GET_TIME();
@@ -951,7 +951,7 @@ static void ESTOP_APP_evtHdlrThread(ESTOP_APP_Context *appCntxt)
                     {
                         LOG_ERROR("ESTOP_APP_getPostprocInputDesc(%d) failed\n",
                                   appCntxt->numGraphParams - 1);
-                     
+
                     }
 
                     // enqueue vxOutTensor
@@ -967,7 +967,7 @@ static void ESTOP_APP_evtHdlrThread(ESTOP_APP_Context *appCntxt)
                         {
                             LOG_ERROR("vxGraphParameterEnqueueReadyRef(%d) failed\n",
                                       appCntxt->numGraphParams - 1);
-                         
+
                         }
                     }
                 }
@@ -1189,7 +1189,7 @@ static void ESTOP_APP_postProcThread(ESTOP_APP_Context  *appCntxt)
             /* Create an output tensor. */
             start = GET_TIME();
             vxStatus =
-                ESTOP_APP_createOutTensor(appCntxt, 
+                ESTOP_APP_createOutTensor(appCntxt,
                                           desc->inferOutputBuff,
                                           desc->vxOutTensor);
 
@@ -1228,14 +1228,14 @@ void ESTOP_APP_launchProcThreads(ESTOP_APP_Context *appCntxt)
     /* Launch the input data thread. */
     if (appCntxt->is_interactive)
     {
-        appCntxt->userCtrlThread = 
+        appCntxt->userCtrlThread =
             std::thread(ESTOP_APP_userControlThread, appCntxt);
 
         appCntxt->userCtrlThread.detach();
     }
 
     /* Launch the event handler thread. */
-    appCntxt->evtHdlrThread = 
+    appCntxt->evtHdlrThread =
         std::thread(ESTOP_APP_evtHdlrThread, appCntxt);
 
     /* Launch CNN pre-processing thread */
@@ -1243,7 +1243,7 @@ void ESTOP_APP_launchProcThreads(ESTOP_APP_Context *appCntxt)
         std::thread(ESTOP_APP_preProcThread, appCntxt);
 
     /* Launch the dlr thread */
-    appCntxt->dlInferThread = 
+    appCntxt->dlInferThread =
         std::thread(ESTOP_APP_dlInferThread, appCntxt);
 
     /* launch post-processing thread. */

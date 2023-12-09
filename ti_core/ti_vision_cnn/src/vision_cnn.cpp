@@ -192,6 +192,12 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
             appCntxt->postProcCfg.inDataHeight = ifInfo->shape[ifInfo->dim - 2];
             appCntxt->logFileName = "semseg";
         }
+         else if (appCntxt->postProcCfg.taskType == "object_6d_pose_estimation")
+        {
+            appCntxt->postProcCfg.inDataWidth  = appCntxt->preProcCfg.outDataWidth;
+            appCntxt->postProcCfg.inDataHeight = appCntxt->preProcCfg.outDataHeight;
+            appCntxt->logFileName = "object6Dpose";
+        }
         else
         {
             appCntxt->postProcCfg.inDataWidth  = appCntxt->preProcCfg.outDataWidth;
@@ -242,7 +248,7 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
         else
         {
             vxSetReferenceName((vx_reference)appCntxt->vxGraph,
-                               "CNN Semantic Segmentation Graph");
+                               "Vision CNN Graph");
         }
     }
 
@@ -254,14 +260,14 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
         /* load HWA kernels */
         tivxHwaLoadKernels(appCntxt->vxContext);
 
-        /* Create CNN semantic segmentation nodes */
+        /* Create CNN node */
         vxStatus = VISION_CNN_init_SS(appCntxt);
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         appPerfPointSetName(&appCntxt->visonPerf,
-                            "Semantic Segmentation GRAPH");
+                            "Vision CNN GRAPH");
 
         vxStatus = VISION_CNN_setupPipeline(appCntxt);
 
@@ -557,7 +563,7 @@ void VISION_CNN_cleanupHdlr(VISION_CNN_Context *appCntxt)
         tivxLogRtTraceExportToFile((char *)name.c_str());
     }
 
-    /* Deinit semantic segmentation nodes */
+    /* Deinit vision CNN node */
     VISION_CNN_deinit_core(appCntxt);
 
     VISION_CNN_deInit(appCntxt);

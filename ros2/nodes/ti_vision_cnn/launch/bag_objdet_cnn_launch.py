@@ -7,15 +7,28 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import TextSubstitution
 from launch.substitutions import LaunchConfiguration
 
-dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
-# dl_model_path = "/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"
-# dl_model_path = "/opt/model_zoo/ONR-OD-8220-yolox-s-lite-mmdet-coco-640x640"
+# path to the DL model
+soc = os.getenv('SOC')
+if soc in ['j721e', 'j721s2', 'j784s4']:
+    dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+elif soc in ['am62a']:
+    dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+else:
+    print('{} not supported'.format(soc))
+
+bagfile_default = os.path.join(os.environ['WORK_DIR'],
+    'data/ros_bag/zed1_2020-11-09-18-01-08')
 
 def generate_launch_description():
     ld = LaunchDescription()
 
     exportPerfStats_arg = DeclareLaunchArgument(
         "exportPerfStats", default_value=TextSubstitution(text="0")
+    )
+
+    bagfile_arg = DeclareLaunchArgument(
+        name="bagfile",
+        default_value=TextSubstitution(text=bagfile_default)
     )
 
     dl_model_path_arg = DeclareLaunchArgument(
@@ -46,10 +59,14 @@ def generate_launch_description():
     bag_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(launch_dir, 'rosbag_remap_launch.py')
-        )
+        ),
+        launch_arguments={
+            "bagfile": LaunchConfiguration('bagfile'),
+        }.items()
     )
 
     ld.add_action(exportPerfStats_arg)
+    ld.add_action(bagfile_arg)
     ld.add_action(dl_model_path_arg)
     ld.add_action(detVizThreshold_arg)
     ld.add_action(cnn_launch)

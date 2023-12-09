@@ -61,20 +61,7 @@
  */
 
 #include <signal.h>
-
 #include <visloc_node.h>
-
-static std::shared_ptr<VisLocNode> visLocNode = nullptr;
-
-static void sigHandler(int32_t sig)
-{
-    if (visLocNode)
-    {
-        visLocNode->sigHandler(sig);
-    }
-
-    rclcpp::shutdown();
-}
 
 int main(int argc, char **argv)
 {
@@ -83,12 +70,7 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
-
-        signal(SIGINT, sigHandler);
 
         /* Allow any parameter name to be set on the node without first being
          * declared. Otherwise, setting an undeclared parameter will raise an
@@ -121,9 +103,11 @@ int main(int argc, char **argv)
          */
         nodeOptions.use_intra_process_comms(false);
 
-        visLocNode = std::make_shared<VisLocNode>(nodeOptions);
+        auto visLocNode = std::make_shared<VisLocNode>(nodeOptions);
 
         rclcpp::spin(visLocNode);
+
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }

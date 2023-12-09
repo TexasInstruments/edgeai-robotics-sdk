@@ -249,6 +249,43 @@ index 0000000..9b370eb
 +# 720p
 +ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1280 height:=720
 +```
+diff --git a/config/C920_6D_Pose_HD_camera_info.yaml b/config/C920_6D_Pose_HD_camera_info.yaml
+new file mode 100644
+index 0000000..a4c77aa
+--- /dev/null
++++ b/config/C920_6D_Pose_HD_camera_info.yaml
+@@ -0,0 +1,31 @@
++%YAML:1.0
++---
++image_width: 1280
++image_height: 960
++camera_name: camera
++camera_matrix: !!opencv-matrix
++   rows: 3
++   cols: 3
++   dt: d
++   data: [ 9.3797299601201667e+02, 0., 6.4110167315102080e+02, 0.,
++       9.3981016471195335e+02, 3.8512990806142415e+02, 0., 0., 1. ]
++distortion_model: plumb_bob
++distortion_coefficients: !!opencv-matrix
++   rows: 1
++   cols: 5
++   dt: d
++   data: [ 7.3934261699576093e-02, -4.1542678753901879e-01,
++       1.4128959036683215e-03, 9.4384360282255390e-04,
++       5.9913436641201279e-01 ]
++rectification_matrix: !!opencv-matrix
++   rows: 3
++   cols: 3
++   dt: d
++   data: [ 1., 0., 0., 0., 1., 0., 0., 0., 1. ]
++projection_matrix: !!opencv-matrix
++   rows: 3
++   cols: 4
++   dt: d
++   data: [ 9.3797299601201667e+02, 0., 6.4110167315102080e+02, 0., 0.,
++       9.3981016471195335e+02, 3.8512990806142415e+02, 0., 0., 0., 1.,
++       0. ]
 diff --git a/config/C920_HD_camera_info.yaml b/config/C920_HD_camera_info.yaml
 new file mode 100644
 index 0000000..3ce26c2
@@ -825,10 +862,10 @@ index 0000000..489322f
 \ No newline at end of file
 diff --git a/launch/v4l_mjpg_launch.py b/launch/v4l_mjpg_launch.py
 new file mode 100644
-index 0000000..e01ae08
+index 0000000..3afb289
 --- /dev/null
 +++ b/launch/v4l_mjpg_launch.py
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,134 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -836,7 +873,7 @@ index 0000000..e01ae08
 +from ament_index_python.packages import get_package_share_directory
 +from launch import LaunchDescription
 +from launch.actions import DeclareLaunchArgument
-+from launch.substitutions import LaunchConfiguration
++from launch.substitutions import LaunchConfiguration,TextSubstitution
 +from launch.actions import OpaqueFunction
 +from launch_ros.actions import Node
 +
@@ -845,6 +882,9 @@ index 0000000..e01ae08
 +    # Device
 +    device = "/dev/video-usb-cam" + LaunchConfiguration('cam_id').perform(context)
 +
++    width  = int(LaunchConfiguration('width').perform(context))
++    height = int(LaunchConfiguration('height').perform(context))
++    cam_calib_file = LaunchConfiguration('cam_calib').perform(context)
 +    # Framerate
 +    framerate = LaunchConfiguration('framerate')
 +
@@ -863,7 +903,7 @@ index 0000000..e01ae08
 +
 +    # Camera calibration file
 +    config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
-+    camera_config = 'file://' + os.path.join(config_dir, 'C920_HD_camera_info.yaml')
++    camera_config = 'file://' + os.path.join(config_dir, cam_calib_file)
 +    print(camera_config)
 +
 +    node = Node(
@@ -878,8 +918,8 @@ index 0000000..e01ae08
 +                'camera_name':        camera_name,
 +                'camera_info_url':    camera_config,
 +                'image_encoding':     image_encoding,
-+                'appsink_width':      1280,
-+                'appsink_height':     720,
++                'appsink_width':      width,
++                'appsink_height':     height,
 +                'appsink_framerate':  framerate,
 +                'sync_sink':          False,
 +                'preroll':            False,
@@ -911,6 +951,24 @@ index 0000000..e01ae08
 +        description='Frame rate of the camera'
 +    )
 +
++    width_arg = DeclareLaunchArgument(
++        'width',
++        default_value=TextSubstitution(text='1280'),
++        description='Width of the Frame'
++    )
++
++    height_arg = DeclareLaunchArgument(
++        'height',
++        default_value=TextSubstitution(text='720'),
++        description='Height of the Frame'
++    )
++
++    cam_calib_arg = DeclareLaunchArgument(
++        'cam_calib',
++        default_value=TextSubstitution(text='C920_HD_camera_info.yaml'),
++        description='Camera Calibration File'
++    )
++
 +    image_encoding_arg = DeclareLaunchArgument(
 +        'image_encoding',
 +        default_value='yuv420',
@@ -932,6 +990,9 @@ index 0000000..e01ae08
 +    # Create the launch description and add the arguments
 +    ld  = LaunchDescription()
 +    ld.add_action(cam_id_arg)
++    ld.add_action(width_arg)
++    ld.add_action(height_arg)
++    ld.add_action(cam_calib_arg)
 +    ld.add_action(framerate_arg)
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
@@ -1175,7 +1236,7 @@ index 0000000..1ee7030
 +    return ld
 \ No newline at end of file
 diff --git a/src/gscam_node.cpp b/src/gscam_node.cpp
-index 3fef91f..45f69ff 100644
+index 3fef91f..039d86f 100644
 --- a/src/gscam_node.cpp
 +++ b/src/gscam_node.cpp
 @@ -27,6 +27,9 @@ namespace gscam2
@@ -1226,7 +1287,7 @@ index 3fef91f..45f69ff 100644
      }
  
      gst_app_sink_set_caps(GST_APP_SINK(sink_), caps);
-@@ -324,10 +331,16 @@ namespace gscam2
+@@ -324,14 +331,20 @@ namespace gscam2
        cinfo_pub_->publish(std::move(cinfo));
      } else {
        // Complain if the returned buffer is smaller than we expect
@@ -1247,6 +1308,11 @@ index 3fef91f..45f69ff 100644
  
        if (buf_size < expected_frame_size) {
          RCLCPP_WARN(node_->get_logger(),
+-                    "Image buffer underflow: expected frame to be %d bytes but got only %d"
++                    "Image buffer underflow: expected frame to be %d bytes but got only %lu"
+                     " bytes (make sure frames are correctly encoded)", expected_frame_size, (buf_size));
+       }
+ 
 @@ -349,10 +362,13 @@ namespace gscam2
  
        // Copy the image, so we can free the buffer allocated by gstreamer

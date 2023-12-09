@@ -2,15 +2,16 @@
 MAKEFLAGS += --no-print-directory
 
 # Defaults. These can be changed from command line
-ROS_VER          ?= 1
+ROS_VER          ?= 2
 
 # GPUS: if 'y', '--gpus all' argument is added in 'docker run' command
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER           = 9.0.0
-TIVA_LIB_VER     ?= 9.0.0
-RPMSG_LIB_VER    ?= 0.6.2
+SDK_VER          = 9.1.0
+EDGEAI_VER       = 9.1.0.6
+TIVA_LIB_VER     ?= 9.1.0
+RPMSG_LIB_VER    ?= 0.6.3
 
 # Set the operating variables based on the ROS version specified
 ROS_DISTRO        = humble
@@ -21,9 +22,9 @@ ROS_TAG           = ros2
 EXCLUDE           = ros1
 
 ifeq ($(ROS_VER), 1)
-	ROS_DISTRO      = noetic
-	ROS_TAG         = ros1
-	EXCLUDE         = ros2
+	ROS_DISTRO    = noetic
+	ROS_TAG       = ros1
+	EXCLUDE       = ros2
 endif
 
 # set PLATFORM based on "uname -m"
@@ -56,16 +57,9 @@ ENV_FILE          = env_list.txt
 ENV_FILE_PATH     = $(DOCKER_DIR)/$(ENV_FILE)
 
 # Tarball filenames
-ROSBAG_FILE       = ros-bag_2020_1109.tar.gz
+ROSBAG_FILE       = ros2-bag_2023_1020.tar.gz
 DLRT_LIBS_FILE    = dlrt-libs-aarch64-ubuntu18.04_8.0.tar.gz
-VISLOC_DATA_FILE  = visual-localization-data_2022_0908.tar.gz
-ifeq ($(SOC),j721e)
-	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
-else ifeq ($(SOC),j721s2)
-	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
-else ifeq ($(SOC),j784s4)
-	VISLOC_MODEL_FILE = visual-localization-model-$(SOC)_9.0.tar.gz
-endif
+VISLOC_DATA_FILE  = visual-localization-data-ros2_2022_0908.tar.gz
 LIDAR2D_FILE      = lidar2d_2021_0521.tar.gz
 CALIB_IMGS_FILE   = calib-images-example_2021_0422.tar.gz
 
@@ -74,7 +68,6 @@ URL_BASE         = https://software-dl.ti.com/jacinto7/esd/robotics-sdk/data
 ROSBAG_URL   	 = $(URL_BASE)/$(ROSBAG_FILE)
 DLRT_LIBS_URL    = $(URL_BASE)/$(DLRT_LIBS_FILE)
 VISLOC_DATA_URL  = $(URL_BASE)/$(VISLOC_DATA_FILE)
-VISLOC_MODEL_URL = $(URL_BASE)/$(VISLOC_MODEL_FILE)
 LIDAR2D_LOC_URL  = $(URL_BASE)/$(LIDAR2D_FILE)
 CALIB_IMGS_URL   = $(URL_BASE)/$(CALIB_IMGS_FILE)
 
@@ -101,7 +94,6 @@ info:
 	$(info DATA_DIR          = $(DATA_DIR))
 	$(info DOCKER_DIR        = $(DOCKER_DIR))
 	$(info SCRIPTS_DIR       = $(SCRIPTS_DIR))
-	$(info VISLOC_MODEL_FILE = $(VISLOC_MODEL_FILE))
 
 ## Docker
 # generate "docker build" script
@@ -116,7 +108,7 @@ ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_TAG2=$(PLATFORM)-ros-\$$ROS_DISTRO-\$$SOC:\$$SDK_VER" >> $(TGT_NAME)
 endif
 	@echo "DOCKER_DIR=$(DOCKER_DIR)"                          >> $(TGT_NAME)
-	@echo "USE_PROXY=$(USE_PROXY)"                            >> $(TGT_NAME)
+	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
 	@echo "# modify the server and proxy URLs as requied"     >> $(TGT_NAME)
 	@echo "if [ \"\$${USE_PROXY}\" -ne \"0\" ]; then"         >> $(TGT_NAME)
 	@echo "    REPO_LOCATION=$(ROS_DOCKER_INTERNAL)"          >> $(TGT_NAME)
@@ -127,6 +119,7 @@ endif
 	@echo "echo \"USE_PROXY = \$$USE_PROXY\""                 >> $(TGT_NAME)
 	@echo "echo \"REPO_LOCATION = \$$REPO_LOCATION\""         >> $(TGT_NAME)
 	@echo "DST_DIR=$(WORK_PATH_HOST)/docker_src"              >> $(TGT_NAME)
+	@echo "EDGEAI_VER=$(EDGEAI_VER)"                          >> $(TGT_NAME)
 	@echo "TIVA_LIB_VER=$(TIVA_LIB_VER)"                      >> $(TGT_NAME)
 	@echo "RPMSG_LIB_VER=$(RPMSG_LIB_VER)"                    >> $(TGT_NAME)
 	@echo "bash \$$DOCKER_DIR/scripts/prepare_docker_build.sh \$$DST_DIR \$$TIVA_LIB_VER \$$RPMSG_LIB_VER" >> $(TGT_NAME)
@@ -137,27 +130,27 @@ endif
 	@echo "        --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
 	@echo "        --build-arg REPO_LOCATION=\$$REPO_LOCATION \\" >> $(TGT_NAME)
 	@echo "        --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
+ifeq ($(PLATFORM), pc)
+	@echo "        --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
+endif
 	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).\$$ROS_DISTRO ./docker_src"  >> $(TGT_NAME)
 	@echo "    echo \"Docker build -t \$$DOCKER_TAG completed!\"" >> $(TGT_NAME)
 	@echo "else"                                              >> $(TGT_NAME)
 	@echo "    echo \"\$$DOCKER_TAG already exists.\""        >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "if [ \"\$$(docker images -q \$$DOCKER_TAG2 2> /dev/null)\" == \"\" ]; then" >> $(TGT_NAME)
-	@echo "    docker build \\"                                   >> $(TGT_NAME)
-	@echo "        -t \$$DOCKER_TAG2 \\"                          >> $(TGT_NAME)
-	@echo "        --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
-	@echo "        --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
-	@echo "        --build-arg TIVA_LIB_VER=\$$TIVA_LIB_VER \\"   >> $(TGT_NAME)
-	@echo "        --build-arg RPMSG_LIB_VER=\$$RPMSG_LIB_VER \\" >> $(TGT_NAME)
-	@echo "        --build-arg SOC_NAME=\$$SOC \\"                >> $(TGT_NAME)
-	@echo "        --build-arg ROS_DISTRO=\$$ROS_DISTRO \\"       >> $(TGT_NAME)
-	@echo "        --build-arg SDK_VER=\$$SDK_VER \\"             >> $(TGT_NAME)
-	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
-	@echo "    echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
-	@echo "else"                                              >> $(TGT_NAME)
-	@echo "    echo \"\$$DOCKER_TAG2 already exists.\""       >> $(TGT_NAME)
-	@echo "fi"                                                >> $(TGT_NAME)
+	@echo "docker build \\"                                   >> $(TGT_NAME)
+	@echo "    -t \$$DOCKER_TAG2 \\"                          >> $(TGT_NAME)
+	@echo "    --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
+	@echo "    --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
+	@echo "    --build-arg TIVA_LIB_VER=\$$TIVA_LIB_VER \\"   >> $(TGT_NAME)
+	@echo "    --build-arg RPMSG_LIB_VER=\$$RPMSG_LIB_VER \\" >> $(TGT_NAME)
+	@echo "    --build-arg SOC_NAME=\$$SOC \\"                >> $(TGT_NAME)
+	@echo "    --build-arg ROS_DISTRO=\$$ROS_DISTRO \\"       >> $(TGT_NAME)
+	@echo "    --build-arg SDK_VER=\$$SDK_VER \\"             >> $(TGT_NAME)
+	@echo "    --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
+	@echo "    -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
+	@echo "echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
 endif
 	@echo "duration=\$$SECONDS"                               >> $(TGT_NAME)
 	@echo "echo \"\$$((\$$duration / 60)) minutes and \$$((\$$duration % 60)) seconds elapsed.\"" >> $(TGT_NAME)
@@ -176,7 +169,7 @@ endif
 ifeq ($(PLATFORM), pc)
 	@echo "DOCKER_TAG=$(PLATFORM)-ros-\$$ROS_DISTRO-common:\$$SDK_VER" >> $(TGT_NAME)
 endif
-	@echo "USE_PROXY=$(USE_PROXY)"                            >> $(TGT_NAME)
+	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_DIR=$(DOCKER_DIR)"                          >> $(TGT_NAME)
 	@echo "IP_ADDR=\$$(ifconfig | grep -A 1 'eth0' | tail -1 | awk '{print \$$2}')"       >> $(TGT_NAME)
@@ -253,42 +246,41 @@ docker_run_pc:
 	@$(MAKE) docker_run TGT_NAME=docker_run_$(ROS_TAG).sh
 
 ## data files
-data_download: rosbag_download vl_data_download vl_model_download\
-               lidar2d_download calib_download
+data_download: rosbag_download vl_data_download calib_download
 
 rosbag_download: check_data_dir
+	@echo "[rosbag_download] Downloading ROSBAG files ..."
 	@wget -O $(DATA_DIR)/$(ROSBAG_FILE) "$(ROSBAG_URL)"
 	@rm -rf  $(DATA_DIR)/ros_bag
 	@tar xzf $(DATA_DIR)/$(ROSBAG_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(ROSBAG_FILE)
+	@echo "[rosbag_download] Done"
 
 vl_data_download: check_data_dir
 ifneq ($(SOC),am62a)
+	@echo "[vl_data_download] Downloading the VL data files ..."
 	@wget -O $(DATA_DIR)/$(VISLOC_DATA_FILE) "$(VISLOC_DATA_URL)"
 	@rm -rf  $(DATA_DIR)/visual_localization_data
 	@tar xzf $(DATA_DIR)/$(VISLOC_DATA_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(VISLOC_DATA_FILE)
-endif
-
-vl_model_download: check_data_dir
-ifneq ($(SOC),am62a)
-	@wget -O $(DATA_DIR)/$(VISLOC_MODEL_FILE) "$(VISLOC_MODEL_URL)"
-	@rm -rf  $(DATA_DIR)/visual_localization_model
-	@tar xzf $(DATA_DIR)/$(VISLOC_MODEL_FILE) -C $(DATA_DIR)
-	@rm -f $(DATA_DIR)/$(VISLOC_MODEL_FILE)
+	@echo "[vl_data_download] Done"
 endif
 
 lidar2d_download: check_data_dir
+	@echo "[lidar2d_download] Downloading Lidar data ..."
 	@wget -O $(DATA_DIR)/$(LIDAR2D_FILE) "$(LIDAR2D_LOC_URL)"
 	@rm -rf  $(DATA_DIR)/lidar_2d
 	@tar xzf $(DATA_DIR)/$(LIDAR2D_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(LIDAR2D_FILE)
+	@echo "[lidar2d_download] Done"
 
 calib_download: check_data_dir
+	@echo "[calib_download] Downloading camera calib data ..."
 	@wget -O $(DATA_DIR)/$(CALIB_IMGS_FILE) "$(CALIB_IMGS_URL)"
 	@rm -rf  $(DATA_DIR)/calib_imgs_example
 	@tar xzf $(DATA_DIR)/$(CALIB_IMGS_FILE) -C $(DATA_DIR)
 	@rm -f $(DATA_DIR)/$(CALIB_IMGS_FILE)
+	@echo "[calib_download] Done"
 
 check_data_dir:
 	@if [ ! -d $(DATA_DIR) ]; then \
@@ -305,6 +297,5 @@ data_clean:
 .PHONY: ip_show \
 		rosbag_download \
 		vl_data_download \
-		vl_model_download \
 		lidar2d_download \
 		check_data_dir

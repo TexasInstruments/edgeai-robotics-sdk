@@ -61,20 +61,7 @@
  */
 
 #include <signal.h>
-
 #include <vision_cnn_node.h>
-
-static std::shared_ptr<VisionCnnNode>  visCnnNode = nullptr;
-
-static void sigHandler(int32_t sig)
-{
-    if (visCnnNode)
-    {
-        visCnnNode->sigHandler(sig);
-    }
-
-    rclcpp::shutdown();
-}
 
 int main(int argc, char **argv)
 {
@@ -83,12 +70,7 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
-
-        signal(SIGINT, sigHandler);
 
         /* Allow any parameter name to be set on the node without first being
          * declared. Otherwise, setting an undeclared parameter will raise an
@@ -121,9 +103,11 @@ int main(int argc, char **argv)
          */
         nodeOptions.use_intra_process_comms(false);
 
-        visCnnNode = std::make_shared<VisionCnnNode>(nodeOptions);
+        auto visCnnNode = std::make_shared<VisionCnnNode>(nodeOptions);
 
         rclcpp::spin(visCnnNode);
+
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }
@@ -136,4 +120,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

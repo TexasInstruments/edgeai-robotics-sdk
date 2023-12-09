@@ -1,11 +1,5 @@
 vision_cnn:
     ros__parameters:
-        # input data width in pixels
-        width:                  1280
-
-        # input data height in lines
-        height:                 720
-
         # Maximum number of Semantic Segmentation classes
         num_classes:            20
 
@@ -33,4 +27,4 @@ vision_cnn:
         # 1 - INFO: Used to show run-time processing debug
         # 2 - WARN: Used to warning developers of possible issues
         # 3 - ERROR: Used for most errors
-        log_level:              2
+        log_level:              1

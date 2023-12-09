@@ -50,4 +50,10 @@ else
     echo "Invalid ROS_VERSION"
 fi
 
+# ROS workspace setup
+cd $WORK_DIR
+mkdir -p ${ROS_DISTRO}_ws
+ln -snf ${ROS_DISTRO}_ws ros_ws
+cd $ROS_WS
+
 exec "$@"

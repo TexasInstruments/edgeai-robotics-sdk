@@ -12,9 +12,15 @@ from launch.substitutions import LaunchConfiguration
 image_format = 1
 enable_ldc_node = 1
 lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
-dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
-# dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
-# dl_model_path = "/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"
+
+# path to the DL model
+soc = os.getenv('SOC')
+if soc in ['j721e', 'j721s2', 'j784s4']:
+    dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+elif soc in ['am62a']:
+    dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+else:
+    print('{} not supported'.format(soc))
 
 def get_launch_file(pkg, file_name):
     pkg_dir = get_package_share_directory(pkg)
@@ -53,6 +59,8 @@ def generate_launch_description():
     params = [
         os.path.join(get_package_share_directory('ti_vision_cnn'), 'config', 'params.yaml'),
         {
+            "width":                    1280,
+            "height":                   720,
             "image_format":             image_format,
             "enable_ldc_node":          enable_ldc_node,
             "lut_file_path":            lut_file_path,

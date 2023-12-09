@@ -113,7 +113,7 @@ vx_status VISLOC_init(VISLOC_Context *appCntxt)
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         // Populate infConfig
-        status = appCntxt->dlInferConfig.getConfig(modelPath, true, 0);
+        status = appCntxt->dlInferConfig.getConfig(modelPath, true, 1);
 
         if (status < 0)
         {

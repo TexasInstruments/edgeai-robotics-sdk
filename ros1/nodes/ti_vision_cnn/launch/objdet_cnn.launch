@@ -12,7 +12,7 @@
     <arg name="lut_file_path" default="$(find zed_capture)/config/SN5867575_HD_LUT_right.bin" />
     <!-- DL model path -->
     <arg name="dl_model_path" default="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"/>
-    <!-- <arg name="dl_model_path" default="/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"/> -->
+    <!-- <arg name="dl_model_path" default="/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"/> -->
     <!-- <arg name="dl_model_path" default="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"/> -->
     <!-- Flag for exporting the performance data to a file: 0 - disable, 1 - enable -->
     <arg name="exportPerfStats" default="0"/>

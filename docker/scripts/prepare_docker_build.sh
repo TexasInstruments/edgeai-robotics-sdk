@@ -62,6 +62,7 @@ else
 fi
 cp -p ${SDK_DIR}/docker/setup_proxy.sh ${DST_DIR}
 cp -p ${SDK_DIR}/docker/ros_setup.sh ${DST_DIR}
+cp -p ${SDK_DIR}/docker/set_aliases.sh ${DST_DIR}
 cp -p ${SDK_DIR}/docker/entrypoint_*.sh ${DST_DIR}
 cp -p ${SDK_DIR}/tools/mono_camera/requirements.txt ${DST_DIR}
 

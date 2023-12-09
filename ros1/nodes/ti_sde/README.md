@@ -9,6 +9,8 @@ Stereo Vision
 <figcaption>Stereo demo: point cloud</figcaption>
 <br />
 
+## System Description
+
 This demonstrates the stereo application that utilizes the LDC (Lens Distortion Correction) and DMPAC SDE (Stereo Depth Engine) hardware accelerators (HWAs). The application not only outputs the raw disparity map but also generates a point cloud with 3D position (X, Y, Z) and color information (R, G, B).
 
 The input image format for this application is YUV422:UYVY. The LDC converts the input stereo images to YUV420 (NV12) format and rectifies the images using two rectification tables, one for the left camera and one for the right camera. It's important to provide the rectification tables in a format that the LDC can recognize.

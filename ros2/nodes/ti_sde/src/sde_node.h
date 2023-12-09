@@ -95,10 +95,10 @@ class SDEAppNode: public rclcpp::Node
         ~SDEAppNode();
 
         /** Intercept signal handler */
-        void sigHandler(int32_t  sig);
+        void onShutdown();
 
     private:
-        /** Initialize App cntxt */ 
+        /** Initialize App cntxt */
         vx_status init();
 
         /** process input frames */

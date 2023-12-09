@@ -1,34 +1,31 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
     width_arg = DeclareLaunchArgument(
-        name='width',
-        default_value='1280',
-        description='Width of the image'
+        name ='width',
+        default_value ='1280',
+        description ='Width of the image'
     )
 
     height_arg = DeclareLaunchArgument(
-        name='height',
-        default_value='720',
-        description='Height of the image'
+        name ='height',
+        default_value = '720',
+        description = 'Height of the image'
     )
 
     # color conversion for input image_raw for visualization
-    params = [
-        {
-            "width": LaunchConfiguration('width'),
-            "height": LaunchConfiguration('height'),
-            "input_yuv_topic": "camera/image_raw",
-            "output_rgb_topic": "camera/image_raw_rgb",
-            "yuv_format": "YUV420",
-            "yuv420_luma_only": False,
-        }
-    ]
+    params = [{
+        "width": LaunchConfiguration('width'),
+        "height": LaunchConfiguration('height'),
+        "input_yuv_topic": "camera/image_raw",
+        "output_rgb_topic": "camera/image_raw_rgb",
+        "yuv_format": "YUV420",
+        "yuv420_luma_only": False,
+    }]
     yuv2rbg_node = Node(
         package = "ti_viz_nodes",
         executable = "viz_color_conv_yuv2rgb",

@@ -4,6 +4,8 @@
 ![](docs/estop_rviz.png)
 <br />
 
+## System Description
+
 This demonstrates the 3D obstacle detection application using the disparity map from stereo depth engine and the semantic segmentation map from the deep-learning network. As shown in Figure 1, this application consists of the following three main processes:
 
 ![](docs/estop_demo_block_diagram.svg)

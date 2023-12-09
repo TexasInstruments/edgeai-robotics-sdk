@@ -50,28 +50,17 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     ````{only} tag_j7x
     ```
     root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --cmake-force-configure
-    # TDA4VM: In case catkin_make fails (e.g., due to limited memory), "--executor sequential" option can be added as follows
-    root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential --cmake-force-configure
-    root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
-    ```
-    ````
-    ````{only} tag_am62a
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential --cmake-force-configure
-    root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
-    ```
-    ````
 
-5. The ROSBAG data downloaded is in ROS 1 specific format, and the format and storage mechanism have changed in ROS 2. To convert the ROS 1 bag data to ROS 2 format, use `rosbags-convert <ros1_bag_name.bag>`. This will create a directory named `<ros_bag_name>` and contain the data under this directory. To convert the downloaded ROSBAG file, run the following inside the ROS 2 Docker container.
-    ````{only} tag_j7x
-    ```
-    root@j7-docker:~/j7ros_home$ rosbags-convert $WORK_DIR/data/ros_bag/zed1_2020-11-09-18-01-08.bag
-    root@j7-docker:~/j7ros_home$ rosbags-convert $WORK_DIR/data/visual_localization_data/ros_bag/carla_768x384_visloc.bag
+    # TDA4VM: In case "colcon build" fails (e.g., due to limited memory), "--executor sequential" option can be added as follows
+    root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential --cmake-force-configure
+
+    root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
     ```
     ````
     ````{only} tag_am62a
     ```
-    root@j7-docker:~/j7ros_home$ rosbags-convert $WORK_DIR/data/ros_bag/zed1_2020-11-09-18-01-08.bag
+    root@j7-docker:~/j7ros_home/ros_ws$ colcon build --base-paths /opt/robotics_sdk/ros2 --executor sequential --cmake-force-configure
+    root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
     ```
     ````
 
@@ -118,8 +107,9 @@ Launch arguments can be passed to the following launch commands.
 
 ```{note}
 Camera ID and subdev ID for cameras: You can check the camera ID (`cam_id`) and subdev ID (`subdev_id`) for the camera
-attached to the SK board by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target
-host Linux.
+attached to the SK board by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh`. You can use the alias `setup_cameras` inside the SDK container.
+
+When a new camera is connected to the SK board while you’re already inside the SDK container, it is important to run the camera setup command.
 ```
 
 ```{only} tag_j7x
@@ -128,6 +118,10 @@ host Linux.
 ```
 ```{only} tag_am62a
 - To specify a camera recognized as `/dev/video-{usb,rpi,imx390}-camX` and `/dev/v4l-{rpi,imx390}-subdevY`, use the arguments `cam_id:=X` and `subdev_id:=Y`.
+```
+
+```{note}
+For your convenience, the SDK Docker container comes pre-configured with a variety of handy aliases. These aliases are specifically designed for building and launching demo applications, as well as for visualization tasks. Details about these aliases can be found in the `~/set_aliases.sh` file within the container. Alternatively, you can also refer to the `$SDK_DIR/docker/set_aliases.sh` file.
 ```
 
 ```{only} tag_j7x
@@ -144,6 +138,7 @@ host Linux.
 | Object Detection CNN (IMX219 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx219_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Object Detection CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
 | 3D Obstacle Detection (ZED camera) | ros2 launch ti_estop zed_estop_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_estop_launch.py |
+| Object Detection with 3D Spatial Information (ZED camera)  | ros2 launch ti_objdet_range zed_objdet_range_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
 ```
 ```{only} tag_am62a
 | Demo (Input Source) | Launch command on Target        | Launch command on Remote Visualization PC  |
@@ -167,7 +162,9 @@ It is recommended to launch the demos in two terminals on the target SK board, s
 | Stereo Vision with point-cloud | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_sde sde_pcl_launch.py | ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py |
 | Semantic Segmentation CNN | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
 | Object Detection CNN      | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| 6D Pose Estimation CNN    | -                                         | ros2 launch ti_vision_cnn bag_6dpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_6dpose_cnn_launch.py width:=1280 height:=960 |
 | 3D Obstacle Detection     | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_estop estop_launch.py                | ros2 launch ti_viz_nodes rviz_estop_launch.py |
+| Object Detection with 3D Spatial Information  | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_objdet_range objdet_range_launch.py  | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
 | Visual Localization       | -                                    | ros2 launch ti_vl bag_visloc_launch.py              | ros2 launch ti_viz_nodes rviz_visloc_launch.py |
 ```
 ```{only} tag_am62a
@@ -185,91 +182,3 @@ You can use TMUX inside the ROS Docker container to split the current terminal w
 - `Ctrl + b`, followed by `↑` or `↓`: Switch to the pane in the respective direction.
 - `Ctrl + b`, followed by `x`: Close the current pane.
 ```
-
-In the following, **[SK]** and **[PC]** indicate the steps that should be launched, either on the target SK board or on the PC.
-
-````{only} tag_j7x
-**Run Stereo Vision Application**
-
-1. **[SK]** To launch `ti_sde` node with a ZED stereo camera, run the following launch command **inside** the ROS 2 container:
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_sde zed_sde_launch.py
-    ```
-    Alternatively, you can run the following directly on the target host Linux:
-    ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_sde zed_sde_launch.py
-    ```
-
-2. **[PC]** For visualization, in the ROS 2 container on the PC:
-    ```
-    root@pc-docker:~/j7ros_home/ros_ws$ ros2 launch ti_viz_nodes rviz_sde_launch.py
-    ```
-````
-
-````{only} tag_j7x
-**Run Stereo Vision Application with Point-Cloud Enabled**
-
-1. **[SK]** To launch `ti_sde` node with point-cloud enabled on a ZED camera, run the following launch command **inside** the ROS 2 container:
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_sde zed_sde_pcl_launch.py
-    ```
-    Alternatively, you can run the following directly on the target host Linux:
-    ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_sde zed_sde_pcl_launch.py
-    ```
-
-2. **[PC]** For visualization, in the ROS 2 container on the PC:
-    ```
-    root@pc-docker:~/j7ros_home/ros_ws$ ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py
-    ```
-````
-
-**Run Semantic Segmentation CNN Application**
-
-1. **[SK]** To launch semantic segmentation demo with a USB mono camera, run the following launch command **inside** the ROS 2 container:
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py
-    ```
-    Alternatively, you can run the following directly on the target host Linux:
-    ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py
-    ```
-
-2. **[PC]**  For visualization, in the ROS 2 container on the PC:
-    ```
-    root@pc-docker:~/j7ros_home/ros_ws$ ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py
-    ```
-
-**Run Object Detection CNN Application**
-
-1. **[SK]** To launch object detection demo with a USB mono camera, run the following launch command **inside** the ROS 2 container:
-    ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py
-    ```
-    Alternatively, you can run the following directly on the target host Linux:
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py
-    ```
-
-2. **[PC]**  For visualization, in the ROS 2 container on the PC:
-    ```
-    root@pc-docker:~/j7ros_home/ros_ws$ ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py
-    ```
-
-````{only} tag_j7x
-**Run 3D Obstacle Detection Application**
-
-1. **[SK]** To launch `ti_estop` node with a ZED stereo camera, run the following launch command **inside** the ROS 2 container:
-    ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh ros2 launch ti_estop zed_estop_launch.py
-    ```
-    Alternatively, you can run the following directly on the target host Linux:
-    ```
-    root@j7-docker:~/j7ros_home/ros_ws$ ros2 launch ti_estop zed_estop_launch.py
-    ```
-
-2. **[PC]**  For visualization, in the ROS 2 container on the PC:
-    ```
-    root@pc-docker:~/j7ros_home/ros_ws$ ros2 launch ti_viz_nodes rviz_estop_launch.py
-    ```
-````

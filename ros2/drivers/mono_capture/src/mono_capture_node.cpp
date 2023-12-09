@@ -61,16 +61,7 @@
  */
 
 #include <signal.h>
-
 #include "mono_capture_node.h"
-
-static std::shared_ptr<MonoCamNode>  monocam_ros_node = nullptr;
-
-static void sigHandler(int32_t sig)
-{
-    (void) sig;
-    std::exit(EXIT_SUCCESS);
-}
 
 /**
  * @brief USB mono camera ROS node
@@ -78,7 +69,7 @@ static void sigHandler(int32_t sig)
  * @param [in] resolution  Resolution
  * @param [in] frame_rate  Frame rate
  */
-MonoCamNode::MonoCamNode(const std::string&         name,
+MonoCamNode::MonoCamNode(const std::string& name,
                          const rclcpp::NodeOptions& options):
     Node(name, options)
 {
@@ -115,7 +106,7 @@ MonoCamNode::MonoCamNode(const std::string&         name,
     cv::Mat   cv_img;
     rclcpp::Rate framerate(frame_rate_);
 
-    while (true)
+    while (rclcpp::ok())
     {
         if (!mono_cam.getImages(cv_img))
         {
@@ -208,17 +199,14 @@ int main(int argc, char** argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
 
         nodeOptions.allow_undeclared_parameters(true);
         nodeOptions.automatically_declare_parameters_from_overrides(true);
 
-        signal(SIGINT, sigHandler);
+        auto monocam_ros_node = std::make_shared<MonoCamNode>("mono_camera", nodeOptions);
 
-        monocam_ros_node = std::make_shared<MonoCamNode>("mono_camera", nodeOptions);
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }

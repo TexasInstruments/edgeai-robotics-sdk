@@ -18,7 +18,7 @@ def generate_launch_description():
     # ratefactor: arg that can be set from the command line or a default will be used
     ratefactor = DeclareLaunchArgument(
         name="ratefactor",
-        default_value=TextSubstitution(text="1.0")
+        default_value=TextSubstitution(text="0.66")
     )
 
     # bagfile: arg that can be set from the command line or a default will be used

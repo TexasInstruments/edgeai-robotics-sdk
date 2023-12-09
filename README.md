@@ -64,7 +64,7 @@ The Processor SDK Linux for Edge AI also supports the following open-source deep
 - TFLite Runtime
 - ONNX Runtime
 
-For more details on open-source deep-learning runtime on TI Processors, please check [TI Edge AI Cloud](https://dev.ti.com/edgeai/). The Robotics SDK provides a versatile vision CNN node optimized for TI Processors that supports many deep-learning models for object detection and semantic segmentation operations.
+For more details on open-source deep-learning runtime on TI Processors, please check [TI Edge AI Cloud](https://dev.ti.com/edgeai/). The Robotics SDK provides a versatile vision CNN node optimized for TI Processors that supports many deep-learning models for object detection, semantic segmentation, and 6D pose estimation operations.
 
 Figure 2 shows a representative deep-learning and compute-intensive demo application developed with the Robotics SDK.
 
@@ -82,13 +82,14 @@ The following ROS nodes for cameras have been tested and are supported by the SD
 
 ```{only} tag_j7x
 - [USB Stereo Camera Capture Node for ZED Cameras](ros1/drivers/zed_capture/README.md)
-- [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
 - [GStreamer-based Camera Capture Node](ros1/drivers/gscam/README_TI.md)
-- [RealSense Camera Node](docs/realsense_driver_node.md)
+- [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
+- [mmWave Radar Driver Node](docs/radar_driver_node_ros2.md)
 ```
 ```{only} tag_am62a
-- [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
 - [GStreamer-based Camera Capture Node](ros1/drivers/gscam/README_TI.md)
+- [USB Mono Camera Capture Node](ros1/drivers/mono_capture/README.md)
+- [mmWave Radar Driver Node](docs/radar_driver_node_ros2.md)
 ```
 
 ## Demo Applications
@@ -99,7 +100,9 @@ The SDK supports the following out-of-box demo applications:
 - [Stereo Vision Processing Accelerated on LDC and SDE](ros1/nodes/ti_sde/README.md)
 - [Semantic Segmentation CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README.md)
 - [Object Detection CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README_objdet.md)
+- [6D Pose Estimation CNN Accelerated on C7x/MMA](ros1/nodes/ti_vision_cnn/README_6D_pose.md)
 - [3D Obstacle Detection Accelerated on SDE and C7x/MMA](ros1/nodes/ti_estop/README.md)
+- [Vision Object Detection with 3D Spatial Information](ros1/nodes/ti_objdet_range/README.md)
 - [Visual Localization Accelerated on C7x/MMA](ros1/nodes/ti_vl/README.md)
 <!-- - [2D Lidar SLAM (open-source)](ros1/slam/README.md)
 - [AprilTag Detection (open-source)](docs/april_tag.md) -->
@@ -119,10 +122,10 @@ The SDK supports the following out-of-box demo applications:
 ## Scope of Robotics SDK
 
 ```{only} tag_j7x
-![](docs/sdk_scope_j7x_09_00_00.png)
+![](docs/sdk_scope_j7x_09_01_00.png)
 ```
 ```{only} tag_am62a
-![](docs/sdk_scope_am62a_09_00_00.png)
+![](docs/sdk_scope_am62a_09_01_00.png)
 ```
 
 ## Limitations and Known Issues

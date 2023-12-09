@@ -91,7 +91,7 @@ class VisLocNode: public rclcpp::Node
         VisLocNode(const rclcpp::NodeOptions &options,
                    const std::string         &name="visloc");
         ~VisLocNode();
-        void sigHandler(int32_t  sig);
+        void onShutdown();
 
     private:
         vx_status init();
@@ -140,7 +140,7 @@ class VisLocNode: public rclcpp::Node
         /** Output image width */
         uint32_t                                    m_outImgHeight;
 
-        /** Output image data to be published */    
+        /** Output image data to be published */
         Image                                       m_outPubData;
 
         /** Offline map data to be published */

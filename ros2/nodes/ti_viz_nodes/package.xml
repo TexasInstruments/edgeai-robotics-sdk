@@ -5,6 +5,7 @@
   <version>0.0.0</version>
   <description>TI Visualization node package</description>
   <maintainer email="vijayp@ti.com">Vijay Pothukuci</maintainer>
+  <maintainer email="jroh@ti.com">JuneChul Roh</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

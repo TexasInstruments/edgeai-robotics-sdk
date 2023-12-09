@@ -77,7 +77,7 @@ vx_status ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt)
     createParams->vxGraph   = appCntxt->vxGraph;
 
     /*
-     * Create input image objects 
+     * Create input image objects
      */
     createParams->createInputFlag    = 0;
     createParams->inputPipelineDepth = appCntxt->pipelineDepth;
@@ -158,7 +158,7 @@ vx_status ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt)
     if (vxStatus == (vx_status) VX_SUCCESS)
     {
         /*
-         * Create output image objects 
+         * Create output image objects
          */
         createParams->createOutputFlag      = 0;
         createParams->outputPipelineDepth   = 1;
@@ -172,7 +172,7 @@ vx_status ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt)
                               appCntxt->height,
                               VX_DF_IMAGE_U8);
         }
-        else 
+        else
         {
             appCntxt->vxLeftRectImage =
                 vxCreateImage(appCntxt->vxContext,
@@ -204,7 +204,7 @@ vx_status ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt)
                                   appCntxt->height,
                                   VX_DF_IMAGE_U8);
             }
-            else 
+            else
             {
                 appCntxt->vxRightRectImage[i] =
                     vxCreateImage(appCntxt->vxContext,
@@ -255,7 +255,7 @@ vx_status ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt)
         slSdeCreateParams->vxContext = appCntxt->vxContext;
         slSdeCreateParams->vxGraph   = appCntxt->vxGraph;
 
-        /* 
+        /*
          * Create input image objects for SL SDE
          */
         slSdeCreateParams->createInputFlag     = 0;
@@ -267,7 +267,7 @@ vx_status ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt)
                 appCntxt->vxRightRectImage[i];
         }
 
-        /* 
+        /*
          * Create output image objects for SL SDE
          */
         slSdeCreateParams->createOutputFlag = 0;
@@ -313,7 +313,7 @@ vx_status ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt)
         mlSdeCreateParams->vxContext = appCntxt->vxContext;
         mlSdeCreateParams->vxGraph   = appCntxt->vxGraph;
 
-        /* 
+        /*
          * Create input image objects for SL SDE
          */
         mlSdeCreateParams->createInputFlag      = 0;
@@ -326,7 +326,7 @@ vx_status ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt)
                 appCntxt->vxRightRectImage[i];
         }
 
-        /* 
+        /*
          * Create output image objects for ML SDE
          */
         mlSdeCreateParams->createOutputFlag  = 0;
@@ -411,11 +411,12 @@ vx_status ESTOP_APP_init_SS(ESTOP_APP_Context *appCntxt)
     if (taskType == "segmentation")
     {
         /* The SDE PC node expects a tensor of size 3 only. */
-        appCntxt->outTensorNumDim = ifInfo->dim - 1;
+        // ifInfo->shape = [1, 1, 1, 1, H, W]  => outTensorDims = [1, H, W]
+        appCntxt->outTensorNumDim = ifInfo->dim - 3;
 
         for (int32_t i = 0; i < appCntxt->outTensorNumDim; i++)
         {
-            appCntxt->outTensorDims[i] = ifInfo->shape[i+1];
+            appCntxt->outTensorDims[i] = ifInfo->shape[i+3];
         }
     }
     else
@@ -592,7 +593,7 @@ vx_status ESTOP_APP_init_SS_Detection(ESTOP_APP_Context *appCntxt)
     ssDetectCreateParams->vxContext     = appCntxt->vxContext;
     ssDetectCreateParams->vxGraph       = appCntxt->vxGraph;
 
-    /* 
+    /*
      * Create input image objects for SL SDE
      */
     ssDetectCreateParams->createInputFlag = 0;
@@ -696,7 +697,7 @@ vx_status  ESTOP_APP_setupPipeline(ESTOP_APP_Context * appCntxt)
         {
             LOG_ERROR("vxRegisterEvent() failed\n");
         }
-    }    
+    }
 
 
     return vxStatus;
@@ -801,7 +802,7 @@ vx_status ESTOP_APP_setupPipeline_SL(ESTOP_APP_Context * appCntxt)
         {
             q[cnt++].refs_list = (vx_reference*)appCntxt->vx3DBoundBox;
         }
-    } 
+    }
 
 
     /*  scalerObj->vxNode Param 1 (outImage)==> graph param 5 */
@@ -901,7 +902,7 @@ vx_status ESTOP_APP_setupPipeline_SL(ESTOP_APP_Context * appCntxt)
         if (vxStatus != VX_SUCCESS)
         {
             LOG_ERROR("tivxSetNodeParameterNumBufByIndex() failed\n");
-        }        
+        }
     }
 
     if (vxStatus == VX_SUCCESS)
@@ -909,12 +910,12 @@ vx_status ESTOP_APP_setupPipeline_SL(ESTOP_APP_Context * appCntxt)
         // vxPointCloud */
         vxStatus =
             tivxSetNodeParameterNumBufByIndex(pcNode,
-                                              4, 
+                                              4,
                                               appCntxt->pipelineDepth);
         if (vxStatus != VX_SUCCESS)
         {
             LOG_ERROR("tivxSetNodeParameterNumBufByIndex() failed\n");
-        }  
+        }
     }
 
     return vxStatus;
@@ -946,7 +947,7 @@ vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt)
     uint32_t                            i;
 
     appCntxt->numGraphParams = 5;
-    scalerObj      = &appCntxt->scalerObj; 
+    scalerObj      = &appCntxt->scalerObj;
     vxOutTensor    = appCntxt->vxOutTensor;
     leftLdcNode    = SDELCD_getLeftLDCNode(appCntxt->sdeLdcHdl);
     rightLdcNode   = SDELCD_getRightLDCNode(appCntxt->sdeLdcHdl);
@@ -1024,7 +1025,7 @@ vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt)
         }
     }
 
-    // Always ppMedianFilterEnable = 0 
+    // Always ppMedianFilterEnable = 0
     if (vxStatus == (vx_status)VX_SUCCESS && appCntxt->ppMedianFilterEnable)
     {
         appCntxt->numGraphParams += 1;
@@ -1057,7 +1058,7 @@ vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt)
         {
             q[cnt++].refs_list = (vx_reference*)appCntxt->vx3DBoundBox;
         }
-    }    
+    }
 
 
     /*  scalerObj->vxNode Param 1 (outImage)==> graph param 5 */
@@ -1096,7 +1097,7 @@ vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt)
         {
             q[cnt++].refs_list = (vx_reference*)vxOutTensor;
         }
-    } 
+    }
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
@@ -1284,7 +1285,7 @@ vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt)
         // vxPointCloud */
         vxStatus =
             tivxSetNodeParameterNumBufByIndex(pcNode,
-                                              4, 
+                                              4,
                                               appCntxt->pipelineDepth);
         if (vxStatus != VX_SUCCESS)
         {
@@ -1509,13 +1510,13 @@ vx_status  ESTOP_APP_process(ESTOP_APP_Context * appCntxt, ESTOP_APP_graphParams
     if (appCntxt->sdeAlgoType == 0)
     {
         obj[cnt++] = (vx_reference)gpDesc->vxSde16BitOutput;
-    } 
+    }
     else
     {
         /* code */
         obj[cnt++] = (vx_reference)gpDesc->vxMergeDisparityL0;
 
-        // ppMedianFilterEnable is always 0 
+        // ppMedianFilterEnable is always 0
         if (appCntxt->ppMedianFilterEnable)
         {
             obj[cnt++] = (vx_reference)gpDesc->vxMedianFilteredDisparity;
@@ -1549,7 +1550,7 @@ vx_status  ESTOP_APP_process(ESTOP_APP_Context * appCntxt, ESTOP_APP_graphParams
 }
 
 
-vx_status ESTOP_APP_CNN_preProcess(ESTOP_APP_Context   *appCntxt, 
+vx_status ESTOP_APP_CNN_preProcess(ESTOP_APP_Context   *appCntxt,
                                    vx_image             vxScalerOut,
                                    VecDlTensorPtr      *inputTensorVec)
 {
@@ -1684,7 +1685,7 @@ vx_status ESTOP_APP_processEvent(ESTOP_APP_Context * appCntxt, vx_event_t * even
 
     if (event->type == VX_EVENT_NODE_COMPLETED)
     {
-        uint32_t appValue = appCntxt->vxEvtAppValBase + 
+        uint32_t appValue = appCntxt->vxEvtAppValBase +
                             ESTOP_APP_SCALER_NODE_COMPLETE_EVENT;
 
         if (event->app_value != appValue)
@@ -1774,11 +1775,11 @@ vx_status ESTOP_APP_processEvent(ESTOP_APP_Context * appCntxt, vx_event_t * even
 }
 
 
-vx_status ESTOP_APP_getOutBuff(ESTOP_APP_Context *appCntxt, 
-                               vx_image *rightRectImage, 
-                               vx_image *ssOutput, 
-                               vx_tensor *outTensor, 
-                               vx_user_data_object *obsBB, 
+vx_status ESTOP_APP_getOutBuff(ESTOP_APP_Context *appCntxt,
+                               vx_image *rightRectImage,
+                               vx_image *ssOutput,
+                               vx_tensor *outTensor,
+                               vx_user_data_object *obsBB,
                                vx_image *disparity16,
                                vx_uint64 *timestamp)
 {
@@ -1802,7 +1803,7 @@ vx_status ESTOP_APP_getOutBuff(ESTOP_APP_Context *appCntxt,
         {
             *disparity16 = desc.vxMedianFilteredDisparity;
         }
-        else 
+        else
         {
             *disparity16 = desc.vxMergeDisparityL0;
         }

@@ -208,6 +208,18 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
                 appCntxt->outTensorDims[1] = CM_POST_PROCESS_DETECT_NUM_FIELDS;
             }
         }
+        else if ( taskType == "object_6d_pose_estimation")
+        {
+            if (ifInfo->shape[0] < 0)
+            {
+                appCntxt->outTensorDims[0] = CM_POST_PROCESS_DETECT_MAX_OBJECTS + 1;
+            }
+
+            if (ifInfo->shape[1] < 0)
+            {
+                appCntxt->outTensorDims[1] = CM_POST_PROCESS_POSE6D_NUM_FIELDS;
+            }
+        }
         else if (taskType != "segmentation")
         {
             LOG_ERROR("Unsupported taskType");
@@ -221,6 +233,33 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
             for (int32_t i = 0; i < appCntxt->outTensorNumDim; i++)
             {
                 appCntxt->outTensorSize *= appCntxt->outTensorDims[i];
+            }
+
+            int32_t first = 0;
+            int32_t last  = 1;
+
+            while (last != appCntxt->outTensorNumDim)
+            {
+                if (appCntxt->outTensorDims[first] == 1 && appCntxt->outTensorDims[last] != 1)
+                {
+                    auto temp = appCntxt->outTensorDims[first];
+                    appCntxt->outTensorDims[first] = appCntxt->outTensorDims[last];
+                    appCntxt->outTensorDims[last] = temp;
+                    first++;
+                }
+                else if (appCntxt->outTensorDims[first] != 1)
+                {
+                    first++;
+                }
+                else
+                {
+                    last++;
+                }
+            }
+
+            if (appCntxt->outTensorDims[first] == 1)
+            {
+                appCntxt->outTensorNumDim = first;
             }
 
             // vxCreateTensor
@@ -503,7 +542,7 @@ vx_status  VISION_CNN_setupPipeline(VISION_CNN_Context * appCntxt)
         else
         {
             q[cnt++].refs_list = (vx_reference*)appCntxt->vxInputImage;
-        }        
+        }
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)
@@ -651,7 +690,7 @@ vx_status VISION_CNN_waitGraph(VISION_CNN_Context * appCntxt)
     return vxStatus;
 }
 
-vx_status  VISION_CNN_process(VISION_CNN_Context     * appCntxt, 
+vx_status  VISION_CNN_process(VISION_CNN_Context     * appCntxt,
                               VISION_CNN_graphParams * gpDesc,
                               uint64_t                 timestamp)
 {
@@ -954,7 +993,7 @@ vx_status VISION_CNN_processEvent(VISION_CNN_Context * appCntxt, vx_event_t * ev
 
     if (event->type == VX_EVENT_NODE_COMPLETED)
     {
-        uint32_t appValue = appCntxt->vxEvtAppValBase + 
+        uint32_t appValue = appCntxt->vxEvtAppValBase +
                             VISION_CNN_SCALER_NODE_COMPLETE_EVENT;
 
         if (event->app_value != appValue)

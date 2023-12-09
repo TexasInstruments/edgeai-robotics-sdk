@@ -85,15 +85,15 @@
 /**
  * \defgroup group_ticore_vision_cnn CNN based vision processing
  *
- * \brief It performs versatile deep-learning (DL) inference that is optimized on 
- *        DL cores and TDA4 HWAs. It supports compute-intensive DL inference operations 
- *        including 2D object detection and semantic segmentation. 
- * 
- *        The figure below shows the high-level block diagram for semantic segmentation 
- *        as an exmaple, which consists of multiple processing blocks that are deployed 
- *        on HWAs and DSP processors for pre-processing and post-processing in an 
- *        optimized manner. 
- * 
+ * \brief It performs versatile deep-learning (DL) inference that is optimized on
+ *        DL cores and TDA4 HWAs. It supports compute-intensive DL inference operations
+ *        including 2D object detection and semantic segmentation.
+ *
+ *        The figure below shows the high-level block diagram for semantic segmentation
+ *        as an example, which consists of multiple processing blocks that are deployed
+ *        on HWAs and DSP processors for pre-processing and post-processing in an
+ *        optimized manner.
+ *
  *        \image html semseg_demo_block_diagram.svg "CNN based semantic segmentation" width = 1000
  *
  * \ingroup  group_ticore_apps
@@ -194,16 +194,16 @@ extern "C" {
 #define VISION_CNN_USER_EVT_EXIT              (VISION_CNN_OUT_AVAIL_EVT + 1)
 
 /**
- * \brief Number of graph parameters 
+ * \brief Number of graph parameters
  * \ingroup group_ticore_vision_cnn
  */
 #define VISION_CNN_NUM_GRAPH_PARAMS      (3U)
 
 /**
- * \brief Maximum output tensor dimension 
+ * \brief Maximum output tensor dimension
  * \ingroup group_ticore_vision_cnn
  */
-#define VISION_CNN_MAX_OUT_TENSOR_DIMS   (4U)
+#define VISION_CNN_MAX_OUT_TENSOR_DIMS   (8U)
 
 /**
  * \brief Maximum number of objects to detect for detection
@@ -223,10 +223,16 @@ extern "C" {
  */
 #define CM_POST_PROCESS_DETECT_NUM_FIELDS     (6U)
 
+/**
+ * \brief Number of fields for detected object in 6D Pose Model
+ * \ingroup group_ticore_vision_cnn
+ */
+#define CM_POST_PROCESS_POSE6D_NUM_FIELDS     (15U)
+
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 /**
- * \brief Graph parameters 
+ * \brief Graph parameters
  * \ingroup group_ticore_vision_cnn
  */
 struct VISION_CNN_graphParams
@@ -257,7 +263,7 @@ using VISION_CNN_Queue =
      MultiThreadQ<VISION_CNN_graphParams>;
 
 /**
- * \brief Application context parameters 
+ * \brief Application context parameters
  * \ingroup group_ticore_vision_cnn
  */
 struct VISION_CNN_Context
@@ -473,7 +479,7 @@ struct VISION_CNN_Context
     uint8_t                 exportPerfStats;
 
     /** Vilualization thteshold for object detection. */
-    float                   detVizThreshold{0.5f};
+    float                   detVizThreshold;
 
     /** Real-time logging enable.
      * 0 - disable
@@ -512,7 +518,7 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt);
  *
  * \param [in] appCntxt APP context
  *
- * \return 
+ * \return
  *
  * \ingroup group_ticore_vision_cnn
  */
@@ -576,7 +582,7 @@ vx_status VISION_CNN_run(VISION_CNN_Context   *appCntxt,
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_printStats(VISION_CNN_Context * appCntxt);
@@ -587,11 +593,11 @@ void      VISION_CNN_printStats(VISION_CNN_Context * appCntxt);
  * \param [in] appCntxt APP context
  *
  * \param [in] fp file to export
- * 
+ *
  * \param [in] exportAll flag to export all statistics
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 vx_status VISION_CNN_exportStats(VISION_CNN_Context * appCntxt, FILE *fp, bool exportAll);
@@ -603,7 +609,7 @@ vx_status VISION_CNN_exportStats(VISION_CNN_Context * appCntxt, FILE *fp, bool e
  * \param [in] appCntxt APP context
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 vx_status VISION_CNN_waitGraph(VISION_CNN_Context * appCntxt);
@@ -670,7 +676,7 @@ vx_status VISION_CNN_process(VISION_CNN_Context     * appCntxt,
  * \param [out] timestamp Timestamp of inputImage
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 vx_status VISION_CNN_getOutBuff(VISION_CNN_Context   * appCntxt,
@@ -708,7 +714,7 @@ vx_status VISION_CNN_preProcess(VISION_CNN_Context     * appCntxt,
                                 VecDlTensorPtr         * inputTensorVec);
 
 /**
- * \brief Function to convert semantic sementation output to tensor
+ * \brief Function to convert semantic segmentation output to tensor
  *
  * \param [in] appCntxt APP context
  *
@@ -746,7 +752,7 @@ vx_status VISION_CNN_popFreeInputDesc(VISION_CNN_Context       *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 vx_status VISION_CNN_popPreprocInputDesc(VISION_CNN_Context       *appCntxt,
@@ -818,7 +824,7 @@ vx_status VISION_CNN_popOutputDesc(VISION_CNN_Context       *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_enqueInputDesc(VISION_CNN_Context      *appCntxt,
@@ -832,7 +838,7 @@ void      VISION_CNN_enqueInputDesc(VISION_CNN_Context      *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_enquePreprocInputDesc(VISION_CNN_Context      *appCntxt,
@@ -846,7 +852,7 @@ void      VISION_CNN_enquePreprocInputDesc(VISION_CNN_Context      *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_enqueDlInferInputDesc(VISION_CNN_Context       *appCntxt,
@@ -860,7 +866,7 @@ void      VISION_CNN_enqueDlInferInputDesc(VISION_CNN_Context       *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_enquePostprocInputDesc(VISION_CNN_Context      *appCntxt,
@@ -874,7 +880,7 @@ void      VISION_CNN_enquePostprocInputDesc(VISION_CNN_Context      *appCntxt,
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void      VISION_CNN_enqueOutputDesc(VISION_CNN_Context      *appCntxt,
@@ -886,7 +892,7 @@ void      VISION_CNN_enqueOutputDesc(VISION_CNN_Context      *appCntxt,
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void VISION_CNN_launchProcThreads(VISION_CNN_Context *appCntxt);
@@ -897,7 +903,7 @@ void VISION_CNN_launchProcThreads(VISION_CNN_Context *appCntxt);
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void VISION_CNN_intSigHandler(VISION_CNN_Context *appCntxt);
@@ -908,7 +914,7 @@ void VISION_CNN_intSigHandler(VISION_CNN_Context *appCntxt);
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_vision_cnn
  */
 void VISION_CNN_cleanupHdlr(VISION_CNN_Context *appCntxt);

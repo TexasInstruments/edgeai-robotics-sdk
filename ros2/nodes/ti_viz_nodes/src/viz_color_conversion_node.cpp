@@ -72,12 +72,6 @@ using namespace message_filters;
 
 #define clip3(x, min, max) ( x > max? max : (x < min ? min : x))
 
-static void sigHandler(int32_t sig)
-{
-    (void) sig;
-    rclcpp::shutdown();
-}
-
 namespace ti_ros2
 {
     using ImgSub   = message_filters::Subscriber<Image>;
@@ -133,7 +127,6 @@ namespace ti_ros2
                 in_sub   = new ImgSub(this, input_yuv_topic_);
                 conObj   = in_sub->registerCallback(&Yuv2Rgb::callback_yuv2rgb, this);
 
-                rclcpp::spin(static_cast<rclcpp::Node::SharedPtr>(this));
             }
 
             ~Yuv2Rgb()
@@ -365,8 +358,6 @@ namespace ti_ros2
     };
 }
 
-static ti_ros2::Yuv2Rgb *colorConv = nullptr;
-
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
  */
@@ -377,18 +368,17 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
-
-        signal(SIGINT, sigHandler);
 
         nodeOptions.allow_undeclared_parameters(true);
         nodeOptions.automatically_declare_parameters_from_overrides(true);
         nodeOptions.use_intra_process_comms(false);
 
-        colorConv = new ti_ros2::Yuv2Rgb("viz_color_conv_yuv2rgb", nodeOptions);
+        auto colorConv = std::make_shared<ti_ros2::Yuv2Rgb>("viz_color_conv_yuv2rgb", nodeOptions);
+
+        rclcpp::spin(colorConv);
+
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }

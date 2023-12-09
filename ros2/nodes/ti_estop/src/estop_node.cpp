@@ -84,7 +84,7 @@ EStopNode::EStopNode(const rclcpp::NodeOptions &options,
     {
         RCLCPP_ERROR(this->get_logger(), "new ESTOP_APP_Context() failed.");
         vxStatus = VX_FAILURE;
-    }    
+    }
 
     // camera parameter should be initialized
     m_cntxt->state = ESTOP_APP_STATE_INIT;
@@ -96,6 +96,9 @@ EStopNode::EStopNode(const rclcpp::NodeOptions &options,
     // launch the input process thread
     auto localThread = std::thread([this]{inputProcessThread();});
     localThread.detach();
+
+    // register a callback to run at rclcpp::shutdown()
+    rclcpp::on_shutdown(std::bind(&EStopNode::onShutdown, this));
 }
 
 void EStopNode::setupInputImgSubscribers()
@@ -304,7 +307,7 @@ void EStopNode::publisherThread()
     } else if (m_cntxt->sde_params.disparity_max == 1)
     {
         m_disparityPubData.max_disp = 127;
-    } else 
+    } else
     {
         m_disparityPubData.max_disp = 191;
     }
@@ -377,8 +380,8 @@ void EStopNode::publisherThread()
 
 void EStopNode::camInfoCb(const CameraInfo::ConstSharedPtr& cam_info)
 {
-    ESTOP_APP_init_camInfo(m_cntxt, 
-                           cam_info->width, cam_info->height, 
+    ESTOP_APP_init_camInfo(m_cntxt,
+                           cam_info->width, cam_info->height,
                            cam_info->p[0], cam_info->p[2], cam_info->p[6]);
 
     if (initCtrlSem)
@@ -387,7 +390,7 @@ void EStopNode::camInfoCb(const CameraInfo::ConstSharedPtr& cam_info)
     }
 }
 
-void EStopNode::imgCb(const Image::ConstSharedPtr& left_image_ptr, 
+void EStopNode::imgCb(const Image::ConstSharedPtr& left_image_ptr,
                       const Image::ConstSharedPtr& right_image_ptr)
 {
     if (m_cntxt->state == ESTOP_APP_STATE_INIT)
@@ -395,9 +398,9 @@ void EStopNode::imgCb(const Image::ConstSharedPtr& left_image_ptr,
         uint64_t nanoSec = right_image_ptr->header.stamp.sec * 1e9 +
                            right_image_ptr->header.stamp.nanosec;
 
-        ESTOP_APP_run(m_cntxt, 
-                      left_image_ptr->data.data(), 
-                      right_image_ptr->data.data(), 
+        ESTOP_APP_run(m_cntxt,
+                      left_image_ptr->data.data(),
+                      right_image_ptr->data.data(),
                       nanoSec);
     }
     else if (m_cntxt->state == ESTOP_APP_STATE_INVALID)
@@ -502,7 +505,7 @@ void EStopNode::processCompleteEvtHdlr()
         }
 
         /* Make eStop decision */
-        vxStatus = makeEStopDecision(m_ogMapPubData.data.data(), 
+        vxStatus = makeEStopDecision(m_ogMapPubData.data.data(),
                                      m_eStopGridIdx,
                                      m_ogMapPubData.info.width,
                                      m_ogMapPubData.info.height);
@@ -665,7 +668,7 @@ void EStopNode::readParams()
     get_parameter_or("pp_median_filter_enable", tmp, 0);
     m_cntxt->ppMedianFilterEnable = (uint8_t)tmp;
 
-    /* SDE Parameters */ 
+    /* SDE Parameters */
     /* Get the SDE minimum disparity information */
     /* Always set to 0 */
     m_cntxt->sde_params.disparity_min = 0;
@@ -800,12 +803,12 @@ void EStopNode::readParams()
     get_parameter_or("max_estop_width", tmp, 1500);
     m_maxEStopWidth = (int32_t)tmp;
 
-    /* Minimum number of consecutive frames without any obstacle 
+    /* Minimum number of consecutive frames without any obstacle
        in EStop range to set m_eStop = 0 */
     get_parameter_or("min_free_frame_run", tmp, 3);
     m_minFreeRun = (int8_t)tmp;
 
-    /* Minimum number of consecutive frames with any obstacle 
+    /* Minimum number of consecutive frames with any obstacle
        in EStop range to set m_eStop = 1 */
     get_parameter_or("min_obs_frame_run", tmp, 1);
     m_minObsRun = (int8_t)tmp;
@@ -838,7 +841,7 @@ void EStopNode::readParams()
     /* Get the disparity merge core information. */
     get_parameter("disp_merge_deploy_core", str);
     m_cntxt->mlSdeCreateParams.dispMergeNodeCore = CM_getCoreName((const char *)str.c_str());
-    
+
     /* Get the hole filling core information. */
     get_parameter("hole_filling_deploy_core", str);
     m_cntxt->mlSdeCreateParams.holeFillingNodeCore = CM_getCoreName((const char *)str.c_str());
@@ -940,10 +943,8 @@ vx_status EStopNode::init()
     return vxStatus;
 }
 
-void EStopNode::sigHandler(int32_t  sig)
+void EStopNode::onShutdown()
 {
-    (void)sig;
-
     if (m_cntxt)
     {
         ESTOP_APP_intSigHandler(m_cntxt);
@@ -1005,7 +1006,7 @@ vx_status EStopNode::extract3DBBData(ObjectPos3D          * bbData,
 }
 
 vx_status EStopNode::extractOGMapData(int8_t               *ogData,
-                                      ObjectPos3D          *bbData, 
+                                      ObjectPos3D          *bbData,
                                       vx_user_data_object   vx3DBB,
                                       int32_t               width,
                                       int32_t               height,
@@ -1043,7 +1044,7 @@ vx_status EStopNode::extractOGMapData(int8_t               *ogData,
     // init to NON_FOV_GRID_VALUE.
     memset(ogData, NON_FOV_GRID_VALUE, width * height);
 
-    // init grids in FOV to FOV_GRID_VALUE 
+    // init grids in FOV to FOV_GRID_VALUE
     for (j = height/2; j < height; j++)
     {
        offset = floor((j - height/2)*tanAngle);
@@ -1124,10 +1125,10 @@ vx_status EStopNode::setEStopArea(int32_t  *eStopGridIdx,
     float     leftSlope;
     float     rightSlope;
     vx_status vxStatus;
-    
+
     /*
     |<--- max_estop_range --->|
-    --------------------------- -> max_estop_distance 
+    --------------------------- -> max_estop_distance
     -                         -
      -                      -
       -                    -
@@ -1194,7 +1195,7 @@ vx_status EStopNode::makeEStopDecision(int8_t  *ogData,
             break;
         }
 
-        if (ogData[eStopGridIdx[i]] != ESTOP_AREA_GRID_VALUE && 
+        if (ogData[eStopGridIdx[i]] != ESTOP_AREA_GRID_VALUE &&
             ogData[eStopGridIdx[i]] != FOV_GRID_VALUE &&
             ogData[eStopGridIdx[i]] != NON_FOV_GRID_VALUE)
         {

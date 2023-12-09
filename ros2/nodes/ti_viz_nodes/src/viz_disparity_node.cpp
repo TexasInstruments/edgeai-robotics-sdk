@@ -80,12 +80,6 @@ const unsigned char SDE_falseColorLUT_RGB[3][260] = {
     {128,64,0,74,96,101,104,108,113,116,120,125,129,135,142,148,153,160,166,174,179,185,192,198,205,211,217,224,230,235,242,248,255,255,255,255,255,254,255,255,255,255,255,254,253,255,255,255,254,255,255,255,255,255,255,255,254,254,255,255,255,255,254,254,255,255,255,255,255,255,255,255,255,249,242,236,231,224,217,210,205,199,192,186,179,173,169,162,155,149,144,138,130,123,117,112,105,99,91,87,80,73,67,60,54,48,41,35,28,23,17,9,2,5,4,4,3,3,4,3,3,2,3,4,4,4,4,4,3,3,2,3,3,2,5,4,4,4,3,4,3,3,2,3,3,4,4,4,4,3,3,4,3,3,2,2,3,4,5,2,3,4,5,2,3,4,3,3,4,4,3,3,4,3,3,3,4,3,4,3,4,3,3,4,2,3,3,4,3,4,3,2,3,4,3,2,3,4,4,3,3,4,2,3,4,3,2,3,4,2,2,3,4,2,3,2,2,3,3,2,2,3,2,2,3,3,2,2,3,3,2,2,3,3,2,2,3,2,2,2,3,2,2,2,3,9,16,23,27,34,40,48,53,59,66,73,77,85,89,255}
 };
 
-static void sigHandler(int32_t sig)
-{
-    (void) sig;
-    rclcpp::shutdown();
-}
-
 namespace ti_ros2
 {
     using ImgSub   = message_filters::Subscriber<Disparity>;
@@ -133,7 +127,6 @@ namespace ti_ros2
                 ccDisp_pub = this->create_publisher<Image>(ccDisparityTopic, 10);
                 ccConf_pub = this->create_publisher<Image>(ccConfidenceTopic, 10);
 
-                rclcpp::spin(static_cast<rclcpp::Node::SharedPtr>(this));
             }
 
             ~VizDisparity()
@@ -272,8 +265,6 @@ namespace ti_ros2
     };
 }
 
-static ti_ros2::VizDisparity   *dispViz = nullptr;
-
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
  */
@@ -284,18 +275,19 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
 
-        signal(SIGINT, sigHandler);
+        // signal(SIGINT, sigHandler);
 
         nodeOptions.allow_undeclared_parameters(true);
         nodeOptions.automatically_declare_parameters_from_overrides(true);
         nodeOptions.use_intra_process_comms(false);
 
-        dispViz = new ti_ros2::VizDisparity("viz_disparity", nodeOptions);
+        auto dispViz = std::make_shared<ti_ros2::VizDisparity>("viz_disparity", nodeOptions);
+
+        rclcpp::spin(dispViz);
+
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }

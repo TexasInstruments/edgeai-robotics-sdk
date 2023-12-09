@@ -82,7 +82,9 @@ static const uint8_t color_map[20][3] =
 static void sigHandler(int32_t sig)
 {
     (void) sig;
+
     rclcpp::shutdown();
+    exit(EXIT_SUCCESS);
 }
 
 namespace ti_ros2
@@ -186,7 +188,7 @@ namespace ti_ros2
 }
 
 // static std::shared_ptr<ti_ros2::VizSemSeg>  semSegViz = nullptr;
-static ti_ros2::VizSemSeg  *semSegViz = nullptr;
+// static ti_ros2::VizSemSeg  *semSegViz = nullptr;
 
 /**
  * Main
@@ -197,9 +199,6 @@ int main(int argc, char **argv)
     {
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
-
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
 
         rclcpp::init(argc, argv, initOptions);
 
@@ -236,8 +235,7 @@ int main(int argc, char **argv)
          */
         nodeOptions.use_intra_process_comms(false);
 
-        // semSegViz = std::make_shared<ti_ros2::VizSemSeg>("viz_semseg", nodeOptions);
-        semSegViz = new ti_ros2::VizSemSeg("viz_semseg", nodeOptions);
+        auto semSegViz = std::make_shared<ti_ros2::VizSemSeg>("viz_semseg", nodeOptions);
 
         return EXIT_SUCCESS;
     }

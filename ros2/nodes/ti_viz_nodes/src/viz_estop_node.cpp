@@ -85,7 +85,9 @@ static const uint8_t color_map[3] = {128, 64, 128};
 static void sigHandler(int32_t sig)
 {
     (void) sig;
+
     rclcpp::shutdown();
+    exit(EXIT_SUCCESS);
 }
 
 namespace ti_ros2
@@ -321,8 +323,6 @@ namespace ti_ros2
     };
 }
 
-static ti_ros2::VizEStop   *estopViz = nullptr;
-
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
  */
@@ -333,9 +333,6 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
 
         signal(SIGINT, sigHandler);
@@ -344,7 +341,7 @@ int main(int argc, char **argv)
         nodeOptions.automatically_declare_parameters_from_overrides(true);
         nodeOptions.use_intra_process_comms(false);
 
-        estopViz = new ti_ros2::VizEStop("app_viz_estop", nodeOptions);
+        auto estopViz = std::make_shared<ti_ros2::VizEStop>("app_viz_estop", nodeOptions);
 
         return EXIT_SUCCESS;
     }

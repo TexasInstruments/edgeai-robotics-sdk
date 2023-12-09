@@ -70,7 +70,7 @@
 using namespace common_msgs;
 
 #define PC_POINT_SIZE                (16)
- 
+
 SDEAppNode::SDEAppNode(const rclcpp::NodeOptions   &options,
                        const std::string           &name):
     Node(name, options)
@@ -103,6 +103,9 @@ SDEAppNode::SDEAppNode(const rclcpp::NodeOptions   &options,
         auto procThread = std::thread([this]{inputProcessThread();});
         procThread.detach();
     }
+
+    // register a callback to run at rclcpp::shutdown()
+    rclcpp::on_shutdown(std::bind(&SDEAppNode::onShutdown, this));
 }
 
 void SDEAppNode::process()
@@ -224,7 +227,7 @@ void SDEAppNode::publisherThread()
 
     m_disparityPubData.data.assign(m_disparitySize, 0);
     m_disparityPubData.width           = m_imgWidth;
-    m_disparityPubData.height          = m_imgHeight; 
+    m_disparityPubData.height          = m_imgHeight;
     m_disparityPubData.min_disp        = 0;
     if (m_cntxt->sde_params.disparity_max == 0)
     {
@@ -232,13 +235,13 @@ void SDEAppNode::publisherThread()
     } else if (m_cntxt->sde_params.disparity_max == 1)
     {
         m_disparityPubData.max_disp = 127;
-    } else 
+    } else
     {
         m_disparityPubData.max_disp = 191;
     }
     m_disparityPubData.step            = m_imgWidth * 2;
     m_disparityPubData.header.frame_id = "map";
-    
+
     // Create the publisher for the disparity output
     m_disparityPub = this->create_publisher<Disparity>(rawDispTopic, 1);
     RCLCPP_INFO(this->get_logger(), "Created Publisher for topic: %s", rawDispTopic.c_str());
@@ -282,7 +285,7 @@ void SDEAppNode::publisherThread()
         m_pcPubData.is_bigendian    = false;
         m_pcPubData.point_step      = offset;  // should be PC_POINT_SIZE
         m_pcPubData.row_step        = 0;       // should be updated for every PC frame
-        m_pcPubData.is_dense        = 1;        
+        m_pcPubData.is_dense        = 1;
 
         // Create the publisher for the PC data
         m_pcPub = this->create_publisher<PointCloud2>(pcTopic, 1);
@@ -296,17 +299,17 @@ void SDEAppNode::publisherThread()
 
 void SDEAppNode::camInfoCb(const CameraInfo::ConstSharedPtr& cam_info)
 {
-    SDEAPP_init_camInfo(m_cntxt, 
-                        cam_info->width, cam_info->height, 
+    SDEAPP_init_camInfo(m_cntxt,
+                        cam_info->width, cam_info->height,
                         cam_info->p[0], cam_info->p[2], cam_info->p[6]);
 
     if (initCtrlSem)
     {
         initCtrlSem->notify();
-    } 
+    }
 }
 
-void SDEAppNode::imgCb(const Image::ConstSharedPtr& left_image_ptr, 
+void SDEAppNode::imgCb(const Image::ConstSharedPtr& left_image_ptr,
                        const Image::ConstSharedPtr& right_image_ptr)
 {
     if (m_cntxt->state == SDEAPP_STATE_INIT)
@@ -314,7 +317,7 @@ void SDEAppNode::imgCb(const Image::ConstSharedPtr& left_image_ptr,
         uint64_t nanoSec = right_image_ptr->header.stamp.sec * 1e9 +
                            right_image_ptr->header.stamp.nanosec;
 
-        SDEAPP_run(m_cntxt, 
+        SDEAPP_run(m_cntxt,
                    left_image_ptr->data.data(),
                    right_image_ptr->data.data(),
                    nanoSec);
@@ -498,7 +501,7 @@ void SDEAppNode::readParams()
     get_parameter_or("pp_median_filter_enable", tmp, 0);
     m_cntxt->ppMedianFilterEnable = (uint8_t)tmp;
 
-    /* SDE Parameters */ 
+    /* SDE Parameters */
     /* Get the SDE minimum disparity information */
     /* Always set to 0 */
     m_cntxt->sde_params.disparity_min = 0;
@@ -607,7 +610,7 @@ void SDEAppNode::readParams()
     get_parameter("disp_merge_deploy_core", str);
     m_cntxt->mlSdeCreateParams.dispMergeNodeCore =
         CM_getCoreName((const char *)str.c_str());
-    
+
     /* Get the hole filling core information. */
     get_parameter("hole_filling_deploy_core", str);
     m_cntxt->mlSdeCreateParams.holeFillingNodeCore =
@@ -728,10 +731,8 @@ vx_status SDEAppNode::init()
     return vxStatus;
 }
 
-void SDEAppNode::sigHandler(int32_t  sig)
+void SDEAppNode::onShutdown()
 {
-    (void)sig;
-
     if (m_cntxt)
     {
         SDEAPP_intSigHandler(m_cntxt);

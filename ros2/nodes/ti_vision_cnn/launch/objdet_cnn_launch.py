@@ -7,6 +7,15 @@ from launch.actions import OpaqueFunction
 from launch.substitutions import TextSubstitution
 from launch.substitutions import LaunchConfiguration
 
+# path to the DL model
+soc = os.getenv('SOC')
+if soc in ['j721e', 'j721s2', 'j784s4']:
+    dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+elif soc in ['am62a']:
+    dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+else:
+    print('{} not supported'.format(soc))
+
 def finalize_node(context, *args, **kwargs):
     image_format = int(LaunchConfiguration("image_format").perform(context))
     zed_sn = LaunchConfiguration("zed_sn").perform(context)
@@ -20,6 +29,8 @@ def finalize_node(context, *args, **kwargs):
     params = [
         os.path.join(get_package_share_directory('ti_vision_cnn'),'config','params.yaml'),
         {
+            "width":                    1280,
+            "height":                   720,
             "image_format":             image_format,
             "lut_file_path":            lut_file_path,
             "enable_ldc_node":          enable_ldc_node,
@@ -47,56 +58,54 @@ def finalize_node(context, *args, **kwargs):
 
 def generate_launch_description():
     # ZED camera serial number string
-    zed_sn = DeclareLaunchArgument(
+    zed_sn_arg = DeclareLaunchArgument(
         name="zed_sn",
         default_value=TextSubstitution(text="SN5867575"),
         description='string for ZED camera serial number'
     )
 
     # Input image format: 0 - VX_DF_IMAGE_U8, 1 - VX_DF_IMAGE_NV12, 2 - VX_DF_IMAGE_UYVY
-    image_format = DeclareLaunchArgument(
+    image_format_arg = DeclareLaunchArgument(
         name="image_format",
         default_value=TextSubstitution(text='2'),
         description='input image format'
     )
 
     # enable ldc node flag
-    enable_ldc_node = DeclareLaunchArgument(
+    enable_ldc_node_arg = DeclareLaunchArgument(
         name="enable_ldc_node",
         default_value=TextSubstitution(text='1'),
         description='enable ldc node flag'
     )
 
     # DL model path
-    dl_model_path = DeclareLaunchArgument(
+    dl_model_path_arg = DeclareLaunchArgument(
         name="dl_model_path",
-        default_value=TextSubstitution(text="/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"),
-        # default_value=TextSubstitution(text="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"),
-        # default_value=TextSubstitution(text="/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"),
+        default_value=TextSubstitution(text=dl_model_path),
         description='DL model path'
     )
 
     # Flag for exporting the performance data to a file: 0 - disable, 1 - enable
-    exportPerfStats = DeclareLaunchArgument(
+    exportPerfStats_arg = DeclareLaunchArgument(
         name="exportPerfStats",
         default_value=TextSubstitution(text="0"),
         description='flag for exporting the performance data'
     )
 
     # Threshold for object detection visualization
-    detVizThreshold = DeclareLaunchArgument(
+    detVizThreshold_arg = DeclareLaunchArgument(
         name="detVizThreshold",
         default_value=TextSubstitution(text="0.5"),
         description='Threshold for object detection visualization'
     )
 
     ld = LaunchDescription()
-    ld.add_action(zed_sn)
-    ld.add_action(image_format)
-    ld.add_action(enable_ldc_node)
-    ld.add_action(dl_model_path)
-    ld.add_action(exportPerfStats)
-    ld.add_action(detVizThreshold)
+    ld.add_action(zed_sn_arg)
+    ld.add_action(image_format_arg)
+    ld.add_action(enable_ldc_node_arg)
+    ld.add_action(dl_model_path_arg)
+    ld.add_action(exportPerfStats_arg)
+    ld.add_action(detVizThreshold_arg)
     ld.add_action(OpaqueFunction(function=finalize_node))
 
     return ld

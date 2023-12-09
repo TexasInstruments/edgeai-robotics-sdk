@@ -43,6 +43,8 @@ def generate_launch_description():
     params = [
         os.path.join(get_package_share_directory('ti_vision_cnn'), 'config', 'params.yaml'),
         {
+            "width":                    1280,
+            "height":                   720,
             "image_format":             image_format,
             "enable_ldc_node":          enable_ldc_node,
             "lut_file_path":            lut_file_path,
@@ -81,5 +83,3 @@ def generate_launch_description():
     ld.add_action(cam_launch)
 
     return ld
-
-

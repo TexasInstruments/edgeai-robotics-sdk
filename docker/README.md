@@ -105,8 +105,9 @@ Figure 1 shows the hardware setup and high-level installation steps on the targe
 
 2. Flash the downloaded image to an SD card (minimum 32GB, high-performance) using the Balena Etcher tool. For detailed instructions, please refer to {{'[this section](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/getting_started.html#software-setup)'.format(SDK_VER)}}.
 
+<!-- From the SDK 9.1, we do not need to expand the SD card as the rootfs will be automatically expanded on the first boot.
 ````{note}
-The etcher image is created for 16 GB SD cards. If you are using a larger SD card, it is highly recommended to expand the root filesystem to use the full SD card capacity using the following steps on the Ubuntu PC.
+ The etcher image is created for 16 GB SD cards. If you are using a larger SD card, it is highly recommended to expand the root filesystem to use the full SD card capacity using the following steps on the Ubuntu PC.
 
 ```
 # find the SD card device entry using lsblk (Eg: /dev/sdb)
@@ -120,7 +121,7 @@ sudo resize2fs /dev/sdX2
 
 # replace /dev/sdX in above commands with SD card device entry
 ```
-````
+```` -->
 
 ### Connect Remotely to the Target
 
@@ -153,7 +154,7 @@ This script takes care of:
 In a similar way, you can use a script to set up on the remote Ubuntu PC for visualization:
 ```
 user@pc:~$ wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
-user@pc:~$ source ./init_setup.sh REL.09.00.00
+user@pc:~$ source ./init_setup.sh REL.09.01.00
 ```
 
 ````{note}

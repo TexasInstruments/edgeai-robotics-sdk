@@ -36,6 +36,7 @@ ARG RPMSG_LIB_VER
 ARG SOC_NAME
 ARG ROS_DISTRO
 ARG SDK_VER
+ARG EDGEAI_VER
 
 #=========================================================================
 FROM j7-ros-${ROS_DISTRO}-common:${SDK_VER} as base-0
@@ -54,7 +55,7 @@ ARG DEBIAN_FRONTEND
 ARG TIVA_LIB_VER
 ARG RPMSG_LIB_VER
 ARG SOC_NAME
-ARG IS_ROS2
+ARG EDGEAI_VER
 
 # setup proxy settings
 ADD setup_proxy.sh /root/
@@ -75,26 +76,26 @@ RUN ln -s /usr/lib/libtivision_apps.so.$TIVA_LIB_VER /usr/lib/libtivision_apps.s
 ENV SOC=$SOC_NAME
 ADD install_apps_utils.sh install_osrt.sh /usr/bin/
 WORKDIR /opt
-RUN /usr/bin/install_apps_utils.sh && \
-    /usr/bin/install_osrt.sh && \
-    git clone --single-branch --branch EDGEAI_APP_STACK_09_00_00_00 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
+RUN /usr/bin/install_apps_utils.sh -b 09.01.00.06 && \
+    rm -rf /opt/edgeai-apps-utils
+RUN /usr/bin/install_osrt.sh
+RUN git clone --single-branch --branch 09.01.00.06 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
     /opt/edgeai-dl-inferer/scripts/build_dl_inferer.sh && \
-    rm -rf /opt/edgeai-apps-utils && \
     rm -rf /opt/edgeai-dl-inferer
 
 # install edgeai-tiovx-kernels
 ADD install_tiovx_kernels.sh /usr/bin/
-RUN /usr/bin/install_tiovx_kernels.sh && \
+RUN /usr/bin/install_tiovx_kernels.sh -b 09.01.00.06 && \
     rm -rf /opt/edgeai-tiovx-kernels
 
 # install edgeai-tiovx-modules
 ADD install_tiovx_modules.sh /usr/bin/
-RUN /usr/bin/install_tiovx_modules.sh && \
+RUN /usr/bin/install_tiovx_modules.sh -b 09.01.00.06 && \
     rm -rf /opt/edgeai-tiovx-modules
 
 # install edgeai-gst-plugins
 ADD install_gst_plugins.sh /usr/bin/
-RUN /usr/bin/install_gst_plugins.sh && \
+RUN /usr/bin/install_gst_plugins.sh -b 09.01.00.06 && \
     rm -rf /opt/edgeai-gst-plugins
 
 # install python modules for DL RT
@@ -104,11 +105,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # install ti-gpio-cpp
 ADD install_ti_gpio_libs.sh /usr/bin/
-RUN /usr/bin/install_ti_gpio_libs.sh
+RUN /usr/bin/install_ti_gpio_libs.sh -b 09.01.00.06
 
 # add scripts
 COPY entrypoint_arm64v8.sh /root/entrypoint.sh
 ADD  ros_setup.sh /root/
+ADD  set_aliases.sh /root/
 
 # .profile and .bashrc
 WORKDIR /root
@@ -119,13 +121,18 @@ RUN echo "if [ -n \"$BASH_VERSION\" ]; then"     >  .profile && \
     echo "    fi"                                >> .profile && \
     echo "fi"                                    >> .profile && \
     echo "#!/bin/bash"                           >  .bashrc  && \
-    echo "export PS1=\"${debian_chroot:+($debian_chroot)}\u@j7-docker:\w\$ \"" >> .bashrc
+    echo "export PS1=\"${debian_chroot:+($debian_chroot)}\u@j7-docker:\w\$ \"" >> .bashrc && \
+    echo "source $HOME/set_aliases.sh"                                         >> .bashrc
+
+# add labels
+LABEL TI_IMAGE_SOURCE=arm64v8/ros:humble-perception-jammy
+LABEL EDGEAI_VER=$EDGEAI_VER
 
 # workdir for ROS apps
 ARG PROJECT_HOME=j7ros_home
 ENV WORK_DIR=/root/${PROJECT_HOME}
+WORKDIR ${WORK_DIR}
 ENV ROS_WS=${WORK_DIR}/ros_ws
-WORKDIR ${ROS_WS}
 
 # setup entrypoint
 ENTRYPOINT ["/root/entrypoint.sh"]

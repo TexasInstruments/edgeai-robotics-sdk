@@ -244,10 +244,10 @@ vx_status SDEAPP_init(SDEAPP_Context *appCntxt)
     // Reallocate SDE SL2 for 2M inputs
     if (vxStatus == (vx_status) VX_SUCCESS && status == 0)
     {
-        // Reallocation of SDE SL2 memory is called only when 
+        // Reallocation of SDE SL2 memory is called only when
         // CM_vhwaDmpacSl2Free() succeeds.
-        // If  CM_vhwaDmpacSdeSl2Realloc() fails, we set vxStaus 
-        // to VX_FAILURE to stop 
+        // If  CM_vhwaDmpacSdeSl2Realloc() fails, we set vxStaus
+        // to VX_FAILURE to stop
         status = CM_vhwaDmpacSdeSl2Realloc();
         if (status < 0)
         {
@@ -268,7 +268,7 @@ vx_status SDEAPP_init(SDEAPP_Context *appCntxt)
         }
     }
 
-    // Create graph 
+    // Create graph
     if (vxStatus == (vx_status) VX_SUCCESS)
     {
         appCntxt->vxGraph = vxCreateGraph(appCntxt->vxContext);
@@ -308,11 +308,11 @@ vx_status SDEAPP_init(SDEAPP_Context *appCntxt)
      */
     if (vxStatus == (vx_status) VX_SUCCESS)
     {
-        vxStatus = SDEAPP_init_SDE(appCntxt); 
+        vxStatus = SDEAPP_init_SDE(appCntxt);
     }
 
     /*
-     * 3 Setup SDE Triangulation nodes 
+     * 3 Setup SDE Triangulation nodes
      */
     if (appCntxt->enablePC)
     {
@@ -327,7 +327,7 @@ vx_status SDEAPP_init(SDEAPP_Context *appCntxt)
         appPerfPointSetName(&appCntxt->sdePclPerf, "Stereo GRAPH");
 
         /*
-         * set up the pipeline. 
+         * set up the pipeline.
          */
         vxStatus = SDEAPP_setupPipeline(appCntxt);
 
@@ -374,7 +374,7 @@ vx_status SDEAPP_init(SDEAPP_Context *appCntxt)
     return vxStatus;
 }
 
-vx_status SDEAPP_init_camInfo(SDEAPP_Context *appCntxt, 
+vx_status SDEAPP_init_camInfo(SDEAPP_Context *appCntxt,
                               uint32_t width,
                               uint32_t height,
                               double   f,
@@ -399,7 +399,7 @@ vx_status SDEAPP_init_camInfo(SDEAPP_Context *appCntxt,
         appCntxt->width        = SDEAPP_MAX_IMAGE_WIDTH;
         appCntxt->distCenterX -= appCntxt->hImgOfst;
     }
- 
+
     if (appCntxt->height > SDEAPP_MAX_IMAGE_HEIGHT)
     {
         appCntxt->vImgOfst     = (appCntxt->height - SDEAPP_MAX_IMAGE_HEIGHT) / 2;
@@ -411,9 +411,9 @@ vx_status SDEAPP_init_camInfo(SDEAPP_Context *appCntxt,
 }
 
 
-vx_status SDEAPP_run(SDEAPP_Context *appCntxt, 
-                     const vx_uint8 * inputLeftImage, 
-                     const vx_uint8 * inputRightImage, 
+vx_status SDEAPP_run(SDEAPP_Context *appCntxt,
+                     const vx_uint8 * inputLeftImage,
+                     const vx_uint8 * inputRightImage,
                      vx_uint64 timestamp)
 {
     vx_status vxStatus;
@@ -433,9 +433,9 @@ vx_status SDEAPP_run(SDEAPP_Context *appCntxt,
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         start = GET_TIME();
-        vxStatus = CM_copyData2Image(inputLeftImage, 
-                                     gpDesc->vxInputLeftImage, 
-                                     appCntxt->hImgOfst, 
+        vxStatus = CM_copyData2Image(inputLeftImage,
+                                     gpDesc->vxInputLeftImage,
+                                     appCntxt->hImgOfst,
                                      appCntxt->vImgOfst);
 
         end   = GET_TIME();
@@ -451,9 +451,9 @@ vx_status SDEAPP_run(SDEAPP_Context *appCntxt,
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         start = GET_TIME();
-        vxStatus = CM_copyData2Image(inputRightImage, 
-                                     gpDesc->vxInputRightImage, 
-                                     appCntxt->hImgOfst, 
+        vxStatus = CM_copyData2Image(inputRightImage,
+                                     gpDesc->vxInputRightImage,
+                                     appCntxt->hImgOfst,
                                      appCntxt->vImgOfst);
 
         end   = GET_TIME();

@@ -92,6 +92,10 @@ VisionCnnNode::VisionCnnNode(const rclcpp::NodeOptions &options,
     // launch the publisher threads
     auto pubThread = std::thread([this]{publisherThread();});
     pubThread.detach();
+
+    // register a callback to run at rclcpp::shutdown()
+    rclcpp::on_shutdown(std::bind(&VisionCnnNode::onShutdown, this));
+
 }
 
 void VisionCnnNode::subscriberThread()
@@ -176,6 +180,10 @@ void VisionCnnNode::publisherThread()
     {
         // Create the publisher for the output tensor
         m_outTensorPub = m_imgTrans->advertise(outTensorTopic, latch);
+    }
+    else if (m_taskType == "object_6d_pose_estimation")
+    {
+        m_posePub = this->create_publisher<Pose6D>(outTensorTopic, 1);
     }
     else if (m_taskType == "detection")
     {
@@ -288,6 +296,51 @@ void VisionCnnNode::processCompleteEvtHdlr()
                 m_outTensorPubData.header.stamp = time;
                 m_outTensorPub.publish(m_outTensorPubData);
             }
+            else if (m_taskType == "object_6d_pose_estimation")
+            {
+                float          *data;
+                Pose6D          pose;
+
+                data              = reinterpret_cast<float *>(m_outTensorPubData.data.data());
+                pose.header.stamp = time;
+
+                pose.img_width = static_cast<int32_t>(*data++);
+                pose.img_height = static_cast<int32_t>(*data++);
+
+                pose.num_objects  = static_cast<int32_t>(*data++);
+                pose.bounding_boxes.assign(pose.num_objects, BoundingBox2D{});
+                pose.transform_matrix.assign(pose.num_objects, Transform{});
+
+
+                for (int32_t i = 0; i < pose.num_objects; i++)
+                {
+
+                    auto &box = pose.bounding_boxes[i];
+                    auto &mat = pose.transform_matrix[i];
+
+                    box.xmin       = static_cast<int32_t>(*data++);
+                    box.ymin       = static_cast<int32_t>(*data++);
+                    box.xmax       = static_cast<int32_t>(*data++);
+                    box.ymax       = static_cast<int32_t>(*data++);
+                    box.confidence = *data++;
+                    box.label_id   = static_cast<int32_t>(*data++);
+
+                    mat.rot1_x = *data++;
+                    mat.rot1_y = *data++;
+                    mat.rot1_z = *data++;
+
+                    mat.rot2_x = *data++;
+                    mat.rot2_y = *data++;
+                    mat.rot2_z = *data++;
+
+                    mat.trans_x = *data++;
+                    mat.trans_y = *data++;
+                    mat.trans_z = *data;
+
+                }
+
+                m_posePub->publish(pose);
+            }
             else // m_taskType == "detection"
             {
                 float          *data;
@@ -341,6 +394,7 @@ void VisionCnnNode::readParams()
     std::string                     str;
     bool                            status;
     int32_t                         tmp;
+    float                           thres;
 
     /* Get LUT file path information. */
     status = get_parameter("lut_file_path", str);
@@ -365,6 +419,7 @@ void VisionCnnNode::readParams()
     }
 
     snprintf(m_cntxt->dlModelPath, VISION_CNN_MAX_LINE_LEN-1, "%s", str.c_str());
+    RCLCPP_INFO(get_logger(), "dl_model_path: %s", m_cntxt->dlModelPath);
 
     /* Get input image width information. */
     get_parameter_or("width", m_cntxt->inputImageWidth, VISION_CNN_DEFAULT_IMAGE_WIDTH);
@@ -398,6 +453,10 @@ void VisionCnnNode::readParams()
     /* Get enable ldc node flag */
     get_parameter_or("enable_ldc_node", tmp, 1);
     m_cntxt->enableLdcNode = (bool)tmp;
+
+    /* Get vizThreshold flag */
+    get_parameter_or("detVizThreshold", thres, 0.5f);
+    m_cntxt->detVizThreshold = (float)thres;
 
     if (m_cntxt->enableLdcNode == 0 && m_cntxt->inputImageFormat != VX_DF_IMAGE_NV12)
     {
@@ -482,10 +541,8 @@ vx_status VisionCnnNode::init()
     return vxStatus;
 }
 
-void VisionCnnNode::sigHandler(int32_t  sig)
+void VisionCnnNode::onShutdown()
 {
-    (void)sig;
-
     if (m_cntxt)
     {
         VISION_CNN_intSigHandler(m_cntxt);

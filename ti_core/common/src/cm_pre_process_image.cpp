@@ -82,9 +82,9 @@ namespace ti_core_common
  *                      plane date and yuvImage[1] will point to the UV plane
  *                      data.
  *
- * \param [in] mean mean value of RGB channels 
+ * \param [in] mean mean value of RGB channels
  *
- * \param [in] scale standard deviation of RGB channels 
+ * \param [in] scale standard deviation of RGB channels
  *
  * \param [in] width Width of the image in pixels.
  *
@@ -104,7 +104,9 @@ int32_t CM_VISION_CNN_convertYUV2RGB(OutputT           *rgbImage,
                                      std::vector<float> scale,
                                      int32_t            width,
                                      int32_t            height,
-                                     const std::string  dataLayout)
+                                     const std::string  dataLayout,
+                                     bool               reverseChannel
+                                    )
 {
     const InputT   *srcPtrY;
     const InputT   *srcPtrUV;
@@ -179,10 +181,18 @@ int32_t CM_VISION_CNN_convertYUV2RGB(OutputT           *rgbImage,
                 g = (float)clip3((298*y - 100*cb - 208*cr + 128) >> 8, 0, 255);
                 b = (float)clip3((298*y + 516*cb + 128) >> 8, 0, 255);
 
-                //==> TODO: RGB or BGR?. use "reverse_channels" field
-                *dstPtrR++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
-                *dstPtrG++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
-                *dstPtrB++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                if (!reverseChannel)
+                {
+                    *dstPtrR++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
+                    *dstPtrG++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
+                    *dstPtrB++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                }
+                else
+                {
+                    *dstPtrR++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                    *dstPtrG++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
+                    *dstPtrB++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
+                }
             }
         }
     }
@@ -207,10 +217,18 @@ int32_t CM_VISION_CNN_convertYUV2RGB(OutputT           *rgbImage,
                 g = (float)clip3((298*y - 100*cb - 208*cr + 128) >> 8, 0, 255);
                 b = (float)clip3((298*y + 516*cb + 128) >> 8, 0, 255);
 
-                //==> TODO: RGB or BGR?. use "reverse_channels" field
-                *dstPtr++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
-                *dstPtr++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
-                *dstPtr++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                if (!reverseChannel)
+                {
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                }
+                else
+                {
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(b, meanB, scaleB));
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(g, meanG, scaleG));
+                    *dstPtr++ = static_cast<OutputT>(CM_normalize(r, meanR, scaleR));
+                }
             }
         }
     }
@@ -244,7 +262,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_UInt8)
     {
@@ -256,7 +276,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_Int16)
     {
@@ -268,7 +290,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_UInt16)
     {
@@ -280,7 +304,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_Int32)
     {
@@ -292,7 +318,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_UInt32)
     {
@@ -304,7 +332,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_Int64)
     {
@@ -316,7 +346,9 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel
+                                     );
     }
     else if (tensor->type == DlInferType_Float32)
     {
@@ -328,7 +360,8 @@ int32_t CmPreprocessImage::operator()(const void **inData, VecDlTensorPtr &outDa
                                      m_config.scale,
                                      m_config.resizeWidth,
                                      m_config.resizeHeight,
-                                     m_config.dataLayout);
+                                     m_config.dataLayout,
+                                     m_config.reverseChannel);
     }
     else
     {
@@ -352,4 +385,3 @@ CmPreprocessImage::~CmPreprocessImage()
 {
 }
 } // namespace ti_core_common
-

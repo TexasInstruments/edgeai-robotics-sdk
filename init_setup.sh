@@ -31,7 +31,7 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Release tag info of the current release
-GIT_TAG="REL.09.00.00"
+GIT_TAG="REL.09.01.00"
 if [ "$#" -eq 1 ]; then
     GIT_TAG=$1
 fi
@@ -78,7 +78,7 @@ function git_checkout_with_tag {
     fi
 }
 
-# "git pull"" to the current folder
+# "git pull" to the current folder
 function git_pull_to_current_folder {
     git init
     git remote add origin $GIT_REPO
@@ -110,14 +110,12 @@ if [[ -f "$SDK_DIR/scripts/install_gscam.sh" ]]; then
 fi
 
 # Install TI mmWave radar driver node
-if [[ "$ARCH" == "aarch64" ]]; then
-    if [[ -f "$SDK_DIR/scripts/install_mmwave_rospkg.sh" ]]; then
-        bash $SDK_DIR/scripts/install_mmwave_rospkg.sh
-    fi
+if [[ -f "$SDK_DIR/scripts/install_mmwave_rospkg.sh" ]]; then
+    bash $SDK_DIR/scripts/install_mmwave_rospkg.sh 2
 fi
 
 # Setup $WORK_DIR
-mkdir -p $ROS_WS
+mkdir -p $WORK_DIR
 cd $WORK_DIR
 ln -sf $SDK_DIR/docker/Makefile $WORK_DIR/Makefile
 if [[ "$ARCH" == "aarch64" ]]; then

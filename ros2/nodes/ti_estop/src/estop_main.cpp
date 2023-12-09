@@ -62,20 +62,7 @@
 
 #include <signal.h>
 #include <rclcpp/rclcpp.hpp>
-
 #include <estop_node.h>
-
-static std::shared_ptr<EStopNode>  eStopNode = nullptr;
-
-static void sigHandler(int32_t sig)
-{
-    if (eStopNode)
-    {
-        eStopNode->sigHandler(sig);
-    }
-
-    rclcpp::shutdown();
-}
 
 int main(int argc, char **argv)
 {
@@ -84,12 +71,7 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
-
-        signal(SIGINT, sigHandler);
 
         /* Allow any parameter name to be set on the node without first being
          * declared. Otherwise, setting an undeclared parameter will raise an
@@ -122,9 +104,11 @@ int main(int argc, char **argv)
          */
         nodeOptions.use_intra_process_comms(false);
 
-        eStopNode = std::make_shared<EStopNode>(nodeOptions);
+        auto eStopNode = std::make_shared<EStopNode>(nodeOptions);
 
         rclcpp::spin(eStopNode);
+
+        rclcpp::shutdown();
 
         return EXIT_SUCCESS;
     }

@@ -11,6 +11,15 @@ from launch.substitutions import LaunchConfiguration
 # Folder that contains camera params
 config_dir = "/opt/robotics_sdk/ros1/drivers/zed_capture/config/"
 
+# path to the DL model
+soc = os.getenv('SOC')
+if soc in ['j721e', 'j721s2', 'j784s4']:
+    dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+elif soc in ['am62a']:
+    dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+else:
+    print('{} not supported'.format(soc))
+
 def get_launch_file(pkg, file_name):
     pkg_dir = get_package_share_directory(pkg)
     return os.path.join(pkg_dir, 'launch', file_name)
@@ -29,6 +38,10 @@ def generate_launch_description():
 
     exportPerfStats_arg = DeclareLaunchArgument(
         "exportPerfStats", default_value=TextSubstitution(text="0")
+    )
+
+    dl_model_path_arg = DeclareLaunchArgument(
+        "dl_model_path", default_value=TextSubstitution(text=dl_model_path)
     )
 
     detVizThreshold_arg = DeclareLaunchArgument(
@@ -56,6 +69,9 @@ def generate_launch_description():
             "cam_id": LaunchConfiguration('cam_id'),
             "zed_sn_str": LaunchConfiguration('zed_sn'),
             'topic_ns_right': 'camera',
+            "exportPerfStats": LaunchConfiguration('exportPerfStats'),
+            "dl_model_path": LaunchConfiguration('dl_model_path'),
+            "detVizThreshold": LaunchConfiguration('detVizThreshold'),
         }.items()
     )
 
@@ -63,6 +79,7 @@ def generate_launch_description():
     ld.add_action(cam_id_arg)
     ld.add_action(zed_sn_arg)
     ld.add_action(exportPerfStats_arg)
+    ld.add_action(dl_model_path_arg)
     ld.add_action(detVizThreshold_arg)
     ld.add_action(lut_file_path_arg)
     ld.add_action(cnn_launch)

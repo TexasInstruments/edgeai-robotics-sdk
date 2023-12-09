@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+## Release 9.1.0 (2023-12-08)
+
+- The vision CNN chain (`ti_vision_cnn`) now includes support for 6D pose estimation. This enhancement is particularly beneficial for applications such as automated bin picking.
+- The 3D perception demo application (`ti_objdet_range`), which utilizes CNN object detection and stereo vision, has been successfully migrated to ROS 2.
+- The ROS node for the radar driver, which is compatible with TI mmWave radar devices (including the IWR6843), has been successfully migrated to ROS 2.
+- Added support for RPi headers and GPIO libraries for SK-AM62A (as part of the Processor SDK Linux for Edge AI).
+- For convenience, the SDK Docker container comes pre-configured with a variety of handy aliases. Details about these aliases can be found in `$SDK_DIR/docker/set_aliases.sh`.
+
 ## Release 9.0.0 (2023-08-11)
 
 - Added support for SK-AM62A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_00_00/AM62A/docs/). The Robotics SDK now supports four TI Processor platforms: SK-AM62A, SK-TDA4VM, SK_AM68A, and SK-AM69A.

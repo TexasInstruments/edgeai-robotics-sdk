@@ -1,4 +1,4 @@
-# input foramt
+# input format
 # 0 - VX_DF_IMAGE_U8
 # 1 - VX_DF_IMAGE_NV12
 # 2 - VX_DF_IMAGE_UYVY
@@ -8,8 +8,8 @@ input_format:             2
 # LDC LUT definition
 lut_file_path:            $(find ti_vl)/ldc_lut/zero_768x384_LUT.bin
 
-# location of DL model
-dl_model_path:            $(env TI_DATA_PATH)/visual_localization_model/dkaze_768x384_inference_tvm-dlr
+# path to the model
+dl_model_path:            /opt/model_zoo/visloc-7500_onnxrt_carla_edgeai-tv_tiad_dkaze_carla_768x384_model_onnx
 
 # location of top-view image
 top_view_img_path:        $(env TI_DATA_PATH)/visual_localization_data/map/topview_gt_0532.yuv

@@ -10,7 +10,7 @@ This `ti_vision_cnn` node is a versatile deep-learning (DL) inference ROS node t
 <figcaption>Figure 1. Semantic segmentation demo: block diagram</figcaption>
 <br />
 
-## Processing Blocks
+## System Description
 
 Referring to Figure 1, below are the descriptions of the processing blocks implemented in this application:
 

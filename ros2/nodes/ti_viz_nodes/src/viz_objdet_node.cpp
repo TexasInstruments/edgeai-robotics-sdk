@@ -63,6 +63,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 #include <sensor_msgs/msg/image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <common_msgs/msg/detection2_d.hpp>
@@ -73,6 +74,7 @@
 using namespace sensor_msgs::msg;
 using namespace common_msgs::msg;
 using namespace message_filters;
+using namespace message_filters::sync_policies;
 using namespace cv;
 
 using std::placeholders::_1;
@@ -81,7 +83,9 @@ using std::placeholders::_2;
 static void sigHandler(int32_t sig)
 {
     (void) sig;
+
     rclcpp::shutdown();
+    exit(EXIT_SUCCESS);
 }
 
 static cv::Mat overlayBoundingBox(cv::Mat &img,
@@ -115,7 +119,7 @@ static cv::Mat overlayBoundingBox(cv::Mat &img,
 namespace ti_ros2
 {
     /**
-     * @brief  VizObjDet ROS warpper class
+     * @brief  VizObjDet ROS wrapper class
      */
 
     class VizObjDet: public rclcpp::Node
@@ -133,6 +137,7 @@ namespace ti_ros2
                 std::string rectImgTopic;
                 std::string tensorTopic;
                 std::string odMapImgTopic;
+                bool        useApproxTimeSync;
 
                 // input topics
                 get_parameter_or("rectified_image_topic",   rectImgTopic, std::string(""));
@@ -141,13 +146,28 @@ namespace ti_ros2
                 // output topics
                 get_parameter_or("vision_cnn_image_topic", odMapImgTopic, std::string(""));
 
+                // time sync policy
+                get_parameter_or("approx_time_sync", useApproxTimeSync, false);
+
                 m_odMapImgPub = this->create_publisher<Image>(odMapImgTopic, 10);
 
                 message_filters::Subscriber<Detection2D> tensorSub(this, tensorTopic);
                 message_filters::Subscriber<Image> rectImgSub(this, rectImgTopic);
 
-                TimeSynchronizer<Detection2D, Image> sync(tensorSub, rectImgSub, 10);
-                sync.registerCallback(std::bind(&VizObjDet::callback_vizObjDet, this, _1, _2));
+
+                TimeSynchronizer<Detection2D, Image> exactTimeSync(tensorSub, rectImgSub, 10);
+
+                typedef ApproximateTime<Detection2D, Image> approxPloicy;
+                Synchronizer<approxPloicy> approxTimeSync(approxPloicy(10), tensorSub, rectImgSub);
+
+                if (!useApproxTimeSync)
+                {
+                    exactTimeSync.registerCallback(std::bind(&VizObjDet::callback_vizObjDet, this, _1, _2));
+                }
+                else
+                {
+                    approxTimeSync.registerCallback(std::bind(&VizObjDet::callback_vizObjDet, this, _1, _2));
+                }
 
                 rclcpp::spin(static_cast<rclcpp::Node::SharedPtr>(this));
             }
@@ -166,13 +186,29 @@ namespace ti_ros2
                 int32_t box[4];
                 int32_t class_id;
                 int32_t num_objects = detMsg->num_objects;
+                int32_t in_width = detMsg->img_width;
+                int32_t in_height = detMsg->img_height;
+                int32_t out_width = imagePtr->width;
+                int32_t out_height = imagePtr->height;
+                float   scale_x = 1.0f;
+                float   scale_y = 1.0f;
+
+                if (in_width > 0)
+                {
+                    scale_x = static_cast<float>(out_width) / in_width;
+                }
+
+                if (in_height > 0)
+                {
+                    scale_y = static_cast<float>(out_height) / in_height;
+                }
 
                 for (int32_t i = 0; i < num_objects; i++)
                 {
-                    box[0] = detMsg->bounding_boxes[i].xmin;
-                    box[1] = detMsg->bounding_boxes[i].ymin;
-                    box[2] = detMsg->bounding_boxes[i].xmax;
-                    box[3] = detMsg->bounding_boxes[i].ymax;
+                    box[0] = detMsg->bounding_boxes[i].xmin * scale_x;
+                    box[1] = detMsg->bounding_boxes[i].ymin * scale_y;
+                    box[2] = detMsg->bounding_boxes[i].xmax * scale_x;
+                    box[3] = detMsg->bounding_boxes[i].ymax * scale_y;
                     class_id = detMsg->bounding_boxes[i].label_id;
 
                     overlayBoundingBox(cv_outImgPtr->image, box, class_id);
@@ -191,8 +227,6 @@ namespace ti_ros2
     };
 }
 
-static ti_ros2::VizObjDet  *objDetViz = nullptr;
-
 /**
  * Main
  */
@@ -203,9 +237,6 @@ int main(int argc, char **argv)
         rclcpp::InitOptions initOptions{};
         rclcpp::NodeOptions nodeOptions{};
 
-        /* Prevent the RCLCPP signal handler binding. */
-        initOptions.shutdown_on_signal = false;
-
         rclcpp::init(argc, argv, initOptions);
 
         signal(SIGINT, sigHandler);
@@ -214,7 +245,7 @@ int main(int argc, char **argv)
         nodeOptions.automatically_declare_parameters_from_overrides(true);
         nodeOptions.use_intra_process_comms(false);
 
-        objDetViz = new ti_ros2::VizObjDet("viz_objdet", nodeOptions);
+        auto objDetViz = std::make_shared<ti_ros2::VizObjDet>("viz_objdet", nodeOptions);
 
         return EXIT_SUCCESS;
     }

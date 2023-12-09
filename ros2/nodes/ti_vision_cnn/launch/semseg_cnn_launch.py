@@ -20,6 +20,8 @@ def finalize_node(context, *args, **kwargs):
     params = [
         os.path.join(get_package_share_directory('ti_vision_cnn'),'config','params.yaml'),
         {
+            "width":                    1280,
+            "height":                   720,
             "image_format":             image_format,
             "lut_file_path":            lut_file_path,
             "enable_ldc_node":          enable_ldc_node,

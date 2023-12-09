@@ -24,5 +24,13 @@ if (${BUILD_VISUALIZATION_NODES})
     set(VIZ_ESTOP_SRCS src/viz_estop_node.cpp)
     build_node(viz_estop VIZ_ESTOP_SRCS)
 
+    # viz_objdet_range_node
+    set(VIZ_OBJDET_RANGE_SRCS src/viz_objdet_range_node.cpp)
+    build_node(viz_objdet_range VIZ_OBJDET_RANGE_SRCS)
+
+    # viz_pose6d
+    set(VIZ_POSE6D_SRCS src/viz_pose6d_node.cpp)
+    build_node(viz_pose6d VIZ_POSE6D_SRCS)
+
     ament_package()
 endif()

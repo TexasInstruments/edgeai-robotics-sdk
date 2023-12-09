@@ -88,27 +88,27 @@
 /**
  * \defgroup group_ticore_visloc CNN based visual localization
  *
- * \brief It performs the ego vehicle localization that estimates an ego vehicle's 6-DOF 
- *        (Degree of Freedom) pose from calibrated camera images using a 3D sparse map 
- *        created offline. The 3D sparse map consists of a set of key points with (X, Y, Z) 
- *        positions and 64-dimensional descriptors. To localize the ego vehicle's pose, 
- *        key points are detected with descriptors from the input camera image and 
- *        these key points are matched against the key points in the map. The ego vehicle's 
+ * \brief It performs the ego vehicle localization that estimates an ego vehicle's 6-DOF
+ *        (Degree of Freedom) pose from calibrated camera images using a 3D sparse map
+ *        created offline. The 3D sparse map consists of a set of key points with (X, Y, Z)
+ *        positions and 64-dimensional descriptors. To localize the ego vehicle's pose,
+ *        key points are detected with descriptors from the input camera image and
+ *        these key points are matched against the key points in the map. The ego vehicle's
  *        pose is estimated using the Perspective-n-Point (PnP) approach. The overall data
  *        flow is descriedb in the figure below: <br>
- * 
+ *
  *        \image html visloc_demo_block_diagram.svg "CNN based visual localization" width=1000
- * 
- *        Key-point descriptor plays critical role in the visual localization. A deep 
- *        neural network is used to learn hand computed feature descriptor like KAZE in 
- *        a supervised manner. We refer such descriptor as DKAZE. The DAKZE network was used 
- *        to create key features and their descriptors for the sparse 3D map and is also 
- *        used to detect key feature points with descriptors for every input image in 
- *        the localization process.  For more details about the DKAZE network and the 
- *        localization process, refer to 
+ *
+ *        Key-point descriptor plays critical role in the visual localization. A deep
+ *        neural network is used to learn hand computed feature descriptor like KAZE in
+ *        a supervised manner. We refer such descriptor as DKAZE. The DAKZE network was used
+ *        to create key features and their descriptors for the sparse 3D map and is also
+ *        used to detect key feature points with descriptors for every input image in
+ *        the localization process.  For more details about the DKAZE network and the
+ *        localization process, refer to
  *        <a href="https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/group_apps_dl_demos_app_tidl_vl.html">
  *        Vision Apps User Guide</a>. <br>
- * 
+ *
  * \ingroup  group_ticore_apps
  *
  */
@@ -184,13 +184,13 @@ extern "C" {
 #define VISLOC_NUM_MODEL_OUTPUT           (2U)
 
 /**
- * \brief Maximum output tensor dimension 
+ * \brief Maximum output tensor dimension
  * \ingroup group_ticore_visloc
  */
 #define VISLOC_MAX_OUT_TENSOR_DIMS        (4U)
 
 /**
- * \brief Number of graph parameters 
+ * \brief Number of graph parameters
  * \ingroup group_ticore_visloc
  */
 #define VISLOC_NUM_GRAPH_PARAMS           (7U)
@@ -235,7 +235,7 @@ extern "C" {
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 /**
- * \brief Graph parameters 
+ * \brief Graph parameters
  * \ingroup group_ticore_visloc
  */
 struct VISLOC_graphParams
@@ -249,7 +249,7 @@ struct VISLOC_graphParams
     /** Graph parameter 2 */
     vx_image                vxScalerOut;
 
-    /** Graph parameter 3, 4: 
+    /** Graph parameter 3, 4:
      * Output Tensor from DLR output buffer
      */
     vx_tensor               vxOutTensor[2];
@@ -274,7 +274,7 @@ using VISLOC_Queue =
      MultiThreadQ<VISLOC_graphParams>;
 
 /**
- * \brief Application context parameters 
+ * \brief Application context parameters
  * \ingroup group_ticore_visloc
  */
 struct VISLOC_Context
@@ -507,13 +507,13 @@ struct VISLOC_Context
 };
 
 /**
- * \brief Initialize app, e.g. create graph, load kernels, 
+ * \brief Initialize app, e.g. create graph, load kernels,
  *        initialize SemSeg nodes, setup pipelines, etc
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_init(VISLOC_Context *appCntxt);
@@ -523,31 +523,31 @@ vx_status VISLOC_init(VISLOC_Context *appCntxt);
  * \brief Reset app's parameters
  *
  * \param [in] appCntxt APP context
- * 
- * \return 
- * 
+ *
+ * \return
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_reset(VISLOC_Context * appCntxt);
 
 /**
- * \brief Function to initialize Visual Localization nodes 
+ * \brief Function to initialize Visual Localization nodes
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_init_VL(VISLOC_Context *appCntxt);
 
 /**
- * \brief Function to de-initialize Visual Localization nodes 
+ * \brief Function to de-initialize Visual Localization nodes
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_deinit_VL(VISLOC_Context *appCntxt);
@@ -556,11 +556,11 @@ vx_status VISLOC_deinit_VL(VISLOC_Context *appCntxt);
  * \brief Function to set up a graph pipeline
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
  *
  * \ingroup group_ticore_visloc
- */ 
+ */
 vx_status VISLOC_setupPipeline(VISLOC_Context * appCntxt);
 
 
@@ -568,13 +568,13 @@ vx_status VISLOC_setupPipeline(VISLOC_Context * appCntxt);
  * \brief Run a graph for the given input
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] inputImage input image
- * 
+ *
  * \param [in] timestamp timeStamp of input image to be processed
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_run(VISLOC_Context       *appCntxt,
@@ -588,7 +588,7 @@ vx_status VISLOC_run(VISLOC_Context       *appCntxt,
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_printStats(VISLOC_Context * appCntxt);
@@ -597,13 +597,13 @@ void      VISLOC_printStats(VISLOC_Context * appCntxt);
  * \brief Function to export the performance statistics to a file.
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] fp file to export
- * 
+ *
  * \param [in] exportAll flag to export all statistics
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_exportStats(VISLOC_Context * appCntxt, FILE *fp, bool exportAll);
@@ -615,7 +615,7 @@ vx_status VISLOC_exportStats(VISLOC_Context * appCntxt, FILE *fp, bool exportAll
  * \param [in] appCntxt APP context
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_waitGraph(VISLOC_Context * appCntxt);
@@ -650,7 +650,7 @@ vx_status VISLOC_processEvent(VISLOC_Context * appCntxt, vx_event_t * event);
  *
  * \ingroup group_ticore_visloc
  */
-vx_status VISLOC_process(VISLOC_Context     * appCntxt, 
+vx_status VISLOC_process(VISLOC_Context     * appCntxt,
                          VISLOC_graphParams * gpDesc,
                          uint64_t             timestamp);
 
@@ -661,7 +661,7 @@ vx_status VISLOC_process(VISLOC_Context     * appCntxt,
  *        VISLOC_releaseOutBuff() in between, then the same output
  *        is returned.
  *
- *        Once the graph execution is complete, the output buffer is stored in 
+ *        Once the graph execution is complete, the output buffer is stored in
  *        a queue for the use by the calling application. The caller can use
  *        this API to get a reference to the input/output image pair for post
  *        processing. One the caller is done with the input/output pair, a call
@@ -678,7 +678,7 @@ vx_status VISLOC_process(VISLOC_Context     * appCntxt,
  *              corresponding to the 'inputImage'.
  *
  * \param [out] outputPose Reference to the output pose matrix from the graph.
- * 
+ *
  * \param [out] timestamp Timestamp of inputImage
  *
  * \return VX_SUCCESS on success
@@ -692,13 +692,13 @@ vx_status VISLOC_getOutBuff(VISLOC_Context   * appCntxt,
                             vx_uint64        * timestamp);
 
 /**
- * \brief Function to release buffer in the output queue by moving 
+ * \brief Function to release buffer in the output queue by moving
  *        the buffer to the free queue
  *
  * \param [in] appCntxt APP context
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 vx_status VISLOC_releaseOutBuff(VISLOC_Context * appCntxt);
@@ -707,7 +707,7 @@ vx_status VISLOC_releaseOutBuff(VISLOC_Context * appCntxt);
  * \brief Function to convert the scaler output to RGB
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] vxScalerOut Scaler (MSC) output image
  *
  * \param [out] inputTensorVec A vector of input tensors
@@ -715,7 +715,7 @@ vx_status VISLOC_releaseOutBuff(VISLOC_Context * appCntxt);
  * \return VX_SUCCESS on success
  *
  */
-vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt, 
+vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt,
                             vx_image             vxScalerOut,
                             VecDlTensorPtr     * inputTensorVec);
 
@@ -723,11 +723,11 @@ vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt,
  * \brief Function to convert Score output to tensor
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] outputTensorVec A vector of output tensors
- * 
+ *
  * \param [out] vxOutTensor tensor object created from dlrOutputBuff
- * 
+ *
  * \return VX_SUCCESS on success
  *
  * \ingroup group_ticore_visloc
@@ -735,17 +735,17 @@ vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt,
 vx_status VISLOC_createScoreOutTensor(VISLOC_Context     * appCntxt,
                                       VecDlTensorPtr     & outputTensorVec,
                                       vx_tensor            vxOutTensor);
-                                      
+
 
 /**
  * \brief Function to convert Descriptor output to tensor
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] outputTensorVec A vector of output tensors
- * 
+ *
  * \param [out] vxOutTensor tensor object created from dlrOutputBuff
- * 
+ *
  * \return VX_SUCCESS on success
  *
  * \ingroup group_ticore_visloc
@@ -845,7 +845,7 @@ vx_status VISLOC_getOutputDesc(VISLOC_Context       *appCntxt,
 
 
 /**
- * \brief Function to release the buffer from the output queue. 
+ * \brief Function to release the buffer from the output queue.
  *        The release output buffer is moved to the input queue.
  *
  * \param [in] appCntxt APP context
@@ -860,7 +860,7 @@ vx_status VISLOC_popOutputDesc(VISLOC_Context       *appCntxt,
                                VISLOC_graphParams  **gpDesc);
 
 /**
- * \brief Function to add the buffer to the free input queue. 
+ * \brief Function to add the buffer to the free input queue.
  *
  * \param [in] appCntxt APP context
  *
@@ -872,14 +872,14 @@ void      VISLOC_enqueInputDesc(VISLOC_Context      *appCntxt,
                                 VISLOC_graphParams  *gpDesc);
 
 /**
- * \brief Function to add the buffer to the pre-processing input queue. 
+ * \brief Function to add the buffer to the pre-processing input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_enquePreprocInputDesc(VISLOC_Context      *appCntxt,
@@ -887,28 +887,28 @@ void      VISLOC_enquePreprocInputDesc(VISLOC_Context      *appCntxt,
 
 
 /**
- * \brief Function to add the buffer to the DLR input queue. 
+ * \brief Function to add the buffer to the DLR input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_enqueDlInferInputDesc(VISLOC_Context      *appCntxt,
                                        VISLOC_graphParams  *gpDesc);
 
 /**
- * \brief Function to add the buffer to the visual localization input queue. 
+ * \brief Function to add the buffer to the visual localization input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_enqueVisLocInputDesc(VISLOC_Context      *appCntxt,
@@ -916,14 +916,14 @@ void      VISLOC_enqueVisLocInputDesc(VISLOC_Context      *appCntxt,
 
 
 /**
- * \brief Function to add the buffer to the output queue. 
+ * \brief Function to add the buffer to the output queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void      VISLOC_enqueOutputDesc(VISLOC_Context      *appCntxt,
@@ -935,9 +935,9 @@ void      VISLOC_enqueOutputDesc(VISLOC_Context      *appCntxt,
  * \brief Launch input data thread, event handler thread and DLR thread
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void VISLOC_launchProcThreads(VISLOC_Context *appCntxt);
@@ -946,20 +946,20 @@ void VISLOC_launchProcThreads(VISLOC_Context *appCntxt);
  * \brief Handle intercept signal (Ctrl+C) to exit
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void VISLOC_intSigHandler(VISLOC_Context *appCntxt);
 
 /**
- * \brief Clean up all the resources before exiting 
+ * \brief Clean up all the resources before exiting
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return
- * 
+ *
  * \ingroup group_ticore_visloc
  */
 void VISLOC_cleanupHdlr(VISLOC_Context *appCntxt);
@@ -968,9 +968,9 @@ void VISLOC_cleanupHdlr(VISLOC_Context *appCntxt);
 /**
  * \brief Function to extract pose data from an openVX matrix object.
  *
- * \param [out] outPose Output position data 
+ * \param [out] outPose Output position data
  *
- * \param [out] outQuaternion Output quaternion data 
+ * \param [out] outQuaternion Output quaternion data
  *
  * \param [in]  pose OpenVX Matrix object
  *

@@ -64,9 +64,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-
 #include <cv_bridge/cv_bridge.h>
-
 #include <visloc_node.h>
 #include <visloc.h>
 
@@ -97,6 +95,9 @@ VisLocNode::VisLocNode(const rclcpp::NodeOptions &options,
     // launch the publisher threads
     auto pubThread = std::thread([this]{publisherThread();});
     pubThread.detach();
+
+    // register a callback to run at rclcpp::shutdown()
+    rclcpp::on_shutdown(std::bind(&VisLocNode::onShutdown, this));
 }
 
 void VisLocNode::setupInputImgSubscribers()
@@ -259,11 +260,11 @@ void VisLocNode::processCompleteEvtHdlr()
 
     RCLCPP_INFO(this->get_logger(), "%s Launched.", __FUNCTION__);
 
-    // Set out pose topic's header 
+    // Set out pose topic's header
     // frame_id is same as m_mapPubData frame id
     outPose.header.frame_id = "map";
 
-    // Read map file 
+    // Read map file
     fp = fopen(m_cntxt->poseCalcCreateParams.inputMapFeatPtPath,"rb");
 
     if (fp == NULL)
@@ -342,18 +343,18 @@ void VisLocNode::processCompleteEvtHdlr()
             // Publish pose data
             outPose.header.stamp    = time;
             outPose.header.frame_id = "map";
-            
+
             outPose.pose.position.x    = m_outPose[0];
-            outPose.pose.position.y    = m_outPose[1];  
+            outPose.pose.position.y    = m_outPose[1];
             outPose.pose.position.z    = m_outPose[2];
             outPose.pose.orientation.x = m_outQuaternion[0];
-            outPose.pose.orientation.y = m_outQuaternion[1]; 
+            outPose.pose.orientation.y = m_outQuaternion[1];
             outPose.pose.orientation.z = m_outQuaternion[2];
             outPose.pose.orientation.w = m_outQuaternion[3];
 
             m_posePub->publish(outPose);
 
-            // Publish map data 
+            // Publish map data
             m_mapPubData.header.stamp = time;
             m_mapPub->publish(m_mapPubData);
         }
@@ -432,6 +433,7 @@ void VisLocNode::readParams()
     }
 
     snprintf(m_cntxt->dlModelPath, CM_MAX_FILE_LEN-1, "%s", str.c_str());
+    RCLCPP_INFO(get_logger(), "dl_model_path: %s", m_cntxt->dlModelPath);
 
     /* Get top-down view image path. */
     status = get_parameter("top_view_img_path", str);
@@ -515,10 +517,10 @@ void VisLocNode::readParams()
     get_parameter_or("max_map_feat", m_cntxt->poseCalcCreateParams.maxMapFeat, 5000);
 
     /* Get max number of map features */
-    get_parameter_or("max_frame_feat", m_cntxt->poseCalcCreateParams.maxFrameFeat, 1000); 
+    get_parameter_or("max_frame_feat", m_cntxt->poseCalcCreateParams.maxFrameFeat, 1000);
 
     /* Get score threshold for picking good points */
-    get_parameter_or("score_th", m_cntxt->poseCalcCreateParams.scoreTh, 128);  
+    get_parameter_or("score_th", m_cntxt->poseCalcCreateParams.scoreTh, 128);
 
 
     /* Get initial pose estimate used in campling the map data */
@@ -550,6 +552,7 @@ void VisLocNode::readParams()
     /* Get pipeline depth information. */
     get_parameter_or("pipeline_depth", tmp, 1);
     m_cntxt->pipelineDepth = (uint8_t)tmp;
+    RCLCPP_INFO(get_logger(), "dl_model_path: %d", m_cntxt->pipelineDepth);
 
     /* Get graph export flag information. */
     get_parameter_or("exportGraph", tmp, 0);
@@ -613,10 +616,8 @@ vx_status VisLocNode::init()
     return vxStatus;
 }
 
-void VisLocNode::sigHandler(int32_t  sig)
+void VisLocNode::onShutdown()
 {
-    (void)sig;
-
     if (m_cntxt)
     {
         VISLOC_intSigHandler(m_cntxt);

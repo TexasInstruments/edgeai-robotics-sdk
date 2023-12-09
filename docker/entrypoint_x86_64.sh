@@ -42,5 +42,4 @@ else
     echo "Invalid ROS_VERSION"
 fi
 
-
 exec "$@"

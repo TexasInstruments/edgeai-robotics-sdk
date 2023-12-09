@@ -73,6 +73,8 @@
 #include <sensor_msgs/msg/image.h>
 
 #include <common_msgs/msg/detection2_d.hpp>
+#include <common_msgs/msg/pose6_d.hpp>
+
 
 #include <vision_cnn.h>
 
@@ -90,12 +92,13 @@ class VisionCnnNode: public rclcpp::Node
     using ImgTrans = image_transport::ImageTransport;
     using SubCon   = message_filters::Connection;
     using DetPub   = rclcpp::Publisher<Detection2D>::SharedPtr;
+    using PosePub  = rclcpp::Publisher<Pose6D>::SharedPtr;
 
     public:
         VisionCnnNode(const rclcpp::NodeOptions    &options,
                       const std::string            &name="vision_cnn");
         ~VisionCnnNode();
-        void sigHandler(int32_t  sig);
+        void onShutdown();
 
     private:
         vx_status init();
@@ -113,6 +116,7 @@ class VisionCnnNode: public rclcpp::Node
         ImgPub                  m_rectImgPub;
         ImgPub                  m_outTensorPub;
         DetPub                  m_odPub;
+        PosePub                 m_posePub;
         uint32_t                m_inputImgWidth;
         uint32_t                m_inputImgHeight;
         uint32_t                m_outImgWidth;
@@ -125,4 +129,3 @@ class VisionCnnNode: public rclcpp::Node
 };
 
 #endif /* _APP_VISION_CNN_NODE_H_ */
-

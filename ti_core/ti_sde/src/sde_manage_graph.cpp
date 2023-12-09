@@ -77,7 +77,7 @@ vx_status SDEAPP_init_LDC(SDEAPP_Context *appCntxt)
     createParams->vxGraph   = appCntxt->vxGraph;
 
     /*
-     * Create input image objects 
+     * Create input image objects
      */
     createParams->createInputFlag      = 0;
     createParams->inputPipelineDepth   = appCntxt->pipelineDepth;
@@ -160,7 +160,7 @@ vx_status SDEAPP_init_LDC(SDEAPP_Context *appCntxt)
     if (vxStatus == (vx_status) VX_SUCCESS)
     {
         /*
-         * Create output image objects 
+         * Create output image objects
          */
         createParams->createOutputFlag      = 0;
         createParams->outputPipelineDepth   = 1;
@@ -174,7 +174,7 @@ vx_status SDEAPP_init_LDC(SDEAPP_Context *appCntxt)
                               appCntxt->height,
                               VX_DF_IMAGE_U8);
         }
-        else 
+        else
         {
             appCntxt->vxLeftRectImage =
                 vxCreateImage(appCntxt->vxContext,
@@ -210,7 +210,7 @@ vx_status SDEAPP_init_LDC(SDEAPP_Context *appCntxt)
                                   appCntxt->width,
                                   appCntxt->height,
                                   VX_DF_IMAGE_U8);
-            } else 
+            } else
             {
                 appCntxt->vxRightRectImage[i] =
                     vxCreateImage(appCntxt->vxContext,
@@ -261,7 +261,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
         slSdeCreateParams->vxContext = appCntxt->vxContext;
         slSdeCreateParams->vxGraph   = appCntxt->vxGraph;
 
-        /* 
+        /*
          * Create input image objects for SL SDE
          */
         slSdeCreateParams->createInputFlag     = 0;
@@ -273,7 +273,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
             slSdeCreateParams->vxRightRectImage[i] = appCntxt->vxRightRectImage[i];
         }
 
-        /* 
+        /*
          * Create output image objects for SL SDE
          */
         slSdeCreateParams->createOutputFlag    = 0;
@@ -317,7 +317,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
         mlSdeCreateParams->vxContext = appCntxt->vxContext;
         mlSdeCreateParams->vxGraph   = appCntxt->vxGraph;
 
-        /* 
+        /*
          * Create input image objects for SL SDE
          */
         mlSdeCreateParams->createInputFlag    = 0;
@@ -329,7 +329,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
             mlSdeCreateParams->vxRightRectImageL0[i] = appCntxt->vxRightRectImage[i];
         }
 
-        /* 
+        /*
          * Create output image objects for ML SDE
          */
         mlSdeCreateParams->createOutputFlag  = 0;
@@ -349,7 +349,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
                     vxStatus = VX_FAILURE;
                     break;
                 }
-                else 
+                else
                 {
                     mlSdeCreateParams->vxMedianFilteredDisparity[i] =
                         appCntxt->vxMedianFilteredDisparity[i];
@@ -397,7 +397,7 @@ vx_status SDEAPP_init_SDE(SDEAPP_Context *appCntxt)
 vx_status SDEAPP_init_SDE_Triang(SDEAPP_Context *appCntxt)
 {
     SDE_TRIANG_createParams  * sdeTriangCreateParams;
-    
+
     int32_t                           i;
     vx_status                         vxStatus = VX_SUCCESS;
 
@@ -410,7 +410,7 @@ vx_status SDEAPP_init_SDE_Triang(SDEAPP_Context *appCntxt)
     sdeTriangCreateParams->vxContext     = appCntxt->vxContext;
     sdeTriangCreateParams->vxGraph       = appCntxt->vxGraph;
 
-    /* 
+    /*
      * Create input image objects for SDE Triangulate
      */
     sdeTriangCreateParams->createInputFlag = 0;
@@ -440,14 +440,14 @@ vx_status SDEAPP_init_SDE_Triang(SDEAPP_Context *appCntxt)
         }
     }
 
-    /* 
+    /*
      * Create output point cloud objects for SDE Triangulate
      */
     // output objects are created in applib
     sdeTriangCreateParams->createOutputFlag = 0;
 
     pcConfig.maxPoints  = appCntxt->width * appCntxt->height;
-    pcSize              = PTK_PointCloud_getSize(&pcConfig); 
+    pcSize              = PTK_PointCloud_getSize(&pcConfig);
 
     for (i = 0; i < appCntxt->pipelineDepth; i++)
     {
@@ -703,7 +703,7 @@ vx_status SDEAPP_setupPipeline_SL(SDEAPP_Context * appCntxt)
     {
         /* RGB rectified right image converted from YUV420 */
         vxStatus = tivxSetNodeParameterNumBufByIndex(colorConvNode,
-                                                     1, 
+                                                     1,
                                                      appCntxt->pipelineDepth);
 
         if (vxStatus != VX_SUCCESS)
@@ -812,7 +812,7 @@ vx_status SDEAPP_setupPipeline_ML(SDEAPP_Context * appCntxt)
         }
     }
 
-    // Always ppMedianFilterEnable = 0 
+    // Always ppMedianFilterEnable = 0
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         if (appCntxt->ppMedianFilterEnable)
@@ -1028,7 +1028,7 @@ vx_status SDEAPP_setupPipeline_ML(SDEAPP_Context * appCntxt)
     {
         /* RGB rectified right image converted from YUV420 */
         vxStatus = tivxSetNodeParameterNumBufByIndex(colorConvNode,
-                                                     1, 
+                                                     1,
                                                      appCntxt->pipelineDepth);
 
         if (vxStatus != VX_SUCCESS)
@@ -1123,13 +1123,13 @@ vx_status  SDEAPP_process(SDEAPP_Context * appCntxt, SDEAPP_graphParams * gpDesc
     if (appCntxt->sdeAlgoType == 0)
     {
         obj[cnt++] = (vx_reference)gpDesc->vxSde16BitOutput;
-    } 
+    }
     else
     {
         /* code */
         obj[cnt++] = (vx_reference)gpDesc->vxMergeDisparityL0;
 
-        // ppMedianFilterEnable is always 0 
+        // ppMedianFilterEnable is always 0
         if (appCntxt->ppMedianFilterEnable)
         {
             obj[cnt++] = (vx_reference)gpDesc->vxMedianFilteredDisparity;
@@ -1240,7 +1240,7 @@ vx_status SDEAPP_processEvent(SDEAPP_Context * appCntxt, vx_event_t * event)
                     if (appCntxt->sdeAlgoType  == 0)
                     {
                        outref = (vx_reference)appCntxt->vxSde16BitOutput[i];
-                    } 
+                    }
                     else if (appCntxt->ppMedianFilterEnable)
                     {
                         outref = (vx_reference)appCntxt->vxMedianFilteredDisparity[i];
@@ -1260,7 +1260,7 @@ vx_status SDEAPP_processEvent(SDEAPP_Context * appCntxt, vx_event_t * event)
             if (index >= appCntxt->pipelineDepth)
             {
                 LOG_ERROR("Resource look up failed\n");
-    
+
                 vxStatus = VX_FAILURE;
             }
         }
@@ -1329,7 +1329,7 @@ vx_status SDEAPP_getOutBuff(SDEAPP_Context      *appCntxt,
         {
             *disparity16 = desc->vxMedianFilteredDisparity;
         }
-        else 
+        else
         {
             *disparity16 = desc->vxMergeDisparityL0;
         }
@@ -1349,7 +1349,7 @@ vx_status SDEAPP_releaseOutBuff(SDEAPP_Context * appCntxt)
     SDEAPP_graphParams            * desc;
     std::unique_lock<std::mutex>    lock(appCntxt->paramRsrcMutex);
 
-    vxStatus = VX_SUCCESS; 
+    vxStatus = VX_SUCCESS;
 
     if (appCntxt->outputQ.empty())
     {

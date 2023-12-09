@@ -87,31 +87,31 @@
  * \defgroup group_ticore_estop 3D obstacle detection (e-Stop) processing
  *
  * \brief It performs the 3D obstacle detection (e-Stop) using the disparity map from
- *        stereo depth engine and the semantic segmentation map from the deep-learning 
- *        network. As shown in the figure below, it consists of the following three 
+ *        stereo depth engine and the semantic segmentation map from the deep-learning
+ *        network. As shown in the figure below, it consists of the following three
  *        main processes:
  *
  *        \image html estop_demo_block_diagram.svg "3D obstacle detection (e-Stop)" width = 1000
- * 
+ *
  *        1. Stereo Vision Processing <br>
- *           This is the same process described in @ref group_ticore_sde without 
- *           the point-cloud generation process. The output disparity map is fed to 
+ *           This is the same process described in @ref group_ticore_sde without
+ *           the point-cloud generation process. The output disparity map is fed to
  *           the 3D obstacle detection process as an input.
- * 
+ *
  *        2. Semantic Segmentation Processing <br>
- *           This is the same semantic segmentation process described in 
- *           @ref group_ticore_vision_cnn. The output tensor of the CNN network is 
+ *           This is the same semantic segmentation process described in
+ *           @ref group_ticore_vision_cnn. The output tensor of the CNN network is
  *           fed to the 3D obstacle detection process as another input.
- * 
+ *
  *        3. 3D Obstacle Detection Processing <br>
  *           This process outputs the 3D bounding box coordinates of the detected obstacles.
  *           First, it creates 3D point cloud using the disparity map and the camera parameters.
- *           Note that it maps only pixels that belongs to particular classes, e.g., car, 
+ *           Note that it maps only pixels that belongs to particular classes, e.g., car,
  *           pedestrian, bicycle, rider, etc. into the 3D space. Then it projects the 3D point
  *           cloud on a 2D occupancy grid map. Finally it detects individual obstacles by
- *           grouping closely-located occupied cells with an identical class using 
+ *           grouping closely-located occupied cells with an identical class using
  *           a "connected component analysis" algorithm.
- * 
+ *
  *
  * \ingroup  group_ticore_apps
  *
@@ -202,31 +202,31 @@ extern "C" {
 #define ESTOP_APP_STATE_INIT       (1U)
 
 /**
- * \brief Appliation state id - Shutdown 
+ * \brief Appliation state id - Shutdown
  * \ingroup group_ticore_estop
  */
 #define ESTOP_APP_STATE_SHUTDOWN   (2U)
 
 /**
- * \brief OG map grid value in field of view 
+ * \brief OG map grid value in field of view
  * \ingroup group_ticore_estop
  */
 #define FOV_GRID_VALUE             (-1)
 
 /**
- * \brief OG map grid value out of field of view 
+ * \brief OG map grid value out of field of view
  * \ingroup group_ticore_estop
  */
 #define NON_FOV_GRID_VALUE          (0)
 
 /**
- * \brief OG map grid value where emergency stop is needed  
+ * \brief OG map grid value where emergency stop is needed
  * \ingroup group_ticore_estop
  */
 #define ESTOP_AREA_GRID_VALUE      (98)
 
 /**
- * \brief Maximum tensor dimension 
+ * \brief Maximum tensor dimension
  * \ingroup group_ticore_estop
  */
 #define ESTOP_APP_MAX_OUT_TENSOR_DIMS   (4U)
@@ -234,7 +234,7 @@ extern "C" {
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 /**
- * \brief Graph parameters 
+ * \brief Graph parameters
  * \ingroup group_ticore_estop
  */
 struct ESTOP_APP_graphParams
@@ -280,7 +280,7 @@ using ESTOP_APP_Queue =
      MultiThreadQ<ESTOP_APP_graphParams>;
 
 /**
- * \brief Application context parameters 
+ * \brief Application context parameters
  * \ingroup group_ticore_estop
  */
 struct ESTOP_APP_Context
@@ -414,7 +414,7 @@ struct ESTOP_APP_Context
     /** whether enable median filter in multi-layer SDE */
     uint8_t                                 ppMedianFilterEnable;
 
-    /** disparity confidence threshold */ 
+    /** disparity confidence threshold */
     uint8_t                                 confidence_threshold;
 
     /** SDE configuration parameters */
@@ -459,7 +459,7 @@ struct ESTOP_APP_Context
     /** OG map parameters: Min Y range in mm */
     int32_t                                 yMinRange;
 
-    /** OG map parameters: Min Y range in mm */    
+    /** OG map parameters: Min Y range in mm */
     int32_t                                 yMaxRange;
 
     /** OG map parameters: Number of grid in X dimension */
@@ -638,25 +638,25 @@ struct ESTOP_APP_Context
 
 
 /**
- * \brief Set the create parameters for LDC, SDE, SemSeg and detection 
+ * \brief Set the create parameters for LDC, SDE, SemSeg and detection
  *
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_setAllParams(ESTOP_APP_Context *appCntxt);
 
 /**
- * \brief Initialize app, e.g. create graph, load kernels, 
- *        initialize LDC node, SDE node, SemSeg node, and detection node, 
+ * \brief Initialize app, e.g. create graph, load kernels,
+ *        initialize LDC node, SDE node, SemSeg node, and detection node,
  *        setup pipeline, etc.
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt);
@@ -665,20 +665,20 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt);
  * \brief Reset app's parameters
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_reset(ESTOP_APP_Context * appCntxt);
 
 /**
- * \brief Launch input data thread and event handler thread. 
+ * \brief Launch input data thread and event handler thread.
  *
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_launchProcThreads(ESTOP_APP_Context *appCntxt);
@@ -689,18 +689,18 @@ void      ESTOP_APP_launchProcThreads(ESTOP_APP_Context *appCntxt);
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_intSigHandler(ESTOP_APP_Context *appCntxt);
 
 /**
- * \brief Clean up all the resources before exiting 
+ * \brief Clean up all the resources before exiting
  *
  * \param [in] appCntxt APP context
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_cleanupHdlr(ESTOP_APP_Context *appCntxt);
@@ -710,22 +710,22 @@ void      ESTOP_APP_cleanupHdlr(ESTOP_APP_Context *appCntxt);
  * \brief Initialize camera info
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] width image width
- 
+
  * \param [in] height image height
- * 
+ *
  * \param [in] f camera focal length
- 
+
  * \param [in] dx camera horizontal distortion center
- * 
+ *
  * \param [in] dy camera vertical distortion center
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
-vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt, 
+vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt,
                                  uint32_t width,
                                  uint32_t height,
                                  double   f,
@@ -736,29 +736,29 @@ vx_status ESTOP_APP_init_camInfo(ESTOP_APP_Context *appCntxt,
  * \brief Run a graph for the given input
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] inputLeftImage input left image
- * 
+ *
  * \param [in] inputRightImage input right image
- * 
+ *
  * \param [in] timestamp input images' time stamp
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
-vx_status ESTOP_APP_run(ESTOP_APP_Context *appCntxt, 
-                        const vx_uint8 * inputLeftImage, 
-                        const vx_uint8 * inputRightImage, 
+vx_status ESTOP_APP_run(ESTOP_APP_Context *appCntxt,
+                        const vx_uint8 * inputLeftImage,
+                        const vx_uint8 * inputRightImage,
                         vx_uint64 timestamp);
 
 /**
  * \brief Function to initialize LDC nodes and graphs
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status   ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt);
@@ -767,10 +767,10 @@ vx_status   ESTOP_APP_init_LDC(ESTOP_APP_Context *appCntxt);
  * \brief Function to initialize SDE nodes and graphs
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
  *
- * \ingroup group_ticore_estop 
+ * \ingroup group_ticore_estop
  */
 vx_status   ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt);
 
@@ -778,9 +778,9 @@ vx_status   ESTOP_APP_init_SDE(ESTOP_APP_Context *appCntxt);
  * \brief Function to initialize Semantic Segmentation nodes
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_init_SS(ESTOP_APP_Context *appCntxt);
@@ -790,9 +790,9 @@ vx_status ESTOP_APP_init_SS(ESTOP_APP_Context *appCntxt);
  * \brief Function to de-initialize Semantic Segmentation nodes
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_deinit_SS(ESTOP_APP_Context *appCntxt);
@@ -802,56 +802,56 @@ vx_status ESTOP_APP_deinit_SS(ESTOP_APP_Context *appCntxt);
  * \brief Function to initialize Detection nodes and graphs
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_init_SS_Detection(ESTOP_APP_Context *appCntxt);
 
 /**
- * \brief Main function to set up a whole graph pipeline, which calls 
+ * \brief Main function to set up a whole graph pipeline, which calls
  *        either ESTOP_APP_setupPipeline_SL or ESTOP_APP_setupPipeline_ML
  *        depending on SDE type
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
- */ 
+ */
 vx_status ESTOP_APP_setupPipeline(ESTOP_APP_Context * appCntxt);
 
 /**
  * \brief Function to set up a whole graph pipeline when a single-layer SDE is used
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
- */ 
+ */
 vx_status ESTOP_APP_setupPipeline_SL(ESTOP_APP_Context * appCntxt);
 
 /**
  * \brief Function to set up a whole graph pipeline when a multi-layer SDE is used
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
- */ 
+ */
 vx_status ESTOP_APP_setupPipeline_ML(ESTOP_APP_Context * appCntxt);
 
 /**
  * \brief Function to print the performance statistics to stdout.
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \return
- * 
- * \ingroup group_ticore_estop 
+ *
+ * \ingroup group_ticore_estop
  */
 void      ESTOP_APP_printStats(ESTOP_APP_Context * appCntxt);
 
@@ -859,11 +859,11 @@ void      ESTOP_APP_printStats(ESTOP_APP_Context * appCntxt);
  * \brief Function to export the performance statistics to a file.
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] fp file to export
- * 
+ *
  * \param [in] exportAll flag to export all statistics
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_exportStats(ESTOP_APP_Context * appCntxt, FILE *fp, bool exportAll);
@@ -874,7 +874,7 @@ vx_status ESTOP_APP_exportStats(ESTOP_APP_Context * appCntxt, FILE *fp, bool exp
  * \param [in] appCntxt APP context
  *
  * \return VX_SUCCESS on success
- * 
+ *
  * \ingroup group_ticore_estop
  */
 vx_status ESTOP_APP_waitGraph(ESTOP_APP_Context * appCntxt);
@@ -897,7 +897,7 @@ vx_status ESTOP_APP_process(ESTOP_APP_Context * appCntxt, ESTOP_APP_graphParams 
  * \brief Function to convert the scaler output to RGB
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] vxScalerOut Scaler (MSC) output image
  *
  * \param [out] inputTensorVec A vector of input tensors.
@@ -906,7 +906,7 @@ vx_status ESTOP_APP_process(ESTOP_APP_Context * appCntxt, ESTOP_APP_graphParams 
  *
  * \ingroup group_ticore_estop
  */
-vx_status ESTOP_APP_CNN_preProcess(ESTOP_APP_Context   *appCntxt, 
+vx_status ESTOP_APP_CNN_preProcess(ESTOP_APP_Context   *appCntxt,
                                    vx_image             vxScalerOut,
                                    VecDlTensorPtr      *inputTensorVec);
 
@@ -914,7 +914,7 @@ vx_status ESTOP_APP_CNN_preProcess(ESTOP_APP_Context   *appCntxt,
  * \brief Function to convert semantic sementation output to tensor
  *
  * \param [in] appCntxt APP context
- * 
+ *
  * \param [in] outputTensorVec A vector of output tensors. The vector has only
  *             one entry and it carries sematic segmentation class information.
  *
@@ -949,7 +949,7 @@ vx_status ESTOP_APP_processEvent(ESTOP_APP_Context * appCntxt, vx_event_t * even
  *        ESTOP_APP_releaseOutBuff() in between, then the same output
  *        is returned.
  *
- *        Once the graph execution is complete, the output buffer is stored in 
+ *        Once the graph execution is complete, the output buffer is stored in
  *        a queue for the use by the calling application. The caller can use
  *        this API to get a reference to the input/output image pair for post
  *        processing. One the caller is done with the input/output pair, a call
@@ -961,11 +961,11 @@ vx_status ESTOP_APP_processEvent(ESTOP_APP_Context * appCntxt, vx_event_t * even
  * \param [in] appCntxt APP context
  *
  * \param [out] rightRectImage right rectified image passed from a graph
- * 
+ *
  * \param [out] ssOutput output color-coded semantic segmentation map passed from a graph
  *
  * \param [out] outTensor output semantic segmentation tensor passed from a graph
- * 
+ *
  * \param [out] obsBB output obstacle bounding boxes passed from a graph
 *
  * \param [out] disparity16 output raw disparity map passed from a graph
@@ -977,16 +977,16 @@ vx_status ESTOP_APP_processEvent(ESTOP_APP_Context * appCntxt, vx_event_t * even
  *
  * \ingroup group_ticore_estop
  */
-vx_status ESTOP_APP_getOutBuff(ESTOP_APP_Context *appCntxt, 
-                               vx_image *rightRectImage, 
-                               vx_image *ssOutput, 
-                               vx_tensor *outTensor, 
-                               vx_user_data_object *obsBB, 
+vx_status ESTOP_APP_getOutBuff(ESTOP_APP_Context *appCntxt,
+                               vx_image *rightRectImage,
+                               vx_image *ssOutput,
+                               vx_tensor *outTensor,
+                               vx_user_data_object *obsBB,
                                vx_image *disparity16,
                                vx_uint64 *timestamp);
 
 /**
- * \brief Function to release buffer in the output queue by moving 
+ * \brief Function to release buffer in the output queue by moving
  *        the buffer to the free queue
  *
  * \param [in] appCntxt APP context
@@ -1081,7 +1081,7 @@ vx_status ESTOP_APP_getOutputDesc(ESTOP_APP_Context       *appCntxt,
                                   ESTOP_APP_graphParams   *gpDesc);
 
 /**
- * \brief Function to release the buffer from the output queue. 
+ * \brief Function to release the buffer from the output queue.
  *        The release output buffer is moved to the input queue.
  *
  * \param [in] appCntxt APP context
@@ -1096,35 +1096,35 @@ vx_status ESTOP_APP_popOutputDesc(ESTOP_APP_Context       *appCntxt,
                                   ESTOP_APP_graphParams  **gpDesc);
 
 /**
- * \brief Function to add the buffer to the free input queue. 
+ * \brief Function to add the buffer to the free input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void ESTOP_APP_enqueInputDesc(ESTOP_APP_Context      *appCntxt,
                               ESTOP_APP_graphParams  *gpDesc);
 
 /**
- * \brief Function to add the buffer to the pre-processing input queue. 
+ * \brief Function to add the buffer to the pre-processing input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void ESTOP_APP_enquePreprocInputDesc(ESTOP_APP_Context      *appCntxt,
                                      ESTOP_APP_graphParams  *gpDesc);
 
 /**
- * \brief Function to add the buffer to the DLR input queue. 
+ * \brief Function to add the buffer to the DLR input queue.
  *
  * \param [in] appCntxt APP context
  *
@@ -1138,28 +1138,28 @@ void ESTOP_APP_enqueDlInferInputDesc(ESTOP_APP_Context     *appCntxt,
                                      ESTOP_APP_graphParams *gpDesc);
 
 /**
- * \brief Function to add the buffer to the post-proce input queue. 
+ * \brief Function to add the buffer to the post-proce input queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void ESTOP_APP_enquePostprocInputDesc(ESTOP_APP_Context      *appCntxt,
                                       ESTOP_APP_graphParams  *gpDesc);
 
 /**
- * \brief Function to add the buffer to the output queue. 
+ * \brief Function to add the buffer to the output queue.
  *
  * \param [in] appCntxt APP context
  *
  * \param [in] gpDesc pointer to graph parameters
  *
  * \return
- * 
+ *
  * \ingroup group_ticore_estop
  */
 void ESTOP_APP_enqueOutputDesc(ESTOP_APP_Context      *appCntxt,

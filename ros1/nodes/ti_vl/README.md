@@ -3,6 +3,8 @@ Visual Localization
 
 ![](docs/visloc_rviz.png)
 
+## System Description
+
 This application performs the ego vehicle localization that estimates an ego vehicle's 6-DOF (Degree of Freedom) pose from calibrated camera images using a 3D sparse map created offline. The 3D sparse map consists of a set of key points with (X, Y, Z) positions and 64-dimensional descriptors. To localize the ego vehicle's pose, key points are detected with descriptors from the input camera image and these key points are matched against the key points in the map. The ego vehicle's pose is estimated using the Perspective-n-Point (PnP) approach.
 
 Key-point descriptor plays critical role in the visual localization. In this demo, we use a deep neural network to learn hand computed feature descriptor like KAZE in a supervised manner. We refer such descriptor as DKAZE. The DAKZE network was used to create key features and their descriptors for the sparse 3D map and is also used to detect key feature points with descriptors for every input image in the localization process. For more details about the DKAZE network and the localization process, refer to [Vision Apps User Guide](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/group_apps_dl_demos_app_tidl_vl.html).

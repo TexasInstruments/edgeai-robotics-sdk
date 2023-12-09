@@ -7,7 +7,7 @@
     <arg name="enable_ldc_node" default="0"/>
     <arg name="lut_file_path" default="$(find mono_capture)/config/IMX390_HD_LUT.bin" />
     <arg name="dl_model_path" default="/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"/>
-    <!-- <arg name="dl_model_path" default="/opt/model_zoo/TFL-OD-2010-ssd-mobV2-coco-mlperf-300x300"/> -->
+    <!-- <arg name="dl_model_path" default="/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"/> -->
     <arg name="exportPerfStats" default="0"/>
     <arg name="detVizThreshold" default="0.5"/>
     <!-- video device ID used in /dev/videoX -->

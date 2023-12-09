@@ -101,10 +101,10 @@ class EStopNode: public rclcpp::Node
         ~EStopNode();
 
         /** Intercept signal handler */
-        void sigHandler(int32_t  sig);
+        void onShutdown();
 
     private:
-        /** Initialize App cntxt */ 
+        /** Initialize App cntxt */
         vx_status init();
 
         /** Setup input image subscribers */
@@ -136,7 +136,7 @@ class EStopNode: public rclcpp::Node
 
         /** Extact occupancy grid data from 3D bounding box object */
         vx_status extractOGMapData(int8_t                  * ogData,
-                                   ObjectPos3D             * bbData, 
+                                   ObjectPos3D             * bbData,
                                    vx_user_data_object       vx3DBB,
                                    int32_t                   width,
                                    int32_t                   height,
@@ -215,7 +215,7 @@ class EStopNode: public rclcpp::Node
         /** Initialization control semaphore */
         Semaphore              *initCtrlSem;
 
-        /** Min distance of estop range 
+        /** Min distance of estop range
          *  Should be 0
          */
         int32_t                 m_minEStopDistance;
@@ -234,7 +234,7 @@ class EStopNode: public rclcpp::Node
          */
         int8_t                  m_minFreeRun;
 
-        /** When m_eStop = 0, the minimum number of consecutive frames with any obstacle 
+        /** When m_eStop = 0, the minimum number of consecutive frames with any obstacle
          *  in EStop range should be larger than or equal to m_minObsRun to set m_eStop = 1
          */
         int8_t                  m_minObsRun;

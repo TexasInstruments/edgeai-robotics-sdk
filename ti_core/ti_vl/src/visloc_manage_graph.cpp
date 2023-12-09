@@ -63,14 +63,9 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-
 #include "visloc.h"
 
-
-
 static vx_status VISLOC_createInputImageObjects(VISLOC_Context * appCntxt);
-
 
 vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
 {
@@ -80,13 +75,13 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
     const DlTensor       *ifInfo;
     CM_ScalerNodeCntxt   *scalerObj;
     CM_LdcNodeCntxt      *ldcObj;
-    
+
     int32_t               i, j;
     int32_t               numInputs;
     int32_t               numOutputs;
     vx_image              scalerInput;
     vx_status             vxStatus;
-   
+
     CM_PoseCalcNodeCntxt *poseCalcObj;
     CM_PoseVizNodeCntxt  *poseVizObj;
 
@@ -101,15 +96,17 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
     numInputs           = dlInfInputs->size();
     numOutputs          = dlInfOutputs->size();
 
-    /* The Pose caclulation node expects a tensor of size 3 only. */
+    /* The Pose calculation node expects a tensor of size 3 only. */
+    // ifInfo->shape = [1, 1, 1, 1, H, W]      => outTensorDims = [1, H, W]
+    // ifInfo->shape = [1, 1, 1, 64, H/4, W/4] => outTensorDims = [64, H/4, W/4]
     for (i = 0; i < numOutputs; i++)
     {
         ifInfo                       = &dlInfOutputs->at(i);
-        appCntxt->outTensorNumDim[i] = ifInfo->dim - 1;
+        appCntxt->outTensorNumDim[i] = ifInfo->dim - 3;
 
         for (j = 0; j < appCntxt->outTensorNumDim[i]; j++)
         {
-            appCntxt->outTensorDims[i][j] = ifInfo->shape[j+1];
+            appCntxt->outTensorDims[i][j] = ifInfo->shape[j+3];
         }
     }
 
@@ -125,6 +122,9 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
             {
                 appCntxt->outTensorSize[i] *= appCntxt->outTensorDims[i][j];
             }
+
+            int32_t first = 0;
+            int32_t last  = 1;
 
             for (j = 0; j < appCntxt->pipelineDepth; j++)
             {
@@ -144,7 +144,7 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
                 }
             }
         }
-    }    
+    }
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
@@ -162,7 +162,7 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
         {
             int32_t status;
 
-            /* Allocate DL input buffers. Currenly, the input buffers are held
+            /* Allocate DL input buffers. Currently, the input buffers are held
              * for each pipelined outputs so we need pipeline number of input
              * buffers.
              */
@@ -180,7 +180,7 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
                 }
             }
 
-            /* Allocate DL output buffers. Currenly, the input buffers are held
+            /* Allocate DL output buffers. Currently, the input buffers are held
              * for each pipelined outputs so we need pipeline number of input
              * buffers.
              */
@@ -397,7 +397,7 @@ vx_status VISLOC_deinit_VL(VISLOC_Context *appCntxt)
         CM_ldcNodeCntxtDeInit(&appCntxt->ldcObj);
     }
 
-    
+
     /* Scaler node.  */
     CM_scalerNodeCntxtDeInit(&appCntxt->scalerObj);
 
@@ -521,7 +521,7 @@ vx_status  VISLOC_setupPipeline(VISLOC_Context * appCntxt)
         }
     }
 
-    /* Visual localization (PoseCalc) node Param 4 (feature point) 
+    /* Visual localization (PoseCalc) node Param 4 (feature point)
         ==> graph param 2/3. */
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
@@ -557,7 +557,7 @@ vx_status  VISLOC_setupPipeline(VISLOC_Context * appCntxt)
         }
     }
 
-    /* Visual localization (PoseCalc) node Param 9 (pose matrix) 
+    /* Visual localization (PoseCalc) node Param 9 (pose matrix)
         ==> graph param 4/5. */
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
@@ -743,7 +743,7 @@ vx_status VISLOC_waitGraph(VISLOC_Context * appCntxt)
 }
 
 
-vx_status  VISLOC_process(VISLOC_Context     * appCntxt, 
+vx_status  VISLOC_process(VISLOC_Context     * appCntxt,
                           VISLOC_graphParams * gpDesc,
                           uint64_t             timestamp)
 {
@@ -785,7 +785,7 @@ vx_status  VISLOC_process(VISLOC_Context     * appCntxt,
 }
 
 
-vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt, 
+vx_status VISLOC_preProcess(VISLOC_Context     * appCntxt,
                             vx_image             vxScalerOut,
                             VecDlTensorPtr      *inputTensorVec)
 {
@@ -965,7 +965,7 @@ vx_status VISLOC_createDescOutTensor(VISLOC_Context     * appCntxt,
         {
             LOG_ERROR("tivxUnmapTensorPatch() failed.");
         }
-        
+
     }
 
     return vxStatus;
@@ -1134,9 +1134,9 @@ vx_status VISLOC_processEvent(VISLOC_Context * appCntxt, vx_event_t * event)
 
     if (event->type == VX_EVENT_NODE_COMPLETED)
     {
-        uint32_t appValue = appCntxt->vxEvtAppValBase + 
+        uint32_t appValue = appCntxt->vxEvtAppValBase +
                             VISLOC_SCALER_NODE_COMPLETE_EVENT;
-        
+
         if (event->app_value != appValue)
         {
             /* Something wrong. We did not register for this event. */
