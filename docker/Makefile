@@ -9,7 +9,7 @@ GPUS             ?= n
 
 # Robotics SDK version
 SDK_VER          = 9.1.0
-EDGEAI_VER       = 9.1.0.6
+EDGEAI_VER       = 9.1.0
 TIVA_LIB_VER     ?= 9.1.0
 RPMSG_LIB_VER    ?= 0.6.3
 

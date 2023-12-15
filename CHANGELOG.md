@@ -8,6 +8,7 @@ Change Log
 - The ROS node for the radar driver, which is compatible with TI mmWave radar devices (including the IWR6843), has been successfully migrated to ROS 2.
 - Added support for RPi headers and GPIO libraries for SK-AM62A (as part of the Processor SDK Linux for Edge AI).
 - For convenience, the SDK Docker container comes pre-configured with a variety of handy aliases. Details about these aliases can be found in `$SDK_DIR/docker/set_aliases.sh`.
+- We have begun using ros:humble-perception-jammy as the base image. Consequently, this has led to an increase in the size of the SDK Docker image.
 
 ## Release 9.0.0 (2023-08-11)
 

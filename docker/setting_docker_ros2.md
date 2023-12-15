@@ -160,8 +160,8 @@ It is recommended to launch the demos in two terminals on the target SK board, s
 |--------------------------------|--------------------------------------------|------------------------------------------|-------------------------------------------|
 | Stereo Vision                  | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_sde sde_launch.py     | ros2 launch ti_viz_nodes rviz_sde_launch.py |
 | Stereo Vision with point-cloud | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_sde sde_pcl_launch.py | ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py |
-| Semantic Segmentation CNN | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
-| Object Detection CNN      | ros2 launch ti_sde rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Semantic Segmentation CNN | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Object Detection CNN      | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
 | 6D Pose Estimation CNN    | -                                         | ros2 launch ti_vision_cnn bag_6dpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_6dpose_cnn_launch.py width:=1280 height:=960 |
 | 3D Obstacle Detection     | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_estop estop_launch.py                | ros2 launch ti_viz_nodes rviz_estop_launch.py |
 | Object Detection with 3D Spatial Information  | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_objdet_range objdet_range_launch.py  | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
@@ -170,8 +170,8 @@ It is recommended to launch the demos in two terminals on the target SK board, s
 ```{only} tag_am62a
 | Demo                      | ROSBAG launch command on Target (Terminal 1) | Demo launch command on Target (Terminal 2)  | Launch command on Remote Visualization PC |
 |---------------------------|-------------------------------------------|------------------------------------------------|-------------------------------------------|
-| Semantic Segmentation CNN | ros2 launch /opt/robotics_sdk/ros2/nodes/ti_sde/launch/rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
-| Object Detection CNN      | ros2 launch /opt/robotics_sdk/ros2/nodes/ti_sde/launch/rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Semantic Segmentation CNN | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Object Detection CNN      | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
 ```
 
 ```{tip}

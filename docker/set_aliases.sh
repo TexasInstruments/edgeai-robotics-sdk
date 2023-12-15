@@ -10,7 +10,7 @@ ZED_SN=${ZED_SN:-SN18059}
 if [[ -n "$SOC" ]]; then
     PACKAGES_SKIP="ti_viz_nodes"
     if [[ "$SOC" == "am62a" ]]; then
-        PACKAGES_SKIP+=" ti_sde ti_estop ti_vl"
+        PACKAGES_SKIP+=" zed_capture ti_sde ti_estop ti_vl"
     fi
 else
     PACKAGES_SKIP="ti_vision_cnn ti_sde ti_estop ti_vl"
@@ -20,7 +20,7 @@ if [[ -n "$SOC" && ( "$SOC" == "j721e" || "$SOC" == "am62a" ) ]]; then
     ARGS+=" --executor sequential"
 fi
 alias colcon_build="colcon build --base-paths $SDK_DIR/ros2 $ARGS && source install/setup.bash"
-alias colcon_build_select='function _colcon_build_select() { colcon build --base-paths $SDK_DIR/ros2 $ARGS --packages-select "${@:1}" --symlink-install && source install/setup.bash; }; _colcon_build_select'
+alias colcon_build_select='function _colcon_build_select() { colcon build --base-paths $SDK_DIR/ros2 --packages-select "${@:1}" --executor sequential --symlink-install && source install/setup.bash; }; _colcon_build_select'
 alias clean_ws="rm -rf build/* install/* log/*"
 alias clean_pkg='function _clean_pkg() { rm -rf build/"$1" install/"$1"; }; _clean_pkg'
 
@@ -60,6 +60,7 @@ alias imx219_ss="ros2 launch ti_vision_cnn gscam_semseg_cnn_imx219_launch.py cam
 alias imx219_od="ros2 launch ti_vision_cnn gscam_objdet_cnn_imx219_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
 
 # demo launches with IMX390 CSI camera with Fusion board
+alias gen_imx390_ldc="bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh"
 alias imx390_cap="ros2 launch gscam2 v4l_imx390_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
 alias imx390_cap_fhd="ros2 launch gscam2 v4l_imx390_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID width:=1920 height:=1080"
 alias imx390_cap_raw="ros2 launch gscam2 v4l_imx390_raw_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"

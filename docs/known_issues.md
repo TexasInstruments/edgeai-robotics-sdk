@@ -12,6 +12,8 @@ Limitations and Known Issues
 
 1. Default Semantic Segmentation Model: The default semantic segmentation model used in `ti_vision_cnn` and `ti_estop` nodes was initially trained with the Cityscapes dataset and subsequently re-trained with a small dataset collected from a stereo camera (ZED camera, HD mode). This re-training was done for a limited set of scenarios with coarse annotation. As a result, the model's accuracy performance may be limited when used with a different camera model or in different environmental scenes.
 
+1. The default 6D pose estimation model is trained on a limited number of objects from the YCB dataset, with the mustard bottle being the sole object currently used for training. As a result, the accuracy of the model may be limited when it is used with different objects, with a different camera model, or in different scenarios.
+
 1. ROS 2 Demo Launch: Launching a demo in the ROS 2 environment with "ros2 bag play" in a single launch script currently not stable. It is recommended to launch “ros2 bag play” in a separate terminal. The demos in ROS 2 container currently run more stable with live cameras (ZED stereo camera or USB mono camera).
 
 

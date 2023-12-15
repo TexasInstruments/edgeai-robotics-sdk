@@ -608,7 +608,7 @@ vx_status ESTOP_APP_run(ESTOP_APP_Context  *appCntxt,
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        LOG_ERROR("ESTOP_APP_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
+        LOG_WARN("ESTOP_APP_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)

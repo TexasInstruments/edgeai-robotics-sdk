@@ -196,7 +196,7 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
         {
             appCntxt->postProcCfg.inDataWidth  = appCntxt->preProcCfg.outDataWidth;
             appCntxt->postProcCfg.inDataHeight = appCntxt->preProcCfg.outDataHeight;
-            appCntxt->logFileName = "object6Dpose";
+            appCntxt->logFileName = "6dpose";
         }
         else
         {
@@ -349,7 +349,7 @@ vx_status VISION_CNN_run(VISION_CNN_Context   *appCntxt,
 
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        LOG_ERROR("VISION_CNN_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
+        LOG_WARN("VISION_CNN_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)

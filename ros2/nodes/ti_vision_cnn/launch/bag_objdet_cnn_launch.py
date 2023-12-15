@@ -54,7 +54,7 @@ def generate_launch_description():
 
     # Include rosbag launch file
     # The rosbag launch is located under ti_sde package
-    pkg_dir    = get_package_share_directory('ti_sde')
+    pkg_dir    = get_package_share_directory('ti_vision_cnn')
     launch_dir = os.path.join(pkg_dir, 'launch')
     bag_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

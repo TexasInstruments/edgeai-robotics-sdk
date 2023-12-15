@@ -427,7 +427,7 @@ vx_status SDEAPP_run(SDEAPP_Context *appCntxt,
     vxStatus = SDEAPP_getFreeParamRsrc(appCntxt, &gpDesc);
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        LOG_ERROR("SDEAPP_getFreeParamRsrc() failed. Incoming Frame is dropped!\n");
+        LOG_WARN("SDEAPP_getFreeParamRsrc() failed. Incoming Frame is dropped!\n");
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)

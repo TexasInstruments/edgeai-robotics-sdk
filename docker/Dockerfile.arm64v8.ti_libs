@@ -105,7 +105,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # install ti-gpio-cpp
 ADD install_ti_gpio_libs.sh /usr/bin/
-RUN /usr/bin/install_ti_gpio_libs.sh -b 09.01.00.06
+RUN /usr/bin/install_ti_gpio_libs.sh -b release-1.2.0
 
 # add scripts
 COPY entrypoint_arm64v8.sh /root/entrypoint.sh

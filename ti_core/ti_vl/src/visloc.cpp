@@ -280,7 +280,7 @@ vx_status VISLOC_run(VISLOC_Context       *appCntxt,
     vxStatus = VISLOC_popFreeInputDesc(appCntxt, &gpDesc);
     if (vxStatus != (vx_status)VX_SUCCESS)
     {
-        LOG_ERROR("VISLOC_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
+        LOG_WARN("VISLOC_popFreeInputDesc() failed. Incoming Frame is dropped!\n");
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)

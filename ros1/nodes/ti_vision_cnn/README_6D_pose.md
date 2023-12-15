@@ -45,3 +45,7 @@ Depending on the resolution setting of the capture node, run one from the follow
 ```
 ros2 launch ti_viz_nodes rviz_pose6D_cnn_launch.py width:=1280 height:=720
 ```
+
+## Known Issues
+
+1. The default 6D pose estimation model is trained on a limited number of objects from the YCB dataset, with the mustard bottle being the sole object currently used for training. As a result, the accuracy of the model may be limited when it is used with different objects, with a different camera model, or in different scenarios.

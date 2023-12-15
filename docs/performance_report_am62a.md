@@ -8,7 +8,7 @@ Performance statistics logging is turned on by setting a launch parameter, `expo
 
 Demo | FPS| Total time (ms)| Preproc time (ms)| Inference time (ms)| A53 Load (%)| DDR Read BW (MB/s)| DDR Write BW (MB/s)| DDR Total BW (MB/s)| C71_1 Load (%)| MCU1_0 Load (%)| MSC_0 (%)| MSC_1 (%)| VISS (%)| NF (%)| LDC (%)
 ----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----
-ti_vision_cnn (semseg)| 23.49| 42.5763| 15.2609| 36.2415| 54.20| 3227| 2464| 5691| 80.78| 0.80| 9.13| 0| 0| 0| 6.75
-ti_vision_cnn (objdet)| 28.79| 34.7379| 3.4872| 14.0175| 42.80| 1292| 754| 2046| 37.13| 0.79| 10.74| 0| 0| 0| 7.23
+ti_vision_cnn (semseg)| 23.88| 41.8727| 16.0046| 34.1663| 52.71| 2618| 2337| 4955| 73.11| 0.95| 8.75| 0| 0| 0| 6.35
+ti_vision_cnn (objdet)| 26.73| 37.4123| 4.0000| 18.1254| 43.10| 2354| 726| 3080| 47.40| 0.75| 10.18| 0| 0| 0| 6.86
 
 **Note**: "A53 Load (%)" are for dual A53 cores in a scale of 100%. For example, 100% A53 loading means that two A53 cores are fully loaded.
