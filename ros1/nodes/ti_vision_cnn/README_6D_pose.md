@@ -8,7 +8,7 @@ This `ti_vision_cnn` node is a versatile deep-learning (DL) inference ROS node t
 
 ## System Description
 
-![](docs/objdet_demo_block_diagram.svg)
+![](docs/6dpose_demo_block_diagram.svg)
 <figcaption>Figure 1. 6D Pose demo: block diagram</figcaption>
 <br />
 
