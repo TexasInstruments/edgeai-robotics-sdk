@@ -64,6 +64,7 @@
 #include <cm_post_process_image_segmentation.h>
 #include <cm_post_process_image_object_detect.h>
 #include <cm_post_process_pose6D.h>
+#include <cm_post_process_humanpose.h>
 
 
 /**
@@ -94,6 +95,10 @@ CmPostprocessImage* CmPostprocessImage::makePostprocessImageObj(const Postproces
     else if (config.taskType == "object_6d_pose_estimation"){
         LOG_INFO("Creating Obj6DPose...\n");
         cntxt = new CmPostprocessImageObject6DPoseEstimation(config);
+    }
+    else if (config.taskType == "keypoint_detection"){
+        LOG_INFO("Creating ObjHumanPose...\n");
+        cntxt = new CmPostprocessHumanPoseEstimation(config);
     }
     else if (config.taskType == "segmentation")
     {

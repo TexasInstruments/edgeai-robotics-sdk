@@ -73,7 +73,7 @@ set(TIADALG_PATH        tiadalg)
 
 set(TENSORFLOW_INSTALL_DIR /usr/include/tensorflow)
 set(ONNXRT_INSTALL_DIR     /usr/include/onnxruntime)
-set(TFLITE_INSTALL_DIR     /usr/lib/tflite_2.8)
+set(TFLITE_INSTALL_DIR     /usr/lib/tflite_2.12)
 
 set(TARGET_SOC_LOWER $ENV{SOC})
 
@@ -105,6 +105,11 @@ elseif (${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
         set(TARGET_CPU          A72)
         set(TARGET_OS           LINUX)
         set(TARGET_SOC          J784S4)
+    elseif ("${TARGET_SOC_LOWER}" STREQUAL "j722s")
+        set(TARGET_PLATFORM     J7)
+        set(TARGET_CPU          A53)
+        set(TARGET_OS           LINUX)
+	    set(TARGET_SOC          J722S)
     elseif ("${TARGET_SOC_LOWER}" STREQUAL "am62a")
         set(TARGET_PLATFORM     SITARA)
         set(TARGET_CPU          A53)
@@ -130,7 +135,6 @@ set(TENSORFLOW_RT_LIBS
     fft2d_fftsg2d
     fft2d_fftsg
     cpuinfo
-    clog
     farmhash
     ruy_allocator
     ruy_apply_multiplier
@@ -267,8 +271,11 @@ set(SDE_AVAILABLE FALSE)
 
 # BUILD and LINK
 if (NOT ${TARGET_PLATFORM} STREQUAL PC)
-    if (${TARGET_PLATFORM} STREQUAL SITARA)
+    if (${TARGET_PLATFORM} STREQUAL SITARA AND ${TARGET_SOC} STREQUAL AM62A)
         set(SDE_AVAILABLE FALSE)
+        set(TIADALG_AVAILABLE FALSE)
+    elseif (${TARGET_PLATFORM} STREQUAL J7 AND ${TARGET_SOC} STREQUAL J722S)
+        set(SDE_AVAILABLE TRUE)
         set(TIADALG_AVAILABLE FALSE)
     else()
         set(SDE_AVAILABLE TRUE)
@@ -277,7 +284,7 @@ if (NOT ${TARGET_PLATFORM} STREQUAL PC)
 
     set(TARGET_LINK_DIRECTORIES
         ${TI_EXTERNAL_LIB_DIRS}
-        /usr/local/dlr
+        /usr/dlr
         /usr/lib
         ${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/make/gen/linux_aarch64/lib
         ${TFLITE_INSTALL_DIR}/ruy-build
@@ -286,7 +293,7 @@ if (NOT ${TARGET_PLATFORM} STREQUAL PC)
         ${TFLITE_INSTALL_DIR}/fft2d-build
         ${TFLITE_INSTALL_DIR}/cpuinfo-build
         ${TFLITE_INSTALL_DIR}/flatbuffers-build
-        ${TFLITE_INSTALL_DIR}/clog-build
+        ${TFLITE_INSTALL_DIR}/abseil-cpp-build/
         ${TFLITE_INSTALL_DIR}/farmhash-build
         )
 
@@ -318,4 +325,3 @@ function(print_vars)
     message("TI_EDGEAI_ROOT_DIR       =" ${TI_EDGEAI_ROOT_DIR})
 
 endfunction(print_vars)
-

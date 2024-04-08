@@ -4,30 +4,31 @@ ARCH=`arch`
 CURRENT_DIR=$(pwd)
 MODEL_DIR=/opt/model_zoo
 
-if [[ "$SOC" == "j721e" ]]; then
-    URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/TDA4VM/8bits/"
-elif [[ "$SOC" == "j721s2" ]]; then
-    URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM68A/8bits/"
-elif [[ "$SOC" == "j784s4" ]]; then
-    URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM69A/8bits/"
-elif [[ "$SOC" == "am62a" ]]; then
-    URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM62A/8bits/"
-elif [[ "$SOC" == "am62x" ]]; then
-    URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM62/32bits/"
+if [ "$SOC" == "j721e" ]; then
+	URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/TDA4VM/8bits/"
+elif [ "$SOC" == "j721s2" ]; then
+	URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM68A/8bits/"
+elif [ "$SOC" == "j784s4" ]; then
+	URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM69A/8bits/"
+elif [ "$SOC" == "j722s" ]; then
+	URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM67A/8bits/"
+elif [ "$SOC" == "am62a" ]; then
+	URLs="https://software-dl.ti.com/jacinto7/esd/modelzoo/$EDGEAI_SDK_VERSION/modelartifacts/AM62A/8bits/"
 else
-    echo "ERROR: "$SOC" not supported"
-    exit
+	echo "ERROR: "$SOC" not supported"
+	exit
 fi
 
 if [[ "$ARCH" == "aarch64" ]]; then
     echo "[download_models] Installing the models used in the SDK ..."
 
-    # Download object detection and semantic segmentation models
+    # Download object detection, semantic segmentation, and human pose estimation models
     MODELS=(
         TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320
         ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512
         ONR-OD-8220-yolox-s-lite-mmdet-coco-640x640
-        ONR-SS-8818-deeplabv3lite-mobv2-qat-robokit-768x432
+        ONR-SS-7618-deeplabv3lite-mobv2-qat-robokit-768x432
+        ONR-KD-7060-human-pose-yolox-s-640x640
     )
     for model in ${MODELS[@]}; do
         bash /opt/edgeai-gst-apps/download_models.sh -d $model
@@ -53,7 +54,7 @@ if [[ "$ARCH" == "aarch64" ]]; then
         model_name=${MODEL_NAMES[i]}
         model_file=${MODEL_FILES[i]}
 
-        if [ -d $MODEL_DIR/$model_name ]; then
+        if [ -f "$MODEL_DIR/$model_name/param.yaml" ]; then
             echo "$model_name already exists under /opt/model_zoo"
         else
             mkdir -p $MODEL_DIR/$model_name

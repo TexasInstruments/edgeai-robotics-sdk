@@ -8,11 +8,12 @@ This section describes how to set up the Robotics SDK on the Processor SDK Linux
 ### Supported Hardware Platforms
 
 ```{only} tag_j7x
-| Platform                                    | EVM                                            |
-|---------------------------------------------|------------------------------------------------|
-| [TDA4VM](https://www.ti.com/product/TDA4VM) | [SK-TDA4VM](https://www.ti.com/tool/SK-TDA4VM) |
-| [AM68A](https://www.ti.com/product/AM68A)   | [SK-AM68](https://www.ti.com/tool/SK-AM68)     |
-| [AM69A](https://www.ti.com/product/AM69A)   | [SK-AM69](https://www.ti.com/tool/SK-AM69)     |
+| Platform                                    | EVM                                                  |
+|---------------------------------------------|------------------------------------------------------|
+| [TDA4VM](https://www.ti.com/product/TDA4VM) | [SK-TDA4VM](https://www.ti.com/tool/SK-TDA4VM)       |
+| [AM67A](https://www.ti.com/product/AM67A)   | [J722SXH01EVM](https://www.ti.com/tool/J722SXH01EVM) |
+| [AM68A](https://www.ti.com/product/AM68A)   | [SK-AM68](https://www.ti.com/tool/SK-AM68)           |
+| [AM69A](https://www.ti.com/product/AM69A)   | [SK-AM69](https://www.ti.com/tool/SK-AM69)           |
 ```
 ```{only} tag_am62a
 | Platform                                               | EVM                                                |
@@ -28,6 +29,7 @@ The Robotics SDK requires the **SD card image** from Processor SDK Linux for Edg
 | Platform | Link to Processor SDK Linux                                                                                                |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------|
 | TDA4VM   | [Processor SDK Linux for TDA4VM](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-SK-TDA4VM) (Version **{{RELEASE}}.X**) |
+| AM67A    | [Processor SDK Linux for AM67A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM67A) (Version **{{RELEASE}}.X**)      |
 | AM68A    | [Processor SDK Linux for AM68A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM68A) (Version **{{RELEASE}}.X**)      |
 | AM69A    | [Processor SDK Linux for AM69A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM69A) (Version **{{RELEASE}}.X**)      |
 ```
@@ -72,15 +74,15 @@ We also provide Dockerfiles (`docker/Dockerfile.x86_64.humble`) that can build a
 ```{only} tag_j7x
 The Robotics SDK provides camera ROS nodes for [ZED stereo camera](https://www.stereolabs.com/zed/), USB mono cameras (Logitech C270, C920, C922, and others), and CSI cameras including IMX219 and IMX390. All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
 
-- For configuration of a stereo camera, please see [ros1/drivers/zed_capture/README](../ros1/drivers/zed_capture/README.md).
-- For configuration of a USB mono camera, please see [ros1/drivers/mono_capture/README](../ros1/drivers/mono_capture/README.md).
+- For configuration of a stereo camera, please see [ros2/drivers/zed_capture/README](../ros2/drivers/zed_capture/README.md).
+- For configuration of a USB mono camera, please see [ros2/drivers/mono_capture/README](../ros2/drivers/mono_capture/README.md).
 - For configuration of CSI cameras, please see {{'[this section of Processor SDK Linux documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/devices/TDA4VM/linux/getting_started.html#hardware-setup)'.format(SDK_VER)}}.
 - For GStreamer camera ROS node (USB cameras are also supported), please see [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
 ```
 ```{only} tag_am62a
 The Robotics SDK provides camera ROS nodes for USB mono cameras (Logitech C270, C920, C922) and CSI cameras including IMX219 and IMX390. All the demo applications can be tried out with a live camera as well as with a ROSBAG file that is provided with the SDK.
 
-- For configuration of a USB mono camera, please see [ros1/drivers/mono_capture/README](../ros1/drivers/mono_capture/README.md).
+- For configuration of a USB mono camera, please see [ros2/drivers/mono_capture/README](../ros2/drivers/mono_capture/README.md).
 - For configuration of CSI cameras, please see {{'[this section of Processor SDK Linux documentation](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/AM62AX/{}/exports/edgeai_docs/devices/AM62AX/linux/getting_started.html#hardware-setup)'.format(SDK_VER)}}.
 - For GStreamer camera ROS node (USB cameras are also supported), please see [ros2/drivers/gscam2/README_TI](../ros2/drivers/gscam2/README_TI.md)
 ```
@@ -154,7 +156,7 @@ This script takes care of:
 In a similar way, you can use a script to set up on the remote Ubuntu PC for visualization:
 ```
 user@pc:~$ wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
-user@pc:~$ source ./init_setup.sh REL.09.01.00
+user@pc:~$ source ./init_setup.sh REL.09.02.00
 ```
 
 ````{note}

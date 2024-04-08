@@ -82,7 +82,7 @@
 
 #if !defined(SOC_AM62A) && !defined(SOC_AM62)
 #include <perception/perception.h>
-#endif // !defined(SOC_AM62A) || !defined(SOC_AM62)
+#endif // !defined(SOC_AM62A) && !defined(SOC_AM62)
 
 #include <edgeai_dl_inferer/ti_dl_inferer.h>
 #include <edgeai_dl_inferer/ti_pre_process_config.h>
@@ -393,7 +393,7 @@ vx_status CM_extractPointCloudData(uint8_t                  *outPcData,
                                    uint32_t                  pointSize,
                                    uint32_t                 *numPoints,
                                    uint8_t                   copyPointFlag);
-#endif // !defined(SOC_AM62A) || !defined(SOC_AM62)
+#endif // !defined(SOC_AM62A) && !defined(SOC_AM62)
 
 /**
  * \brief Function to create input and output buffers for DL inferer
@@ -440,4 +440,3 @@ void CM_copyTensorData(inT  *inData, outT *outData, int32_t  numElem)
 } // namespace ti_core_common
 
 #endif /* _CM_COMMON_CNTXT_H_ */
-

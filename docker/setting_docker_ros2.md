@@ -113,11 +113,11 @@ When a new camera is connected to the SK board while you’re already inside the
 ```
 
 ```{only} tag_j7x
-- To specify a camera recognized as `/dev/video-{usb,rpi,imx390}-camX` and `/dev/v4l-{rpi,imx390}-subdevY`, use the arguments `cam_id:=X` and `subdev_id:=Y`.
+- To specify a camera recognized as `/dev/video-{usb,imx219,imx390}-camX` and `/dev/v4l-{imx219,imx390}-subdevY`, use the arguments `cam_id:=X` and `subdev_id:=Y`.
 - To specify the serial number of the ZED camera (found in the original box), use the argument `zed_sn`, which should start with 'SN' followed by the serial number.
 ```
 ```{only} tag_am62a
-- To specify a camera recognized as `/dev/video-{usb,rpi,imx390}-camX` and `/dev/v4l-{rpi,imx390}-subdevY`, use the arguments `cam_id:=X` and `subdev_id:=Y`.
+- To specify a camera recognized as `/dev/video-{usb,imx219,imx390}-camX` and `/dev/v4l-{imx219,imx390}-subdevY`, use the arguments `cam_id:=X` and `subdev_id:=Y`.
 ```
 
 ```{note}
@@ -127,51 +127,48 @@ For your convenience, the SDK Docker container comes pre-configured with a varie
 ```{only} tag_j7x
 | Demo (Input Source) | Launch command on Target        | Launch command on Remote Visualization PC  |
 |---------------------|---------------------------------|--------------------------------------------|
-| Stereo Vision (ZED camera) | ros2 launch ti_sde zed_sde_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_sde_launch.py |
-| Stereo Vision with point-cloud (ZED camera) | ros2 launch ti_sde zed_sde_pcl_launch.py cam_id:=X  zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py |
-| Semantic Segmentation CNN (ZED camera)    | ros2 launch ti_vision_cnn zed_semseg_cnn_launch.py cam_id:=X  zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Stereo Vision (ROSBAG) | ros2 launch ti_sde bag_sde_launch.py | ros2 launch ti_viz_nodes rviz_sde_launch.py |
+| Stereo Vision (ZED camera) | ros2 launch ti_sde zed_sde_launch.py cam_id:=X zed_sn:=SNxxxxx | same as above |
+| Stereo Vision with point-cloud (ROSBAG)     | ros2 launch ti_sde bag_sde_pcl_launch.py | ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py |
+| Stereo Vision with point-cloud (ZED camera) | ros2 launch ti_sde zed_sde_pcl_launch.py cam_id:=X  zed_sn:=SNxxxxx | same as above |
+| Semantic Segmentation CNN (ROSBAG)        | ros2 launch ti_vision_cnn bag_semseg_cnn_launch.py  | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Semantic Segmentation CNN (ZED camera)    | ros2 launch ti_vision_cnn zed_semseg_cnn_launch.py cam_id:=X  zed_sn:=SNxxxxx | same as above |
 | Semantic Segmentation CNN (Mono camera)   | ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py cam_id:=X | same as above |
 | Semantic Segmentation CNN (IMX219 camera) | ros2 launch ti_vision_cnn gscam_semseg_cnn_imx219_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Semantic Segmentation CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_semseg_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
-| Object Detection CNN (ZED camera)    | ros2 launch ti_vision_cnn zed_objdet_cnn_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Object Detection CNN (ROSBAG)        | ros2 launch ti_vision_cnn bag_objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Object Detection CNN (ZED camera)    | ros2 launch ti_vision_cnn zed_objdet_cnn_launch.py cam_id:=X zed_sn:=SNxxxxx |  same as above |
 | Object Detection CNN (Mono camera)   | ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py cam_id:=X | same as above |
 | Object Detection CNN (IMX219 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx219_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Object Detection CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
-| 3D Obstacle Detection (ZED camera) | ros2 launch ti_estop zed_estop_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_estop_launch.py |
-| Object Detection with 3D Spatial Information (ZED camera)  | ros2 launch ti_objdet_range zed_objdet_range_launch.py cam_id:=X zed_sn:=SNxxxxx | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
+| 6D Pose Estimation CNN (ROSBAG)   | ros2 launch ti_vision_cnn bag_6dpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_6dpose_cnn_launch.py width:=1280 height:=960 |
+| Human Pose Estimation CNN (ROSBAG) | ros2 launch ti_vision_cnn bag_humanpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_humanpose_cnn_launch.py |
+| Human Pose Estimation CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_humanpose_cnn_launch.py cam_id:=X | same as above |
+| 3D Obstacle Detection (ROSBAG) | ros2 launch ti_estop bag_estop_launch.py | ros2 launch ti_viz_nodes rviz_estop_launch.py |
+| 3D Obstacle Detection (ZED camera) | ros2 launch ti_estop zed_estop_launch.py cam_id:=X zed_sn:=SNxxxxx | same as above |
+| Object Detection with 3D Spatial Information (ROSBAG)  | ros2 launch ti_objdet_range bag_objdet_range_launch.py | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
+| Object Detection with 3D Spatial Information (ZED camera)  | ros2 launch ti_objdet_range zed_objdet_range_launch.py cam_id:=X zed_sn:=SNxxxxx | same as above |
+| Visual Localization (ROSBAG)*    | ros2 launch ti_vl bag_visloc_launch.py              | ros2 launch ti_viz_nodes rviz_visloc_launch.py |
+| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_mmwave_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
+| Camera + Radar Fusion (IMX219, IWR6843)  | ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=X | same as above |
+
+\* Visual location is supported only on TDA4VM, AM68A, and AM69A.
 ```
 ```{only} tag_am62a
 | Demo (Input Source) | Launch command on Target        | Launch command on Remote Visualization PC  |
 |---------------------|---------------------------------|--------------------------------------------|
-| Semantic Segmentation CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py cam_id:=X framerate:=15 | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Semantic Segmentation CNN (ROSBAG)        | ros2 launch ti_vision_cnn bag_semseg_cnn_launch.py  | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
+| Semantic Segmentation CNN (Mono camera)   | ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py cam_id:=X framerate:=15 | same as above |
 | Semantic Segmentation CNN (IMX219 camera) | ros2 launch ti_vision_cnn gscam_semseg_cnn_imx219_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Semantic Segmentation CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_semseg_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
-| Object Detection CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py cam_id:=X framerate:=15 | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Object Detection CNN (ROSBAG)        | ros2 launch ti_vision_cnn bag_objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Object Detection CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py cam_id:=X framerate:=15 | same as above |
 | Object Detection CNN (IMX219 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx219_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Object Detection CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
-```
-
-**Running Demos with ROSBAG**
-
-It is recommended to launch the demos in two terminals on the target SK board, specifically, launch `ros2 bag play` in a separate terminal as shown in the following table.
-
-```{only} tag_j7x
-| Demo                           | ROSBAG launch command on Target (Terminal 1) | Demo launch command on Target (Terminal 2) | Launch command on Remote Visualization PC |
-|--------------------------------|--------------------------------------------|------------------------------------------|-------------------------------------------|
-| Stereo Vision                  | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_sde sde_launch.py     | ros2 launch ti_viz_nodes rviz_sde_launch.py |
-| Stereo Vision with point-cloud | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_sde sde_pcl_launch.py | ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py |
-| Semantic Segmentation CNN | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
-| Object Detection CNN      | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
-| 6D Pose Estimation CNN    | -                                         | ros2 launch ti_vision_cnn bag_6dpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_6dpose_cnn_launch.py width:=1280 height:=960 |
-| 3D Obstacle Detection     | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_estop estop_launch.py                | ros2 launch ti_viz_nodes rviz_estop_launch.py |
-| Object Detection with 3D Spatial Information  | ros2 launch ti_sde rosbag_launch.py  | ros2 launch ti_objdet_range objdet_range_launch.py  | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
-| Visual Localization       | -                                    | ros2 launch ti_vl bag_visloc_launch.py              | ros2 launch ti_viz_nodes rviz_visloc_launch.py |
-```
-```{only} tag_am62a
-| Demo                      | ROSBAG launch command on Target (Terminal 1) | Demo launch command on Target (Terminal 2)  | Launch command on Remote Visualization PC |
-|---------------------------|-------------------------------------------|------------------------------------------------|-------------------------------------------|
-| Semantic Segmentation CNN | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn semseg_cnn_launch.py | ros2 launch ti_viz_nodes rviz_semseg_cnn_launch.py |
-| Object Detection CNN      | ros2 launch ti_vision_cnn rosbag_remap_launch.py | ros2 launch ti_vision_cnn objdet_cnn_launch.py | ros2 launch ti_viz_nodes rviz_objdet_cnn_launch.py |
+| Human Pose Estimation CNN (ROSBAG) | ros2 launch ti_vision_cnn bag_humanpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_humanpose_cnn_launch.py |
+| Human Pose Estimation CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_humanpose_cnn_launch.py cam_id:=X | same as above |
+| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_mmwave_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
+| Camera + Radar Fusion (IMX219, IWR6843)  | ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=X | same as above |
 ```
 
 ```{tip}

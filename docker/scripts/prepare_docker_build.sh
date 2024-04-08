@@ -81,7 +81,6 @@ fi
 if [[ "$ARCH" == "aarch64" ]]; then
     source ${SDK_DIR}/docker/scripts/detect_soc.sh
     # Installation of OSRT libs is now part of edgeai-gst-app/scripts/install_dl_inferer.sh
-    cp -p ${SDK_DIR}/docker/install_osrt.sh ${DST_DIR}
     cp -p /opt/edgeai-gst-apps/scripts/install_apps_utils.sh ${DST_DIR}
     cp -p /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh ${DST_DIR}
     cp -p /opt/edgeai-gst-apps/scripts/install_tiovx_kernels.sh ${DST_DIR}

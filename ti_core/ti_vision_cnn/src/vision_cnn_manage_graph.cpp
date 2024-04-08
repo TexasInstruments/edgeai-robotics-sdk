@@ -182,7 +182,6 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
     {
         const std::string   taskType = appCntxt->postProcObj->getTaskType();
         int32_t             elementSize;
-
         appCntxt->outTensorNumDim = ifInfo->dim;
         elementSize               = getTypeSize(ifInfo->type);
 
@@ -220,7 +219,7 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
                 appCntxt->outTensorDims[1] = CM_POST_PROCESS_POSE6D_NUM_FIELDS;
             }
         }
-        else if (taskType != "segmentation")
+        else if (taskType != "segmentation" && taskType != "keypoint_detection")
         {
             LOG_ERROR("Unsupported taskType");
             vxStatus = VX_FAILURE;

@@ -1,8 +1,18 @@
+import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+
+# path to the DL model
+soc = os.getenv('SOC')
+if soc in ['j721e', 'j721s2', 'j784s4']:
+    default_dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
+elif soc in ['j722s', 'am62a']:
+    default_dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
+else:
+    print('{} not supported'.format(soc))
 
 def generate_launch_description():
 
@@ -10,7 +20,7 @@ def generate_launch_description():
     exportPerfStats = DeclareLaunchArgument('exportPerfStats', default_value='0')
     detVizThreshold = DeclareLaunchArgument('detVizThreshold', default_value='0.5')
     dl_model_path = DeclareLaunchArgument('dl_model_path',
-        default_value='/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512'
+        default_value=default_dl_model_path
     )
 
     exportPerfStats_str_arg = DeclareLaunchArgument("exportPerfStats_str", default_value=[LaunchConfiguration('exportPerfStats')])

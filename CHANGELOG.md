@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## Release 9.2.0 (2024-04-05)
+
+- Added support for AM67A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_02_00/AM67A/docs/). The Robotics SDK now supports five TI Processor platforms: AM62A, TDA4VM, AM67A, AM68A, and AM69A.
+- Added a new camera and radar fusion demo application (`ti_objdet_radar`). This application consists consists of CNN object detection, mmWave radar processing chain (on IWR6843), and object-level fusion algorithm.
+- Added new ROS-GST plugins (`ti_ros_gst_plugins`). These GStreamer plugins provide an optimized bridge between ROS 2 and the GStreamer framework.
+- The vision CNN chain (`ti_vision_cnn`) now includes support for human pose estimation.
+
 ## Release 9.1.0 (2023-12-08)
 
 - The vision CNN chain (`ti_vision_cnn`) now includes support for 6D pose estimation. This enhancement is particularly beneficial for applications such as automated bin picking.
@@ -12,7 +19,7 @@ Change Log
 
 ## Release 9.0.0 (2023-08-11)
 
-- Added support for SK-AM62A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_00_00/AM62A/docs/). The Robotics SDK now supports four TI Processor platforms: SK-AM62A, SK-TDA4VM, SK_AM68A, and SK-AM69A.
+- Added support for SK-AM62A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_00_00/AM62A/docs/). The Robotics SDK now supports four TI Processor platforms: SK-AM62A, SK-TDA4VM, SK-AM68A, and SK-AM69A.
 - Migrated ROS 2 to Humble and it is operating in Ubuntu 22.04 Docker container.
 - ROS 1 support is not included in 9.0.0 release. However, ROS 1 Noetic is still supported on the four TI platforms with Robotics SDK 8.6.1.
 - Support for IMX390 FPD-link CSI camera is added in `gscam2` and `ti_vision_cnn` processing chain in ROS 2.

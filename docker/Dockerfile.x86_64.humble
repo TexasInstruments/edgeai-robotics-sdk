@@ -112,6 +112,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rqt-image-view \
     ros-humble-rqt-console \
     ros-humble-rqt-graph \
+    ros-humble-rqt-topic \
+    ros-humble-rqt-msg \
     libcanberra-gtk-module \
     libcanberra-gtk3-0 \
     libcanberra-gtk3-module && \

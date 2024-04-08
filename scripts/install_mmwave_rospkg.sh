@@ -13,7 +13,7 @@ fi
 
 # install mmwave_rospkg
 REPO_URL="https://git.ti.com/git/mmwave_radar/mmwave_ti_ros.git"
-COMMIT="2184f08811ca6e6a21a9dfdacbd575deb897f9bf"
+COMMIT="3cfb96e29db1a5728a9c45f968ae2739d370f58f"
 BRANCH="master"
 if [ "$ROS_VER" == "1" ]; then
     WORK_PATH=$SDK_DIR/ros1/drivers

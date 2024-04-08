@@ -436,8 +436,6 @@ vx_status ESTOP_APP_init(ESTOP_APP_Context *appCntxt)
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
-        /* load image processing kernel */
-        tivxImgProcLoadKernels(appCntxt->vxContext);
 
         /* Load HWA kernels */
         tivxHwaLoadKernels(appCntxt->vxContext);
@@ -707,7 +705,6 @@ void ESTOP_APP_deInit(ESTOP_APP_Context *appCntxt)
 
     // Unload HWA kernels
     tivxStereoUnLoadKernels(appCntxt->vxContext);
-    tivxImgProcUnLoadKernels(appCntxt->vxContext);
     tivxHwaUnLoadKernels(appCntxt->vxContext);
 
     /* Release the context. */

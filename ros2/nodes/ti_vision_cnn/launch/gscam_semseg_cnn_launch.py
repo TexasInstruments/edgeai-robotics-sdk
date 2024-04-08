@@ -12,7 +12,7 @@ from launch.substitutions import LaunchConfiguration
 image_format = 1
 enable_ldc_node = 1
 lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
-dl_model_path = "/opt/model_zoo/ONR-SS-8818-deeplabv3lite-mobv2-qat-robokit-768x432"
+dl_model_path = "/opt/model_zoo/ONR-SS-7618-deeplabv3lite-mobv2-qat-robokit-768x432"
 
 def get_launch_file(pkg, file_name):
     pkg_dir = get_package_share_directory(pkg)

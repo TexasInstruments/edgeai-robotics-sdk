@@ -61,23 +61,37 @@
  */
 #include <cm_remote_service.h>
 
-namespace ti_core_common 
+namespace ti_core_common
 {
 
 #ifndef PC
+
 int32_t CM_vhwaDmpacSl2Free()
 {
     int32_t status;
-
+#if defined (SOC_J722S)
+    status = appRemoteServiceRun(APP_IPC_CPU_MCU2_0, APP_VHWA_SERVICE_NAME,
+                                 APP_DMPAC_SDE_SL2_FREE,
+                                 NULL, 0, 0);
+#else
     status = appRemoteServiceRun(APP_IPC_CPU_MCU2_1, APP_VHWA_SERVICE_NAME,
                                  APP_DMPAC_SDE_SL2_FREE,
                                  NULL, 0, 0);
+#endif
 
     if (status == 0)
     {
+#if defined (SOC_J722S)
+        status = appRemoteServiceRun(APP_IPC_CPU_MCU2_0, APP_VHWA_SERVICE_NAME,
+                                     APP_DMPAC_DOF_SL2_FREE,
+                                     NULL, 0, 0);
+
+#else
         status = appRemoteServiceRun(APP_IPC_CPU_MCU2_1, APP_VHWA_SERVICE_NAME,
                                      APP_DMPAC_DOF_SL2_FREE,
                                      NULL, 0, 0);
+#endif
+
     }
 
     return status;
@@ -95,14 +109,18 @@ int32_t CM_vhwaDmpacSdeSl2Realloc()
     sl2AllocPrms.inCcsf       = APP_FVID2_CCSF_BITS12_UNPACKED16;
     sl2AllocPrms.searchRange  = APP_SDE_SR_192;
     sl2AllocPrms.disBuffDepth = APP_SDE_DEFAULT_DIS_BUFF_DEPTH;
-    
+#if defined (SOC_J722S)
+    status = appRemoteServiceRun(APP_IPC_CPU_MCU2_0, APP_VHWA_SERVICE_NAME,
+                                 APP_DMPAC_SDE_SL2_REALLOC,
+                                 &sl2AllocPrms, sizeof(sl2AllocPrms), 0);
+#else
     status = appRemoteServiceRun(APP_IPC_CPU_MCU2_1, APP_VHWA_SERVICE_NAME,
                                  APP_DMPAC_SDE_SL2_REALLOC,
                                  &sl2AllocPrms, sizeof(sl2AllocPrms), 0);
+#endif
 
     return status;
 }
 #endif
 
-} // namespace ti_core_common 
-
+} // namespace ti_core_common

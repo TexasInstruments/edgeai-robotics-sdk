@@ -4,6 +4,9 @@
 #   At Ubuntu PC command line (not in Docker container):
 #   ~/j7ros_home$ make calib_download
 
+# Python venv is set up in the SDK Docker container
+. /opt/venv/bin/activate
+
 PYTHON=python3
 J7ROS_DIR=${HOME}/j7ros_home
 if [[ `arch` == "x86_64" ]]; then
@@ -36,3 +39,5 @@ ${PYTHON} camera_calibration.py \
 ${PYTHON} generate_rect_map_mono.py \
     -i ${CAMINFO_FILE} \
     -n ${CAMERA_NAME}
+
+deactivate

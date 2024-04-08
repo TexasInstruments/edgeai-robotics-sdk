@@ -149,7 +149,7 @@ def main(camera_info_file, camera_mode, camera_name, new_image_size=None):
     image_size = (width, height)
     if dist_model == 'plumb_bob':
         # create remap table for left
-        map_x, map_y = cv2.initUndistortRectifyMap(K, D, R, P, size=image_size, m1type=cv2.CV_32FC1)
+        map_x, map_y = cv2.initUndistortRectifyMap(K, D, R, K, size=image_size, m1type=cv2.CV_32FC1)
 
         # write LDC undist/rect LUT
         lut_file_path = os.path.join(os.path.dirname(camera_info_file), camera_name+"_"+camera_mode+"_LUT.bin")

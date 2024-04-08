@@ -185,6 +185,10 @@ void VisionCnnNode::publisherThread()
     {
         m_posePub = this->create_publisher<Pose6D>(outTensorTopic, 1);
     }
+    else if (m_taskType == "keypoint_detection")
+    {
+        m_human_posePub = this->create_publisher<HumanPose>(outTensorTopic, 1);
+    }
     else if (m_taskType == "detection")
     {
         // Create the publisher for the rectified image
@@ -340,6 +344,43 @@ void VisionCnnNode::processCompleteEvtHdlr()
                 }
 
                 m_posePub->publish(pose);
+            }
+            else if (m_taskType == "keypoint_detection")
+            {
+                float          *data;
+                HumanPose       pose;
+                int             total_kps = 17;
+                int             steps = 3;
+                int             total_value = total_kps * steps;
+
+                data              = reinterpret_cast<float *>(m_outTensorPubData.data.data());
+                pose.header.stamp = time;
+
+                pose.img_width  = static_cast<int32_t>(*data++);
+                pose.img_height = static_cast<int32_t>(*data++);
+
+                pose.num_objects  = static_cast<int32_t>(*data++);
+                pose.bounding_boxes.assign(pose.num_objects, BoundingBox2D{});
+                pose.keypoint.assign(pose.num_objects * total_value, float{});
+
+                for (int32_t i = 0; i < pose.num_objects; i++)
+                {
+
+                    auto &box = pose.bounding_boxes[i];
+
+                    box.xmin       = static_cast<int32_t>(*data++);
+                    box.ymin       = static_cast<int32_t>(*data++);
+                    box.xmax       = static_cast<int32_t>(*data++);
+                    box.ymax       = static_cast<int32_t>(*data++);
+                    box.confidence = *data++;
+                    box.label_id   = static_cast<int32_t>(*data++);
+
+                    for (int32_t j = 0; j < total_value ; j++)
+                    {
+                        pose.keypoint[i* total_value + j] = *data++;
+                    }
+                }
+                m_human_posePub->publish(pose);
             }
             else // m_taskType == "detection"
             {

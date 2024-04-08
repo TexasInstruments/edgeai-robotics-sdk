@@ -11,13 +11,13 @@ from launch.substitutions import LaunchConfiguration
 # Input image format: 0 - VX_DF_IMAGE_U8, 1 - VX_DF_IMAGE_NV12, 2 - VX_DF_IMAGE_UYVY
 image_format = 1
 enable_ldc_node = 1
-lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
+lut_file_path = "/opt/robotics_sdk/tools/camera_info/IMX219_HD_LUT.bin"
 
 # path to the DL model
 soc = os.getenv('SOC')
 if soc in ['j721e', 'j721s2', 'j784s4']:
     dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
-elif soc in ['am62a']:
+elif soc in ['j722s', 'am62a']:
     dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
 else:
     print('{} not supported'.format(soc))

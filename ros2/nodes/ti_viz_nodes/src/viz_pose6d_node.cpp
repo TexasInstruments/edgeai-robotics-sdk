@@ -327,7 +327,7 @@ namespace ti_ros2
                     score  = poseMsg->bounding_boxes[i].confidence;
                     label_id = poseMsg->bounding_boxes[i].label_id;
 
-                    if (label_id != 4)
+                    if (label_id < 0 || label_id > 20)
                     {
                         continue;
                     }

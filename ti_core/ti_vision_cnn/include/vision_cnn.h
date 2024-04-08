@@ -229,6 +229,12 @@ extern "C" {
  */
 #define CM_POST_PROCESS_POSE6D_NUM_FIELDS     (15U)
 
+/**
+ * \brief Number of fields for detected object in Human Pose Model
+ * \ingroup group_ticore_vision_cnn
+ */
+#define CM_POST_PROCESS_HUMANPOSE_NUM_FIELDS     (57U)
+
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 /**

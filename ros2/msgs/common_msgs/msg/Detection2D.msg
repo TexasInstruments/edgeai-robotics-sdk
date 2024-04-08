@@ -1,4 +1,4 @@
-std_msgs/Header header
+std_msgs/Header  header
 int32            img_width
 int32            img_height
 int32            num_objects

@@ -23,22 +23,6 @@ def generate_launch_description():
         description='Height of the input image'
     )
 
-    # color conversion for input image_raw for visualization
-    params = [{
-        "width":            LaunchConfiguration('width'),
-        "height":           LaunchConfiguration('height'),
-        "input_yuv_topic":  "camera/image_raw",
-        "output_rgb_topic": "camera/image_raw_rgb",
-        "yuv_format":       "YUV420"
-    }]
-    yuv2rbg_node1 = Node(
-        package = "ti_viz_nodes",
-        executable = "viz_color_conv_yuv2rgb",
-        name = "viz_color_conv_yuv2rgb_input",
-        output = "screen",
-        parameters = params
-    )
-
     # color conversion for image_rect_nv12 for visualization
     params = [{
         "width":            LaunchConfiguration('width'),
@@ -48,7 +32,7 @@ def generate_launch_description():
         "yuv_format":       "YUV420",
         "yuv420_luma_only": False
     }]
-    yuv2rbg_node2 = Node(
+    yuv2rbg_node = Node(
         package = "ti_viz_nodes",
         executable = "viz_color_conv_yuv2rgb",
         name = "viz_color_conv_yuv2rgb_node_rect",
@@ -85,8 +69,7 @@ def generate_launch_description():
     # Create the launch description with launch and node information
     ld.add_action(width_arg)
     ld.add_action(height_arg)
-    ld.add_action(yuv2rbg_node1)
-    ld.add_action(yuv2rbg_node2)
+    ld.add_action(yuv2rbg_node)
     ld.add_action(viz_pose6d_node)
     ld.add_action(rviz2_node)
 

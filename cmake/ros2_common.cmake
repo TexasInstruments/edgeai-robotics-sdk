@@ -61,3 +61,32 @@ function(build_node)
 
 endfunction(build_node)
 
+# Function for building a lib:
+# ARG0: app name
+# ARG1: source list
+function(build_lib)
+    set(app ${ARGV0})
+    set(src ${ARGV1})
+
+    add_library(${app} SHARED ${${src}})
+
+    target_link_libraries(${app}
+                          -Wl,--start-group
+                          ${COMMON_LINK_LIBS}
+                          ${TARGET_LINK_LIBS}
+                          -Wl,--end-group
+                         )
+
+    ament_target_dependencies(${app}
+                              ${common_msgs_EXPORTED_TARGETS}
+                              rclcpp
+                              common_msgs
+                              sensor_msgs
+                              nav_msgs
+                              cv_bridge
+                              image_transport
+                              )
+    install(TARGETS ${app}
+            DESTINATION lib/${PROJECT_NAME})
+
+endfunction(build_lib)

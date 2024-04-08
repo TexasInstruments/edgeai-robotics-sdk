@@ -28,9 +28,17 @@ if (${BUILD_VISUALIZATION_NODES})
     set(VIZ_OBJDET_RANGE_SRCS src/viz_objdet_range_node.cpp)
     build_node(viz_objdet_range VIZ_OBJDET_RANGE_SRCS)
 
+    # viz_objdet_radar_node
+    set(VIZ_OBJDET_RADAR_SRCS src/viz_objdet_radar_node.cpp)
+    build_node(viz_objdet_radar VIZ_OBJDET_RADAR_SRCS)
+
     # viz_pose6d
     set(VIZ_POSE6D_SRCS src/viz_pose6d_node.cpp)
     build_node(viz_pose6d VIZ_POSE6D_SRCS)
+
+    # viz_humanpose
+    set(VIZ_HUMANPOSE_SRCS src/viz_humanpose_node.cpp)
+    build_node(viz_humanpose VIZ_HUMANPOSE_SRCS)
 
     ament_package()
 endif()

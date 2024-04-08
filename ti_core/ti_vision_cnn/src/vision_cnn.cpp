@@ -115,7 +115,6 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         status = appCntxt->postProcCfg.getConfig(modelPath);
-
         //==> DEBUG
         //appCntxt->postProcCfg.dumpInfo();
 
@@ -198,6 +197,12 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
             appCntxt->postProcCfg.inDataHeight = appCntxt->preProcCfg.outDataHeight;
             appCntxt->logFileName = "6dpose";
         }
+        else if (appCntxt->postProcCfg.taskType == "keypoint_detection")
+        {
+            appCntxt->postProcCfg.inDataWidth  = appCntxt->preProcCfg.outDataWidth;
+            appCntxt->postProcCfg.inDataHeight = appCntxt->preProcCfg.outDataHeight;
+            appCntxt->logFileName = "humanpose";
+        }
         else
         {
             appCntxt->postProcCfg.inDataWidth  = appCntxt->preProcCfg.outDataWidth;
@@ -254,9 +259,6 @@ vx_status VISION_CNN_init(VISION_CNN_Context *appCntxt)
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
-        /* load image processing kernel */
-        tivxImgProcLoadKernels(appCntxt->vxContext);
-
         /* load HWA kernels */
         tivxHwaLoadKernels(appCntxt->vxContext);
 
@@ -395,8 +397,6 @@ void VISION_CNN_deInit(VISION_CNN_Context *appCntxt)
     // release graph
     vxReleaseGraph(&appCntxt->vxGraph);
 
-    //tivxTIDLUnLoadKernels(appCntxt->vxContext);
-    tivxImgProcUnLoadKernels(appCntxt->vxContext);
     tivxHwaUnLoadKernels(appCntxt->vxContext);
 
     /* Release the context. */

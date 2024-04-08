@@ -110,7 +110,7 @@ index 63ad29c..5f41e23 100644
 \ No newline at end of file
 diff --git a/README_TI.md b/README_TI.md
 new file mode 100644
-index 0000000..9b370eb
+index 0000000..4061071
 --- /dev/null
 +++ b/README_TI.md
 @@ -0,0 +1,135 @@
@@ -132,7 +132,7 @@ index 0000000..9b370eb
 +## Usage: USB Camera
 +
 +### Running gscam2 on the target
-+1. Camera Calibration and Rectification Map Generation: See corresponding parts of [mono_capture/README.md](../../../ros1/drivers/mono_capture/README.md).
++1. Camera Calibration and Rectification Map Generation: See corresponding parts of [mono_capture/README.md](../../../ros2/drivers/mono_capture/README.md).
 +
 +
 +2. Build the ROS node:
@@ -325,13 +325,12 @@ index 0000000..3ce26c2
 +       0. ]
 diff --git a/config/IMX219_HD_camera_info.yaml b/config/IMX219_HD_camera_info.yaml
 new file mode 100644
-index 0000000..b3ab210
+index 0000000..8610603
 --- /dev/null
 +++ b/config/IMX219_HD_camera_info.yaml
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,31 @@
 +%YAML:1.0
 +---
-+# This is just a template. All the coefficients should be from calibration.
 +image_width: 1280
 +image_height: 720
 +camera_name: camera
@@ -339,16 +338,16 @@ index 0000000..b3ab210
 +   rows: 3
 +   cols: 3
 +   dt: d
-+   data: [ 9.3797299601201667e+02, 0., 6.4110167315102080e+02, 0.,
-+       9.3981016471195335e+02, 3.8512990806142415e+02, 0., 0., 1. ]
++   data: [ 1.0202477539224885e+03, 0., 6.5408568058599019e+02, 0.,
++       1.0227768039269025e+03, 3.3505135921974897e+02, 0., 0., 1. ]
 +distortion_model: plumb_bob
 +distortion_coefficients: !!opencv-matrix
 +   rows: 1
 +   cols: 5
 +   dt: d
-+   data: [ 7.3934261699576093e-02, -4.1542678753901879e-01,
-+       1.4128959036683215e-03, 9.4384360282255390e-04,
-+       5.9913436641201279e-01 ]
++   data: [ 1.9778509583126228e-01, -3.7778169196911265e-01,
++       -3.0851736169866797e-03, 1.0126562004595756e-03,
++       7.2843066712127577e-02 ]
 +rectification_matrix: !!opencv-matrix
 +   rows: 3
 +   cols: 3
@@ -358,19 +357,20 @@ index 0000000..b3ab210
 +   rows: 3
 +   cols: 4
 +   dt: d
-+   data: [ 9.3797299601201667e+02, 0., 6.4110167315102080e+02, 0., 0.,
-+       9.3981016471195335e+02, 3.8512990806142415e+02, 0., 0., 0., 1.,
++   data: [ 1.0202477539224885e+03, 0., 6.5408568058599019e+02, 0., 0.,
++       1.0227768039269025e+03, 3.3505135921974897e+02, 0., 0., 0., 1.,
 +       0. ]
 diff --git a/launch/v4l_imx219_launch.py b/launch/v4l_imx219_launch.py
 new file mode 100644
-index 0000000..396bf79
+index 0000000..6c2aa56
 --- /dev/null
 +++ b/launch/v4l_imx219_launch.py
-@@ -0,0 +1,158 @@
+@@ -0,0 +1,178 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
 +import os
++import subprocess
 +from ament_index_python.packages import get_package_share_directory
 +from launch import LaunchDescription
 +from launch.actions import DeclareLaunchArgument
@@ -378,18 +378,29 @@ index 0000000..396bf79
 +from launch.actions import OpaqueFunction
 +from launch_ros.actions import Node
 +
++# run setup_cameras.sh to configure IMX219 camera with 10-bit 1640x1232
++# Alternatively, the following can be run in the command line (preferably on the host Linux):
++# IMX219_CAM_FMT="[fmt:SRGGB10_1X10/1640x1232]" /opt/edgeai-gst-apps/scripts/setup_cameras.sh
++command = "/opt/edgeai-gst-apps/scripts/setup_cameras.sh"
++env = {"IMX219_CAM_FMT": "[fmt:SRGGB10_1X10/1640x1232]"}
++subprocess.run(command, env={**os.environ, **env}, shell=True)
++
 +def finalize_node(context, *args, **kwargs):
 +
 +    """
++    Following setup for IMX219 camera is included in entrypoint.sh:
++    IMX219_CAM_FMT="[fmt:SRGGB10_1X10/1640x1232]" /opt/edgeai-gst-apps/scripts/setup_cameras.sh
++
 +    You can check the cam_id and subdev_id for the IMX219 camera (RPi v2)
 +    attached by running /opt/edgeai-gst-apps/scripts/setup_cameras.sh on the target
 +    host Linux. Accordingly please update the parameters or pass as launch arguments.
 +    """
++
 +    # Video device
-+    device = "/dev/video-rpi-cam" + LaunchConfiguration('cam_id').perform(context)
++    device = "/dev/video-imx219-cam" + LaunchConfiguration('cam_id').perform(context)
 +
 +    # Subdev
-+    subdev = "/dev/v4l-rpi-subdev" + LaunchConfiguration('subdev_id').perform(context)
++    subdev = "/dev/v4l-imx219-subdev" + LaunchConfiguration('subdev_id').perform(context)
 +
 +    # Width and height of the image
 +    width = int(LaunchConfiguration('width').perform(context))
@@ -408,27 +419,32 @@ index 0000000..396bf79
 +    sensor_name = 'SENSOR_SONY_IMX219_RPI'
 +
 +    # DCC VISS binary file
-+    dcc_isp_file = '/opt/imaging/imx219/linear/dcc_viss.bin'
++    dcc_isp_file = '/opt/imaging/imx219/linear/dcc_viss_10b_1640x1232.bin'
 +
 +    # DCC 2A binary file
-+    dcc_2a_file = '/opt/imaging/imx219/linear/dcc_2a.bin'
++    dcc_2a_file = '/opt/imaging/imx219/linear/dcc_2a_10b_1640x1232.bin'
 +
 +    # GStreamer pipeline specified in gscam_config was tested with IMX219 camera.
-+    # Assumes 'edgeai-tiovx-modules' and 'edgeai-gst-plugins' are already installed in target ROS container
++    # Assumes 'edgeai-tiovx-modules' and 'edgeai-gst-plugins' are already installed in target ROS container.
++    # Following pipleline center-crops 1640 x 1232 to 1632 x 918, then resizes to 1280 x 720.
 +    gscam_config = 'v4l2src device={} io-mode=5 do-timestamp=true ! '.format(device) \
-+        + 'video/x-bayer, width=1920, height=1080, format=rggb ! ' \
++        + 'video/x-bayer, width=1640, height=1232, format=rggb10 ! ' \
 +        + 'tiovxisp sink_0::device={} dcc-isp-file={} '.format(subdev, dcc_isp_file) \
-+        + 'sink_0::dcc-2a-file={} format-msb=7 sensor-name={} ! '.format(dcc_2a_file, sensor_name) \
-+        + 'tiovxmultiscaler ! video/x-raw, width={}, height={} ! '.format(width, height) \
++        + 'sink_0::dcc-2a-file={} format-msb=9 sensor-name={} ! '.format(dcc_2a_file, sensor_name) \
++        + 'video/x-raw, format=NV12, width=1640, height=1232 ! ' \
++        + 'tiovxmultiscaler src_0::roi-startx=4 src_0::roi-starty=157 src_0::roi-width=1632 src_0::roi-height=918 ! ' \
++        + 'video/x-raw, format=NV12, width={}, height={} ! '.format(width, height) \
 +        + 'tiovxdlcolorconvert target=1 out-pool-size=4'
 +    print(gscam_config)
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # Camera calibration file
-+    config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
-+    camera_config = 'file://' + os.path.join(config_dir, 'IMX219_HD_camera_info.yaml')
++    # config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
++    # camera_config = 'file://' + os.path.join(config_dir, 'IMX219_HD_camera_info.yaml')
++    camera_config = 'file:///opt/robotics_sdk/tools/camera_info/IMX219_HD_camera_info.yaml'
 +    print(camera_config)
 +
 +    node = Node(
@@ -441,6 +457,7 @@ index 0000000..396bf79
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_config,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      width,
@@ -449,13 +466,8 @@ index 0000000..396bf79
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -479,13 +491,13 @@ index 0000000..396bf79
 +    width_arg = DeclareLaunchArgument(
 +        'width',
 +        default_value='1280',
-+        description='width of the image'
++        description='width of the image, not larger than 1632'
 +    )
 +
 +    height_arg = DeclareLaunchArgument(
 +        'height',
 +        default_value='720',
-+        description='height of the image'
++        description='height of the image, not larger than 918'
 +    )
 +
 +    framerate_arg = DeclareLaunchArgument(
@@ -512,6 +524,12 @@ index 0000000..396bf79
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
 +    ld.add_action(cam_id_arg)
@@ -522,16 +540,17 @@ index 0000000..396bf79
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_launch.py b/launch/v4l_imx390_launch.py
 new file mode 100644
-index 0000000..39a930c
+index 0000000..644325b
 --- /dev/null
 +++ b/launch/v4l_imx390_launch.py
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,175 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -587,9 +606,6 @@ index 0000000..39a930c
 +    # DCC 2A binary file
 +    dcc_2a_file = '/opt/imaging/imx390/linear/dcc_2a.bin'
 +
-+    # camera_info URL: replace with camera_info from camera calibration
-+    camera_info_url = '/opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
-+
 +    # LDC LUT file
 +    lut_file = '/opt/imaging/imx390/imx390_35244_equidistant_{}x{}_LUT.bin'.format(width, height)
 +
@@ -607,6 +623,7 @@ index 0000000..39a930c
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # camera_info URL: replace with camera_info from camera calibration
 +    camera_info_url = 'file:///opt/imaging/imx390/imx390_35244_equidistant_{}x{}_rect.yaml'.format(width, height)
@@ -622,6 +639,7 @@ index 0000000..39a930c
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_info_url,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      width,
@@ -630,13 +648,8 @@ index 0000000..39a930c
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -693,6 +706,12 @@ index 0000000..39a930c
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
 +    ld.add_action(cam_id_arg)
@@ -703,16 +722,17 @@ index 0000000..39a930c
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_raw_launch.py b/launch/v4l_imx390_raw_launch.py
 new file mode 100644
-index 0000000..489322f
+index 0000000..4508927
 --- /dev/null
 +++ b/launch/v4l_imx390_raw_launch.py
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,147 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -759,9 +779,6 @@ index 0000000..489322f
 +    # DCC 2A binary file
 +    dcc_2a_file = '/opt/imaging/imx390/linear/dcc_2a.bin'
 +
-+    # camera_info URL: replace with camera_info from camera calibration
-+    camera_info_url = 'file:///opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
-+
 +    # GStreamer pipeline specified in gscam_config was tested with IMX390,
 +    # 'edgeai-tiovx-modules' and 'edgeai-gst-plugins' are already installed in the ROS container
 +    gscam_config = 'v4l2src device={} do-timestamp=true ! '.format(device) \
@@ -774,9 +791,10 @@ index 0000000..489322f
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # camera_info URL: replace with camera_info from camera calibration
-+    camera_info_url = '/opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
++    camera_info_url = 'file:///opt/robotics_sdk/tools/mono_camera/imx390_35244_equidistant_camera_info.yaml'
 +    print(camera_info_url)
 +
 +    node = Node(
@@ -789,6 +807,7 @@ index 0000000..489322f
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_info_url,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      width,
@@ -797,13 +816,8 @@ index 0000000..489322f
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -848,6 +862,12 @@ index 0000000..489322f
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld = LaunchDescription()
 +    ld.add_action(cam_id_arg)
@@ -856,16 +876,17 @@ index 0000000..489322f
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/launch/v4l_mjpg_launch.py b/launch/v4l_mjpg_launch.py
 new file mode 100644
-index 0000000..3afb289
+index 0000000..ad047b9
 --- /dev/null
 +++ b/launch/v4l_mjpg_launch.py
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,138 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -900,6 +921,7 @@ index 0000000..3afb289
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # Camera calibration file
 +    config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
@@ -916,6 +938,7 @@ index 0000000..3afb289
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_config,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      width,
@@ -924,13 +947,8 @@ index 0000000..3afb289
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -987,6 +1005,12 @@ index 0000000..3afb289
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld  = LaunchDescription()
 +    ld.add_action(cam_id_arg)
@@ -997,16 +1021,17 @@ index 0000000..3afb289
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/launch/v4l_ov5640_launch.py b/launch/v4l_ov5640_launch.py
 new file mode 100644
-index 0000000..a89c9ba
+index 0000000..7b40876
 --- /dev/null
 +++ b/launch/v4l_ov5640_launch.py
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,114 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -1038,6 +1063,7 @@ index 0000000..a89c9ba
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # Camera calibration file
 +    config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
@@ -1054,6 +1080,7 @@ index 0000000..a89c9ba
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_config,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      1280,
@@ -1062,13 +1089,8 @@ index 0000000..a89c9ba
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -1107,6 +1129,12 @@ index 0000000..a89c9ba
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld  = LaunchDescription()
 +    ld.add_action(video_id_arg)
@@ -1114,16 +1142,17 @@ index 0000000..a89c9ba
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/launch/v4l_yuv_launch.py b/launch/v4l_yuv_launch.py
 new file mode 100644
-index 0000000..1ee7030
+index 0000000..ddb2c86
 --- /dev/null
 +++ b/launch/v4l_yuv_launch.py
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,114 @@
 +"""
 +Launch gscam2 node with parameters and remappings.
 +"""
@@ -1155,6 +1184,7 @@ index 0000000..1ee7030
 +
 +    # Camera namespace
 +    camera_name = LaunchConfiguration('camera_name').perform(context)
++    image_topic_name = LaunchConfiguration('image_topic_name').perform(context)
 +
 +    # Camera calibration file
 +    config_dir = os.path.join(get_package_share_directory('gscam2'), 'config')
@@ -1171,6 +1201,7 @@ index 0000000..1ee7030
 +            {
 +                'gscam_config':       gscam_config,
 +                'camera_name':        camera_name,
++                'image_topic_name':   image_topic_name,
 +                'camera_info_url':    camera_config,
 +                'image_encoding':     image_encoding,
 +                'appsink_width':      1280,
@@ -1179,13 +1210,8 @@ index 0000000..1ee7030
 +                'sync_sink':          False,
 +                'preroll':            False,
 +                'use_gst_timestamps': False,
-+                'frame_id':           'camera_frame',
++                'frame_id':           camera_name,
 +            },
-+        ],
-+        # Remap outputs to the correct namespace
-+        remappings=[
-+            ('/image_raw', '/' + camera_name + '/image_raw'),
-+            ('/camera_info', '/' + camera_name + '/camera_info'),
 +        ],
 +    )
 +
@@ -1224,6 +1250,12 @@ index 0000000..1ee7030
 +        description='Name of the camera namespace'
 +    )
 +
++    image_topic_name_arg = DeclareLaunchArgument(
++        'image_topic_name',
++        default_value='image_raw',
++        description='Name of the image topic'
++    )
++
 +    # Create the launch description and add the arguments
 +    ld  = LaunchDescription()
 +    ld.add_action(video_id_arg)
@@ -1231,25 +1263,29 @@ index 0000000..1ee7030
 +    ld.add_action(image_encoding_arg)
 +    ld.add_action(node_name_arg)
 +    ld.add_action(camera_name_arg)
++    ld.add_action(image_topic_name_arg)
 +    ld.add_action(OpaqueFunction(function=finalize_node))
 +
 +    return ld
 \ No newline at end of file
 diff --git a/src/gscam_node.cpp b/src/gscam_node.cpp
-index 3fef91f..039d86f 100644
+index 3fef91f..5590953 100644
 --- a/src/gscam_node.cpp
 +++ b/src/gscam_node.cpp
-@@ -27,6 +27,9 @@ namespace gscam2
+@@ -26,7 +26,11 @@ namespace gscam2
+   CXT_MACRO_MEMBER(image_encoding, std::string, sensor_msgs::image_encodings::RGB8) /*   */ \
    CXT_MACRO_MEMBER(camera_info_url, std::string, "")        /* Location of camera info file  */ \
    CXT_MACRO_MEMBER(camera_name, std::string, "")            /* Camera name  */ \
-   CXT_MACRO_MEMBER(frame_id, std::string, "camera_frame")   /* Camera frame id  */ \
+-  CXT_MACRO_MEMBER(frame_id, std::string, "camera_frame")   /* Camera frame id  */ \
++  CXT_MACRO_MEMBER(frame_id, std::string, "camera")         /* Camera frame id  */ \
 +  CXT_MACRO_MEMBER(appsink_width, int, 1280)                /* app_sink: width */ \
 +  CXT_MACRO_MEMBER(appsink_height, int, 720)                /* app_sink: height */ \
 +  CXT_MACRO_MEMBER(appsink_framerate, int, 30)              /* app_sink: set_framerate */ \
++  CXT_MACRO_MEMBER(image_topic_name, std::string, "image_raw") /* Name of image topic */ \
    /* End of list */
  
  #undef CXT_MACRO_MEMBER
-@@ -63,6 +66,9 @@ namespace gscam2
+@@ -63,6 +67,9 @@ namespace gscam2
      // Discover width and height from the incoming data
      int width_, height_;
  
@@ -1259,7 +1295,7 @@ index 3fef91f..039d86f 100644
      // Calibration between ros::Time and gst timestamps
      GstClockTime time_offset_;
  
-@@ -141,16 +147,17 @@ namespace gscam2
+@@ -141,16 +148,17 @@ namespace gscam2
      GstCaps *caps = gst_app_sink_get_caps(GST_APP_SINK(sink_));
  
      // http://gstreamer.freedesktop.org/data/doc/gstreamer/head/pwg/html/section-types-definitions.html
@@ -1287,7 +1323,19 @@ index 3fef91f..039d86f 100644
      }
  
      gst_app_sink_set_caps(GST_APP_SINK(sink_), caps);
-@@ -324,14 +331,20 @@ namespace gscam2
+@@ -217,9 +225,9 @@ namespace gscam2
+ 
+     cinfo_pub_ = node_->create_publisher<sensor_msgs::msg::CameraInfo>("camera_info", 1);
+     if (cxt_.image_encoding_ == "jpeg") {
+-      jpeg_pub_ = node_->create_publisher<sensor_msgs::msg::CompressedImage>("image_raw/compressed", 1);
++      jpeg_pub_ = node_->create_publisher<sensor_msgs::msg::CompressedImage>(cxt_.image_topic_name_+"/compressed", 1);
+     } else {
+-      camera_pub_ = node_->create_publisher<sensor_msgs::msg::Image>("image_raw", 1);
++      camera_pub_ = node_->create_publisher<sensor_msgs::msg::Image>(cxt_.image_topic_name_, 1);
+     }
+ 
+     // Pre-roll camera if needed
+@@ -324,14 +332,20 @@ namespace gscam2
        cinfo_pub_->publish(std::move(cinfo));
      } else {
        // Complain if the returned buffer is smaller than we expect
@@ -1313,7 +1361,7 @@ index 3fef91f..039d86f 100644
                      " bytes (make sure frames are correctly encoded)", expected_frame_size, (buf_size));
        }
  
-@@ -349,10 +362,13 @@ namespace gscam2
+@@ -349,10 +363,13 @@ namespace gscam2
  
        // Copy the image, so we can free the buffer allocated by gstreamer
        if (cxt_.image_encoding_ == sensor_msgs::image_encodings::RGB8) {
@@ -1329,7 +1377,7 @@ index 3fef91f..039d86f 100644
        std::copy(
          buf_data,
          (buf_data) + (buf_size),
-@@ -400,12 +416,23 @@ namespace gscam2
+@@ -400,12 +417,23 @@ namespace gscam2
      }
  
      if (cxt_.image_encoding_ != sensor_msgs::image_encodings::RGB8 &&

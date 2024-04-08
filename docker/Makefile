@@ -8,10 +8,10 @@ ROS_VER          ?= 2
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER          = 9.1.0
-EDGEAI_VER       = 9.1.0
-TIVA_LIB_VER     ?= 9.1.0
-RPMSG_LIB_VER    ?= 0.6.3
+SDK_VER          = 9.2.0
+EDGEAI_VER       = 9.2.0.5
+TIVA_LIB_VER     ?= 9.2.0
+RPMSG_LIB_VER    ?= 0.6.6
 
 # Set the operating variables based on the ROS version specified
 ROS_DISTRO        = humble
@@ -57,19 +57,23 @@ ENV_FILE          = env_list.txt
 ENV_FILE_PATH     = $(DOCKER_DIR)/$(ENV_FILE)
 
 # Tarball filenames
-ROSBAG_FILE       = ros2-bag_2023_1020.tar.gz
-DLRT_LIBS_FILE    = dlrt-libs-aarch64-ubuntu18.04_8.0.tar.gz
-VISLOC_DATA_FILE  = visual-localization-data-ros2_2022_0908.tar.gz
-LIDAR2D_FILE      = lidar2d_2021_0521.tar.gz
-CALIB_IMGS_FILE   = calib-images-example_2021_0422.tar.gz
+ROSBAG_ZED_FILE       = ros2-bag_zed1_2020_1109.tar.gz
+ROSBAG_6DPOSE_FILE    = ros2-bag_pose_6d_nv12.tar.gz
+ROSBAG_HUMANPOSE_FILE = ros2-bag_human_pose_nv12.tar.gz
+ROSBAG_ODRADAR_FILE   = camera_radar_2024_03_18-18_58_23.tar.gz
+VISLOC_DATA_FILE      = visual-localization-data-ros2_2022_0908.tar.gz
+LIDAR2D_FILE          = lidar2d_2021_0521.tar.gz
+CALIB_IMGS_FILE       = calib-images-example_2021_0422.tar.gz
 
 # Tarball URLs
-URL_BASE         = https://software-dl.ti.com/jacinto7/esd/robotics-sdk/data
-ROSBAG_URL   	 = $(URL_BASE)/$(ROSBAG_FILE)
-DLRT_LIBS_URL    = $(URL_BASE)/$(DLRT_LIBS_FILE)
-VISLOC_DATA_URL  = $(URL_BASE)/$(VISLOC_DATA_FILE)
-LIDAR2D_LOC_URL  = $(URL_BASE)/$(LIDAR2D_FILE)
-CALIB_IMGS_URL   = $(URL_BASE)/$(CALIB_IMGS_FILE)
+URL_BASE              = https://software-dl.ti.com/jacinto7/esd/robotics-sdk/data
+ROSBAG_ZED_URL        = $(URL_BASE)/$(ROSBAG_ZED_FILE)
+ROSBAG_6DPOSE_URL     = $(URL_BASE)/$(ROSBAG_6DPOSE_FILE)
+ROSBAG_HUMANPOSE_URL  = $(URL_BASE)/$(ROSBAG_HUMANPOSE_FILE)
+ROSBAG_ODRADAR_URL    = $(URL_BASE)/$(ROSBAG_ODRADAR_FILE)
+VISLOC_DATA_URL       = $(URL_BASE)/$(VISLOC_DATA_FILE)
+LIDAR2D_LOC_URL       = $(URL_BASE)/$(LIDAR2D_FILE)
+CALIB_IMGS_URL        = $(URL_BASE)/$(CALIB_IMGS_FILE)
 
 # IP address
 J7_IP_ADDR       := $(shell ifconfig | grep -A 1 'eth0' | tail -1 | awk '{print $$2}')
@@ -172,10 +176,12 @@ endif
 	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_DIR=$(DOCKER_DIR)"                          >> $(TGT_NAME)
+ifeq ($(ROS_VER), 1)
 	@echo "IP_ADDR=\$$(ifconfig | grep -A 1 'eth0' | tail -1 | awk '{print \$$2}')"       >> $(TGT_NAME)
 	@echo "if [[ ! \$$IP_ADDR =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\$$ ]]; then"             >> $(TGT_NAME)
 	@echo "    IP_ADDR=\$$(ifconfig | grep -A 1 'wlp1s0' | tail -1 | awk '{print \$$2}')" >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)
+endif
 endif
 	@echo "if [ \"\$$#\" -lt 1 ]; then"                       >> $(TGT_NAME)
 	@echo "    CMD=/bin/bash"                                 >> $(TGT_NAME)
@@ -209,7 +215,9 @@ endif
 endif
 ifeq ($(PLATFORM), j7)
 	@echo "    --env TIVA_LIB_VER=$(TIVA_LIB_VER) \\"         >> $(TGT_NAME)
+ifeq ($(ROS_VER), 1)
 	@echo "    --env J7_IP_ADDR=\$$IP_ADDR \\"                >> $(TGT_NAME)
+endif
 	@echo "    --env-file \$$DOCKER_DIR/$(ENV_FILE) \\"       >> $(TGT_NAME)
 	@echo "    --device-cgroup-rule='c 235:* rmw' \\"         >> $(TGT_NAME)
 endif
@@ -250,10 +258,24 @@ data_download: rosbag_download vl_data_download calib_download
 
 rosbag_download: check_data_dir
 	@echo "[rosbag_download] Downloading ROSBAG files ..."
-	@wget -O $(DATA_DIR)/$(ROSBAG_FILE) "$(ROSBAG_URL)"
 	@rm -rf  $(DATA_DIR)/ros_bag
-	@tar xzf $(DATA_DIR)/$(ROSBAG_FILE) -C $(DATA_DIR)
-	@rm -f $(DATA_DIR)/$(ROSBAG_FILE)
+	@mkdir -p $(DATA_DIR)/ros_bag
+	@wget -O $(DATA_DIR)/$(ROSBAG_ZED_FILE) "$(ROSBAG_ZED_URL)"
+	@echo "Extracting..."
+	@tar xzf $(DATA_DIR)/$(ROSBAG_ZED_FILE) -C $(DATA_DIR)/ros_bag
+	@rm -f $(DATA_DIR)/$(ROSBAG_ZED_FILE)
+	@wget -O $(DATA_DIR)/$(ROSBAG_6DPOSE_FILE) "$(ROSBAG_6DPOSE_URL)"
+	@echo "Extracting..."
+	@tar xzf $(DATA_DIR)/$(ROSBAG_6DPOSE_FILE) -C $(DATA_DIR)/ros_bag
+	@rm -f $(DATA_DIR)/$(ROSBAG_6DPOSE_FILE)
+	@wget -O $(DATA_DIR)/$(ROSBAG_HUMANPOSE_FILE) "$(ROSBAG_HUMANPOSE_URL)"
+	@echo "Extracting..."
+	@tar xzf $(DATA_DIR)/$(ROSBAG_HUMANPOSE_FILE) -C $(DATA_DIR)/ros_bag
+	@rm -f $(DATA_DIR)/$(ROSBAG_HUMANPOSE_FILE)
+	@wget -O $(DATA_DIR)/$(ROSBAG_ODRADAR_FILE) "$(ROSBAG_ODRADAR_URL)"
+	@echo "Extracting..."
+	@tar xzf $(DATA_DIR)/$(ROSBAG_ODRADAR_FILE) -C $(DATA_DIR)/ros_bag
+	@rm -f $(DATA_DIR)/$(ROSBAG_ODRADAR_FILE)
 	@echo "[rosbag_download] Done"
 
 vl_data_download: check_data_dir

@@ -90,7 +90,7 @@ namespace ti_ros2
              * @param[in]  frame_rate  The frame rate
              */
 
-            Yuv2Rgb(const std::string         &name,
+            Yuv2Rgb(const std::string &name,
                     const rclcpp::NodeOptions &options):
                 Node(name, options), logger(rclcpp::get_logger("Yuv2Rgb"))
             {
@@ -100,18 +100,18 @@ namespace ti_ros2
                 get_parameter_or("height", height, 720);
 
                 get_parameter_or("input_yuv_topic",
-                                       input_yuv_topic_,
-                                       std::string("camera/right/image_raw"));
+                                 input_yuv_topic_,
+                                 std::string("camera/right/image_raw"));
 
                 get_parameter_or("output_rgb_topic",
-                                       output_rgb_topic_,
-                                       std::string("camera/right/image_raw_rgb"));
+                                 output_rgb_topic_,
+                                 std::string("camera/right/image_raw_rgb"));
 
                 get_parameter_or("yuv_format",
-                                       yuv_format_,  std::string("YUV420"));
+                                 yuv_format_, std::string("YUV420"));
 
                 get_parameter_or("yuv420_luma_only",
-                                       yuv420_luma_only_,  false);
+                                 yuv420_luma_only_, false);
 
                 if ((yuv_format_.compare("YUV420") != 0) &&
                     (yuv_format_.compare("YUV422") != 0))
@@ -123,9 +123,9 @@ namespace ti_ros2
                 // allocation for output RGB images
                 outRgbIm = (uint8_t *)malloc(width * height * 3);
 
-                out_pub  = this->create_publisher<Image>(output_rgb_topic_, 10);
-                in_sub   = new ImgSub(this, input_yuv_topic_);
-                conObj   = in_sub->registerCallback(&Yuv2Rgb::callback_yuv2rgb, this);
+                out_pub = this->create_publisher<Image>(output_rgb_topic_, 10);
+                in_sub = new ImgSub(this, input_yuv_topic_);
+                conObj = in_sub->registerCallback(&Yuv2Rgb::callback_yuv2rgb, this);
 
             }
 
@@ -142,7 +142,7 @@ namespace ti_ros2
 
             void callback_yuv2rgb(const Image::ConstSharedPtr& yuv_image_ptr)
             {
-                Image yuv_image  = *yuv_image_ptr;
+                Image yuv_image = *yuv_image_ptr;
 
                 // Sometimes, output image can be smaller than input raw image, e.g.
                 // input yuv image is 1920x1080, but output rgb image is 1920x1024, which is disparity map size.
@@ -163,12 +163,12 @@ namespace ti_ros2
                     }
 
                     convertYUV420RGB(outRgbIm,
-                                    (uint8_t *) yuv_image.data.data(),
-                                    width,
-                                    height,
-                                    yuv_image.width,
-                                    yuv_image.height,
-                                    yuv420_luma_only_);
+                                     (uint8_t *) yuv_image.data.data(),
+                                     width,
+                                     height,
+                                     yuv_image.width,
+                                     yuv_image.height,
+                                     yuv420_luma_only_);
                 }
                 else
                 {
@@ -179,11 +179,11 @@ namespace ti_ros2
                     }
 
                     convertYUV422RGB(outRgbIm,
-                                    (uint8_t *) yuv_image.data.data(),
-                                    width,
-                                    height,
-                                    yuv_image.width,
-                                    yuv_image.height);
+                                     (uint8_t *) yuv_image.data.data(),
+                                     width,
+                                     height,
+                                     yuv_image.width,
+                                     yuv_image.height);
                 }
 
                 // Publish RGB image
@@ -194,7 +194,8 @@ namespace ti_ros2
                 out_msg.step            = width*3;
                 out_msg.data            = vec_rgb;
                 out_msg.header.stamp    = yuv_image.header.stamp;
-                out_msg.header.frame_id = "map";
+                // out_msg.header.frame_id = "map";
+                out_msg.header.frame_id = yuv_image_ptr->header.frame_id.c_str();
                 out_pub->publish(out_msg);
             }
 

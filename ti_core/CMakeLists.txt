@@ -18,33 +18,42 @@ if(${BUILD_CORE_NODES})
         common/src/cm_post_process_image_segmentation.cpp
         common/src/cm_post_process_image_object_detect.cpp
         common/src/cm_post_process_pose6D.cpp
-        )
+        common/src/cm_post_process_humanpose.cpp
+    )
 
-    if (NOT ${TARGET_PLATFORM} STREQUAL SITARA)
-        set(COMMON_SRCS
-            ${COMMON_SRCS}
+    if (${SDE_AVAILABLE})
+        list(APPEND COMMON_SRCS
             common/src/cm_remote_service.cpp
+            common/src/cm_displarity_utils.cpp
+        )
+    endif()
+
+    if (${TIADALG_AVAILABLE})
+        list(APPEND COMMON_SRCS
             common/src/cm_pose_calc_node_cntxt.cpp
             common/src/cm_pose_viz_node_cntxt.cpp
-            common/src/cm_displarity_utils.cpp
-           )
+        )
     endif()
 
     set(VISION_CNN_CORE_SRCS
         ti_vision_cnn/src/vision_cnn.cpp
-        ti_vision_cnn/src/vision_cnn_manage_graph.cpp)
+        ti_vision_cnn/src/vision_cnn_manage_graph.cpp
+    )
 
     set(SDE_CORE_SRCS
         ti_sde/src/sde.cpp
-        ti_sde/src/sde_manage_graph.cpp)
+        ti_sde/src/sde_manage_graph.cpp
+    )
 
     set(ESTOP_CORE_SRCS
         ti_estop/src/estop.cpp
-        ti_estop/src/estop_manage_graph.cpp)
+        ti_estop/src/estop_manage_graph.cpp
+    )
 
     set(VL_CORE_SRCS
         ti_vl/src/visloc.cpp
-        ti_vl/src/visloc_manage_graph.cpp)
+        ti_vl/src/visloc_manage_graph.cpp
+    )
 
     set(SDE_SUBGRAPH_SRCS
         subgraphs/sde_ldc/src/sde_ldc.cpp
@@ -53,25 +62,30 @@ if(${BUILD_CORE_NODES})
         subgraphs/sde_multilayer/src/sde_multilayer.cpp
         subgraphs/sde_triangulate/src/sde_triangulate.cpp
         subgraphs/ss_sde_detection/src/ss_sde_detection.cpp
-        )
+    )
 
     set(EDGEAI_COMMON_SRC
-        ${TI_EDGEAI_ROOT_DIR}/common/src/edgeai_debug.cpp)
+        ${TI_EDGEAI_ROOT_DIR}/common/src/edgeai_debug.cpp
+    )
 
     set(ALL_CORE_SRCS
         ${COMMON_SRCS}
         ${VISION_CNN_CORE_SRCS}
         ${EDGEAI_COMMON_SRC}
-        )
+    )
 
-    if (NOT ${TARGET_PLATFORM} STREQUAL SITARA)
-        set(ALL_CORE_SRCS
-            ${ALL_CORE_SRCS}
+    if (${SDE_AVAILABLE})
+        list(APPEND ALL_CORE_SRCS
             ${SDE_CORE_SRCS}
             ${SDE_SUBGRAPH_SRCS}
             ${ESTOP_CORE_SRCS}
+        )
+    endif()
+
+    if (${TIADALG_AVAILABLE})
+        list(APPEND ALL_CORE_SRCS
             ${VL_CORE_SRCS}
-           )
+        )
     endif()
 
     # Build library

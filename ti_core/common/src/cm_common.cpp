@@ -100,12 +100,12 @@ const char *CM_getCoreName(const char *appCoreName)
     {
         return TIVX_TARGET_IPU1_0;
     }
-#if !defined (SOC_AM62A)
+#if !defined (SOC_AM62A) && !defined(SOC_J722S)
     else if (!strcmp(appCoreName, "TIVX_TARGET_IPU1_1"))
     {
         return TIVX_TARGET_IPU1_1;
     }
-#endif //!defined (SOC_AM62A)
+#endif //!defined (SOC_AM62A) && !defined(SOC_J722S)
 
     return NULL;
 }
@@ -907,7 +907,7 @@ vx_status CM_extractPointCloudData(uint8_t                  *outPcData,
 
     return vxStatus;
 }
-#endif // !defined(SOC_AM62A) || !defined(SOC_AM62)
+#endif // !defined(SOC_AM62A) && !defined(SOC_AM62)
 
 vx_int32 CM_fill1DTensor(vx_tensor in_tensor, const vx_char* in_file)
 {

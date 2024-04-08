@@ -32,9 +32,12 @@ rosidl_generate_interfaces(
     msg/BoundingBox2D.msg
     msg/Detection2D.msg
     msg/BoundingBox2Dp.msg
+    msg/BoundingBox2Dpva.msg
     msg/Detection2Dp.msg
+    msg/Detection2Dpva.msg
     msg/Transform.msg
     msg/Pose6D.msg
+    msg/HumanPose.msg
     DEPENDENCIES
       std_msgs
       geometry_msgs

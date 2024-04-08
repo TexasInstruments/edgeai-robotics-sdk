@@ -11,7 +11,7 @@ from launch.substitutions import LaunchConfiguration
 soc = os.getenv('SOC')
 if soc in ['j721e', 'j721s2', 'j784s4']:
     dl_model_path = "/opt/model_zoo/ONR-OD-8020-ssd-lite-mobv2-mmdet-coco-512x512"
-elif soc in ['am62a']:
+elif soc in ['j722s', 'am62a']:
     dl_model_path = "/opt/model_zoo/TFL-OD-2020-ssdLite-mobDet-DSP-coco-320x320"
 else:
     print('{} not supported'.format(soc))

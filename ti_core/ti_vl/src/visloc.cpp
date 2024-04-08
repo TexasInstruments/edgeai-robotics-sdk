@@ -182,10 +182,9 @@ vx_status VISLOC_init(VISLOC_Context *appCntxt)
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
-        /* load image processing kernel */
-        tivxImgProcLoadKernels(appCntxt->vxContext);
 
         /* load HWA kernels */
+        tivxImgProcLoadKernels(appCntxt->vxContext);
         tivxHwaLoadKernels(appCntxt->vxContext);
 
         /* Create Visual localization nodes */

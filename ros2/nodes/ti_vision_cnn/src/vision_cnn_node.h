@@ -74,6 +74,7 @@
 
 #include <common_msgs/msg/detection2_d.hpp>
 #include <common_msgs/msg/pose6_d.hpp>
+#include <common_msgs/msg/human_pose.hpp>
 
 
 #include <vision_cnn.h>
@@ -93,6 +94,7 @@ class VisionCnnNode: public rclcpp::Node
     using SubCon   = message_filters::Connection;
     using DetPub   = rclcpp::Publisher<Detection2D>::SharedPtr;
     using PosePub  = rclcpp::Publisher<Pose6D>::SharedPtr;
+    using HumanPosePub  = rclcpp::Publisher<HumanPose>::SharedPtr;
 
     public:
         VisionCnnNode(const rclcpp::NodeOptions    &options,
@@ -117,6 +119,7 @@ class VisionCnnNode: public rclcpp::Node
         ImgPub                  m_outTensorPub;
         DetPub                  m_odPub;
         PosePub                 m_posePub;
+        HumanPosePub            m_human_posePub;
         uint32_t                m_inputImgWidth;
         uint32_t                m_inputImgHeight;
         uint32_t                m_outImgWidth;
