@@ -156,7 +156,7 @@ This script takes care of:
 In a similar way, you can use a script to set up on the remote Ubuntu PC for visualization:
 ```
 user@pc:~$ wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
-user@pc:~$ source ./init_setup.sh REL.09.02.00
+user@pc:~$ source ./init_setup.sh REL.10.00.00
 ```
 
 ````{note}

@@ -79,7 +79,7 @@ alias mmwave_cap="ros2 launch ti_mmwave_rospkg 6843ISK_Standard.py rviz:=false"
 # visualization on Ubuntu PC
 alias viz_zed="ros2 run image_view image_view --ros-args --remap /image:=/camera/right/image_raw"
 alias viz_gscam="ros2 launch ti_viz_nodes gscam_nv12_launch.py"
-alias viz_gscam_imx390raw="ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1936 height:=1096"
+alias viz_gscam_imx390raw="ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1936 height:=1100"
 alias viz_mono="ros2 run image_view image_view --ros-args --remap /image:=/camera/image_raw"
 alias viz_sde="ros2 launch ti_viz_nodes rviz_sde_launch.py"
 alias viz_sdepcl="ros2 launch ti_viz_nodes rviz_sde_pcl_launch.py"

@@ -9,12 +9,14 @@ PYTHON=python3
 CAMERA_INFO_FILE=imx390_35244_equidistant_camera_info.yaml
 CAMERA_NAME='imx390_35244'
 
-ARCH=`arch`
-if [[ "$ARCH" == "aarch64" ]]; then
-    SDK_DIR=/opt/robotics_sdk
-elif [[ "$ARCH" == "x86_64" ]]; then
-    SDK_DIR=${HOME}/j7ros_home/ros_ws/src/robotics_sdk
-    echo "Please make the resulting files *.bin and *.yaml copied on the target under /opt/imaging/imx390."
+ARCH=$(arch)
+if [[ -z "$SDK_DIR" ]]; then
+    if [[ "$ARCH" == "aarch64" ]]; then
+        SDK_DIR=/opt/robotics_sdk
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        SDK_DIR=${HOME}/j7ros_home/ros_ws/src/robotics_sdk
+        echo "Please make the resulting files *.bin and *.yaml copied on the target under /opt/imaging/imx390."
+    fi
 fi
 SRC_DIR=$SDK_DIR/tools/mono_camera
 CAMERA_INFO_PATH=$SRC_DIR/$CAMERA_INFO_FILE

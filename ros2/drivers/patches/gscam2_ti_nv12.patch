@@ -110,10 +110,10 @@ index 63ad29c..5f41e23 100644
 \ No newline at end of file
 diff --git a/README_TI.md b/README_TI.md
 new file mode 100644
-index 0000000..4061071
+index 0000000..2f9451c
 --- /dev/null
 +++ b/README_TI.md
-@@ -0,0 +1,135 @@
+@@ -0,0 +1,136 @@
 +GStreamer Camera Node for ROS 2
 +===============================
 +This GStreamer based camera ROS node is from [https://github.com/clydemcqueen/gscam2](https://github.com/clydemcqueen/gscam2). Following changes are made to customize for the use cases in the Robotics SDK:
@@ -207,10 +207,11 @@ index 0000000..4061071
 +
 +You can check the camera ID and subdev ID for the IMX390 camera attached to the hardware setup by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh` on the target host Linux. Accordingly please update the launch files below, or it's also possible to pass as launch arguments.
 +
-+To publish raw images in the native resolution (1936 x 1096),
++To publish raw images in the native resolution (1936 x 1100),
 +```sh
 +ros2 launch gscam v4l_imx390_raw_launch.py cam_id:=X subdev_id:=Y
 +```
++
 +### Running gscam with rectification and resizing
 +
 +We also provide a launch file that includes rectification and resizing in the GStreamer pipeline.
@@ -234,7 +235,7 @@ index 0000000..4061071
 +```
 +
 +```{note}
-+The GStreamer pipeline in `v4l_imx390_launch.py` also includes the LDC plugin (tiovxldc). Raw resolution is 1936 x 1096. The LDC plugin performs rectification and then cropping to produce 1920 x 1080 images in NV12 format, followed by MSC plugin (tiovxmultiscaler) to resize the images to the output resolution.
++The GStreamer pipeline in `v4l_imx390_launch.py` also includes the LDC plugin (tiovxldc). Raw resolution is 1936 x 1100. The LDC plugin performs rectification and then cropping to produce 1920 x 1080 images in NV12 format, followed by MSC plugin (tiovxmultiscaler) to resize the images to the output resolution.
 +```
 +
 +### Visualization on remote PC
@@ -242,8 +243,8 @@ index 0000000..4061071
 +For visualization, run the following in the PC Docker container,
 +
 +```sh
-+# native resolution (1936 x 1096)
-+ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1936 height:=1096
++# native resolution (1936 x 1100)
++ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1936 height:=1100
 +# 1080p
 +ros2 launch ti_viz_nodes gscam_nv12_launch.py width:=1920 height:=1080
 +# 720p
@@ -547,7 +548,7 @@ index 0000000..6c2aa56
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_launch.py b/launch/v4l_imx390_launch.py
 new file mode 100644
-index 0000000..644325b
+index 0000000..4db3d9b
 --- /dev/null
 +++ b/launch/v4l_imx390_launch.py
 @@ -0,0 +1,175 @@
@@ -612,7 +613,7 @@ index 0000000..644325b
 +    # GStreamer pipeline specified in gscam_config was tested with IMX390.
 +    # Assumes 'edgeai-tiovx-modules' and 'edgeai-gst-plugins' are already installed in target ROS container.
 +    gscam_config = 'v4l2src device={} do-timestamp=true ! '.format(device) \
-+        + 'video/x-bayer, width=1936, height=1096, format=rggb12 ! '.format(width, height) \
++        + 'video/x-bayer, width=1936, height=1100, format=rggb12 ! '.format(width, height) \
 +        + 'tiovxisp sink_0::device={} dcc-isp-file={} '.format(subdev, dcc_isp_file) \
 +        + 'sink_0::dcc-2a-file={} format-msb=11 sensor-name={} ! '.format(dcc_2a_file, sensor_name) \
 +        + 'video/x-raw, format=NV12 ! ' \
@@ -729,7 +730,7 @@ index 0000000..644325b
 \ No newline at end of file
 diff --git a/launch/v4l_imx390_raw_launch.py b/launch/v4l_imx390_raw_launch.py
 new file mode 100644
-index 0000000..4508927
+index 0000000..7bcee03
 --- /dev/null
 +++ b/launch/v4l_imx390_raw_launch.py
 @@ -0,0 +1,147 @@
@@ -759,7 +760,7 @@ index 0000000..4508927
 +
 +    # Width and height of the image
 +    width  = 1936
-+    height = 1096
++    height = 1100
 +
 +    # Framerate
 +    framerate = LaunchConfiguration('framerate')

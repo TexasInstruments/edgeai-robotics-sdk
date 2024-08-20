@@ -11,7 +11,7 @@ This demo application is supported on TDA4VM, AM68A, and AM69A. It is not suppor
 
 This application performs the ego vehicle localization that estimates an ego vehicle's 6-DOF (Degree of Freedom) pose from calibrated camera images using a 3D sparse map created offline. The 3D sparse map consists of a set of key points with (X, Y, Z) positions and 64-dimensional descriptors. To localize the ego vehicle's pose, key points are detected with descriptors from the input camera image and these key points are matched against the key points in the map. The ego vehicle's pose is estimated using the Perspective-n-Point (PnP) approach.
 
-Key-point descriptor plays critical role in the visual localization. In this demo, we use a deep neural network to learn hand computed feature descriptor like KAZE in a supervised manner. We refer such descriptor as DKAZE. The DAKZE network was used to create key features and their descriptors for the sparse 3D map and is also used to detect key feature points with descriptors for every input image in the localization process. For more details about the DKAZE network and the localization process, refer to [Vision Apps User Guide](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/group_apps_dl_demos_app_tidl_vl.html).
+Key-point descriptor plays critical role in the visual localization. In this demo, we use a deep neural network to learn hand computed feature descriptor like KAZE in a supervised manner. We refer such descriptor as DKAZE. The DKAZE network was used to create key features and their descriptors for the sparse 3D map and is also used to detect key feature points with descriptors for every input image in the localization process. For more details about the DKAZE network and the localization process, refer to [Vision Apps User Guide](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/group_apps_dl_demos_app_tidl_vl.html).
 
 For this demo, we provide the data set that has been created using Carla simulator. This data set includes an input rosbag file and the sparse 3D map crated offline, etc. The input rosbag file consists of a sequence of images in YUV422 (UYVY) format. Since the sparse 3D map should cover the area where the input image is being captured for localization. This demo does not work for live camera input with the provided sparse 3D map.
 
@@ -102,7 +102,7 @@ Referring to Figure 1, below are the descriptions of the processing blocks imple
 2. Input images are resized to a smaller resolution, which is specified by `dl_width` and `dl_height` in `params.yaml`, for the DKAZE network. The MSC (Multi-Scaler) HWA resizes the images to a desired size.
 3. The pre-processing block converts YUV420 (NV12) to RGB, which is expected input format for the DKAZE network.
 4. The DKAZE network is accelerated by C7x/MMA with DLR runtime, and outputs feature score tensor and feature descriptor tensor.
-5. Two output tensors from the DAKZE network go to the pose calculation (PoseCalc) block, which runs on C6x. This block estimates the ego-vehicle's pose.
+5. Two output tensors from the DKAZE network go to the pose calculation (PoseCalc) block, which runs on C6x. This block estimates the ego-vehicle's pose.
 6. The estimate pose goes to the pose visualization (PoseViz) block, which runs on C6x too. This block creates the top-down output image with overlaid vehicle's trajectory. This output image is published along with the estimated pose.
 
 

@@ -97,16 +97,16 @@ vx_status VISLOC_init_VL(VISLOC_Context *appCntxt)
     numOutputs          = dlInfOutputs->size();
 
     /* The Pose calculation node expects a tensor of size 3 only. */
-    // ifInfo->shape = [1, 1, 1, 1, H, W]      => outTensorDims = [1, H, W]
-    // ifInfo->shape = [1, 1, 1, 64, H/4, W/4] => outTensorDims = [64, H/4, W/4]
+    // SDK 10.0.0.8: ifInfo->shape = [1, 1, H, W]      => outTensorDims = [1, H, W]
+    //               ifInfo->shape = [1, 64, H/4, W/4] => outTensorDims = [64, H/4, W/4]
     for (i = 0; i < numOutputs; i++)
     {
-        ifInfo                       = &dlInfOutputs->at(i);
-        appCntxt->outTensorNumDim[i] = ifInfo->dim - 3;
+        ifInfo = &dlInfOutputs->at(i);
+        appCntxt->outTensorNumDim[i] = ifInfo->dim - 1;
 
         for (j = 0; j < appCntxt->outTensorNumDim[i]; j++)
         {
-            appCntxt->outTensorDims[i][j] = ifInfo->shape[j+3];
+            appCntxt->outTensorDims[i][j] = ifInfo->shape[j+1];
         }
     }
 

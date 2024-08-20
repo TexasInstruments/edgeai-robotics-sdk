@@ -120,7 +120,12 @@ The SDK supports the following out-of-box demo applications:
 - [AprilTag Detection (open-source)](docs/april_tag.md) -->
 ```
 
+```{only} tag_j7x
 ![](ros2/nodes/ti_estop/docs/estop_rviz.png)
+```
+```{only} tag_am62a
+![](ros2/nodes/ti_vision_cnn/docs/humanpose_rviz.jpg)
+```
 
 ![](ros2/nodes/ti_objdet_radar/docs/objdet_radar_rviz.jpg)
 
@@ -130,12 +135,12 @@ The SDK supports the following out-of-box demo applications:
 ## Scope of Robotics SDK
 
 ```{only} tag_j7x
-![](docs/sdk_scope_j7x_09_02_00.png)
+![](docs/sdk_scope_j7x.png)
 
 \* Visual location is supported only on TDA4VM, AM68A, and AM69A.
 ```
 ```{only} tag_am62a
-![](docs/sdk_scope_am62a_09_02_00.png)
+![](docs/sdk_scope_am62a.png)
 ```
 
 ## Limitations and Known Issues

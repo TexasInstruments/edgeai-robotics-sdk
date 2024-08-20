@@ -32,6 +32,7 @@ ARG USE_PROXY
 ARG HTTP_PROXY
 ARG REPO_LOCATION
 ARG DEBIAN_FRONTEND=noninteractive
+ARG BASE_URL
 
 #=========================================================================
 # The environment variable REPO_LOCATION is set from outside as needed,
@@ -49,11 +50,35 @@ ENV https_proxy=${HTTP_PROXY}
 #=========================================================================
 FROM base-${USE_PROXY} AS ros-gst
 ARG DEBIAN_FRONTEND
+ARG BASE_URL
 
 # setup proxy settings
 ADD setup_proxy.sh /root/
 ADD proxy /root/proxy
 RUN /root/setup_proxy.sh
+
+# intsall utils and miscellaneous packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    curl \
+    git \
+    vim \
+    tmux \
+    gdb \
+    iputils-ping \
+    usbutils \
+    rsync \
+    strace \
+    sysstat \
+    net-tools \
+    dialog \
+    chrony \
+    nfs-common \
+    corkscrew \
+    v4l-utils \
+    unzip \
+    plocate && \
+    rm -rf /var/lib/apt/lists/*
 
 # install gstreamer dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -80,38 +105,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         argparse && \
     rm -rf /var/lib/apt/lists/*
 
+# install the gstreamer v4l2 library
+WORKDIR /root/scripts
+ADD install_gst_v4l2_lib.sh ./
+RUN ./install_gst_v4l2_lib.sh
+
 #=========================================================================
 FROM ros-gst as j7ros-common
 ARG DEBIAN_FRONTEND
 
 # install dependency for tivision_apps.so
-# TODO: check if these are still required in 22.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libdevil-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# intsall utils and miscellaneous packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    curl \
-    git \
-    vim \
-    tmux \
-    gdb \
-    iputils-ping \
-    usbutils \
-    rsync \
-    strace \
-    sysstat \
-    gdb \
-    net-tools \
-    dialog \
-    chrony \
-    nfs-common \
-    corkscrew \
-    v4l-utils \
-    unzip \
-    plocate && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -130,7 +135,7 @@ RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources
 # workaround in case apt-key above does not work, e.g., behind a proxy
 RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | gpg --dearmor -o /etc/apt/trusted.gpg.d/ros.gpg
 
-# install additional ROS packages beyond humble-ros-base-jammy
+# install additional ROS packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \

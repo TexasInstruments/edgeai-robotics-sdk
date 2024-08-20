@@ -1,10 +1,16 @@
 Change Log
 ==========
 
+## Release 10.0.0 (2024-08-16)
+
+- The Robotics SDK has been migrated to be compatible with Yocto Scathgap-based Processor-SDK Linux 10.0.
+- The Robotics SDK Docker build process is now independent of the host Linux file system. The SDK Docker image can be built on any ARM64 Linux machine, or on an x86_64 Linux machine using QEMU, by passing the `SOC` environment variable when running `docker_build_ros2.sh`.
+- Pre-built libraries and packages for all dependency packages (including `ti-vision-apps`, `onnx-runtime`, `tflite-runtime`, `neo-ai-dlr,` TIDL runtime modules, and GST-V4L2 libraries) are provided for the SDK Docker container (Ubuntu 22.04).
+
 ## Release 9.2.0 (2024-04-05)
 
 - Added support for AM67A. For details, please check the [documentation](https://software-dl.ti.com/jacinto7/esd/robotics-sdk/09_02_00/AM67A/docs/). The Robotics SDK now supports five TI Processor platforms: AM62A, TDA4VM, AM67A, AM68A, and AM69A.
-- Added a new camera and radar fusion demo application (`ti_objdet_radar`). This application consists consists of CNN object detection, mmWave radar processing chain (on IWR6843), and object-level fusion algorithm.
+- Added a new camera and radar fusion demo application (`ti_objdet_radar`). This application consists of CNN object detection, mmWave radar processing chain (on IWR6843), and object-level fusion algorithm.
 - Added new ROS-GST plugins (`ti_ros_gst_plugins`). These GStreamer plugins provide an optimized bridge between ROS 2 and the GStreamer framework.
 - The vision CNN chain (`ti_vision_cnn`) now includes support for human pose estimation.
 

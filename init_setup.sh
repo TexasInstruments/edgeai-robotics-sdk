@@ -31,7 +31,7 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Release tag info of the current release
-GIT_TAG="REL.09.02.00"
+GIT_TAG="REL.10.00.00"
 if [ "$#" -eq 1 ]; then
     GIT_TAG=$1
 fi
@@ -42,7 +42,7 @@ GIT_REPO="https://git.ti.com/git/processor-sdk-vision/jacinto_ros_perception.git
 BRANCH=master
 
 # git config on the target to avoid warnings
-ARCH=`arch`
+ARCH=$(arch)
 if [[ "$ARCH" == "aarch64" ]]; then
     git config --global user.email "user@example.com"
     git config --global user.name "User"
@@ -52,11 +52,11 @@ fi
 export WORK_DIR=$HOME/j7ros_home
 export ROS_WS=$WORK_DIR/ros_ws
 
-# Installation path for Robotics SDK
+# Installation path for Robotics SDK: overriding is allowed from outside this script
 if [[ "$ARCH" == "aarch64" ]]; then
-    export SDK_DIR=/opt/robotics_sdk
+    export SDK_DIR="${SDK_DIR:-/opt/robotics_sdk}"
 elif [[ "$ARCH" == "x86_64" ]]; then
-    export SDK_DIR=$ROS_WS/src/robotics_sdk
+    export SDK_DIR="${SDK_DIR:-$ROS_WS/src/robotics_sdk}"
 else
     echo "$ARCH is not supported"
     exit 1

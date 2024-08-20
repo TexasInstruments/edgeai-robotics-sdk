@@ -1,14 +1,16 @@
 #!/bin/bash
 ROS_VER=${1:-"2"}
 ROS_WS=$HOME/j7ros_home/ros_ws
-ARCH=`arch`
-if [[ "$ARCH" == "aarch64" ]]; then
-    SDK_DIR=/opt/robotics_sdk
-elif [[ "$ARCH" == "x86_64" ]]; then
-    SDK_DIR=$ROS_WS/src/robotics_sdk
-else
-    echo "$ARCH is not supported"
-    exit 1
+ARCH=$(arch)
+if [[ -z "$SDK_DIR" ]]; then
+    if [[ "$ARCH" == "aarch64" ]]; then
+        SDK_DIR=/opt/robotics_sdk
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        SDK_DIR=$ROS_WS/src/robotics_sdk
+    else
+        echo "$ARCH is not supported"
+        exit 1
+    fi
 fi
 
 # install mmwave_rospkg

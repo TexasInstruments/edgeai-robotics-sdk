@@ -37,9 +37,11 @@ ARG SOC_NAME
 ARG ROS_DISTRO
 ARG SDK_VER
 ARG EDGEAI_VER
+ARG BASE_URL
+ARG SDK_VER_STR
 
 #=========================================================================
-FROM j7-ros-${ROS_DISTRO}-common:${SDK_VER} as base-0
+FROM robotics-sdk:${SDK_VER}-${ROS_DISTRO}-base as base-0
 
 #=========================================================================
 FROM base-0 AS base-1
@@ -56,47 +58,60 @@ ARG TIVA_LIB_VER
 ARG RPMSG_LIB_VER
 ARG SOC_NAME
 ARG EDGEAI_VER
+ENV SOC=$SOC_NAME
+ARG BASE_URL
+ARG SDK_VER_STR
 
 # setup proxy settings
-ADD setup_proxy.sh /root/
-ADD proxy /root/proxy
 RUN /root/setup_proxy.sh
 
-# install vision_apps lib and DL runtime libs
-COPY lib/*  /usr/lib/
-COPY lib_gstreamer-1.0/* /usr/lib/aarch64-linux-gnu/gstreamer-1.0/
-COPY include/processor_sdk /usr/include/processor_sdk
-RUN ln -s /usr/lib/libtivision_apps.so.$TIVA_LIB_VER /usr/lib/libtivision_apps.so && \
-    ln -s /usr/lib/libvx_tidl_rt.so.1.0 /usr/lib/libvx_tidl_rt.so && \
-    ln -s /usr/lib/libtidl_onnxrt_EP.so.1.0 /usr/lib/libtidl_onnxrt_EP.so && \
-    ln -s /usr/lib/libti_rpmsg_char.so.$RPMSG_LIB_VER /usr/lib/libti_rpmsg_char.so.0 && \
-    ln -s /usr/lib/libti_rpmsg_char.so.0 /usr/lib/libti_rpmsg_char.so
+# install vision_apps lib
+WORKDIR /root/scripts
+ADD install_vision_apps_lib.sh ./
+RUN ./install_vision_apps_lib.sh
 
-# install OS-RT libs and install dl-inferer
-ENV SOC=$SOC_NAME
-ADD install_apps_utils.sh /usr/bin/
+# install OS-RT libs
+ADD install_osrt_libs.sh ./
+RUN ./install_osrt_libs.sh
+
+# install TIDL runtime libs
+ADD install_tidl_libs.sh ./
+RUN ./install_tidl_libs.sh
+
+# install ti-rpmsg-char
 WORKDIR /opt
-RUN /usr/bin/install_apps_utils.sh -b 09.02.00.05 && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libtool autoconf && \
+    git clone git://git.ti.com/rpmsg/ti-rpmsg-char.git --branch $RPMSG_LIB_VER --depth 1 --single-branch && \
+    cd /opt/ti-rpmsg-char && \
+    autoreconf -i && ./configure --host=aarch64-none-linux-gnu --prefix=/usr && \
+    make && make install && \
+    rm -rf /opt/ti-rpmsg-char && \
+    rm -rf /var/lib/apt/lists/*
+
+# git-clone edgeai-gst-apps
+WORKDIR /opt
+RUN git clone --single-branch --branch 10.00.00.08 https://github.com/TexasInstruments/edgeai-gst-apps.git
+
+# install apps-utils
+RUN /opt/edgeai-gst-apps/scripts/install_apps_utils.sh -b 10.00.00.08 && \
     rm -rf /opt/edgeai-apps-utils
 
-RUN git clone --single-branch --branch 09.02.00.05 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
-    /opt/edgeai-dl-inferer/scripts/install_osrt.sh --no-opencv && \
+# install dl-inferer
+RUN git clone --single-branch --branch 10.00.00.08 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
     /opt/edgeai-dl-inferer/scripts/build_dl_inferer.sh && \
     rm -rf /opt/edgeai-dl-inferer
 
 # install edgeai-tiovx-kernels
-ADD install_tiovx_kernels.sh /usr/bin/
-RUN /usr/bin/install_tiovx_kernels.sh -b 09.02.00.05 && \
+RUN /opt/edgeai-gst-apps/scripts/install_tiovx_kernels.sh -b 10.00.00.08 && \
     rm -rf /opt/edgeai-tiovx-kernels
 
 # install edgeai-tiovx-modules
-ADD install_tiovx_modules.sh /usr/bin/
-RUN /usr/bin/install_tiovx_modules.sh -b 09.02.00.05 && \
+RUN /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh -b 10.00.00.08 && \
     rm -rf /opt/edgeai-tiovx-modules
 
 # install edgeai-gst-plugins
-ADD install_gst_plugins.sh /usr/bin/
-RUN /usr/bin/install_gst_plugins.sh -b 09.02.00.05 && \
+RUN /opt/edgeai-gst-apps/scripts/install_gst_plugins.sh -b 10.00.00.08 && \
     rm -rf /opt/edgeai-gst-plugins
 
 # install python modules for DL RT
@@ -105,13 +120,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 -m pip install --no-cache-dir PyYAML
 
 # install ti-gpio-cpp
-ADD install_ti_gpio_libs.sh /usr/bin/
-RUN /usr/bin/install_ti_gpio_libs.sh -b 09.02.00.05
+RUN /opt/edgeai-gst-apps/scripts/install_ti_gpio_libs.sh -b 10.00.00.08
+
+# build perf_stats tool
+RUN cd /opt/edgeai-gst-apps/scripts/perf_stats && \
+    mkdir build && cd build && cmake .. && make && \
+    cp /opt/edgeai-gst-apps/scripts/perf_stats/bin/Release/perf_stats /usr/local/bin/perf_stats
 
 # add scripts
 COPY entrypoint_arm64v8.sh /root/entrypoint.sh
-ADD  ros_setup.sh /root/
-ADD  set_aliases.sh /root/
+ADD ros_setup.sh /root/
+ADD set_aliases.sh /root/
 
 # .profile and .bashrc
 WORKDIR /root

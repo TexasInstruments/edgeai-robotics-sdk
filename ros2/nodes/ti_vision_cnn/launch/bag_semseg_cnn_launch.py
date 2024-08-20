@@ -7,6 +7,7 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import TextSubstitution
 from launch.substitutions import LaunchConfiguration
 
+# path to the DL model
 dl_model_path = "/opt/model_zoo/ONR-SS-7618-deeplabv3lite-mobv2-qat-robokit-768x432"
 
 bagfile_default = os.path.join(os.environ['WORK_DIR'],

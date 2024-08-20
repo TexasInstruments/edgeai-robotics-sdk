@@ -31,15 +31,13 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 usage() {
-    echo "usage: prepare_docker_build.sh <DST_DIR> <TIVA_LIB_VER> <RPMSG_LIB_VER>"
+    echo "usage: prepare_docker_build.sh <DST_DIR>"
     echo "  <DST_DIR>  destination path"
     exit 1
 }
 
-if [ "$#" -eq 3 ]; then
+if [ "$#" -eq 1 ]; then
     DST_DIR=$1
-    TIVA_LIB_VER=$2
-    RPMSG_LIB_VER=$3
 else
     usage
 fi
@@ -49,65 +47,56 @@ rm -rf $DST_DIR
 mkdir -p ${DST_DIR}/proxy
 
 # Copy files to add
-ARCH=`arch`
+ARCH=$(arch)
 
-if [[ "$ARCH" == "aarch64" ]]; then
-    SDK_DIR=/opt/robotics_sdk
-elif [[ "$ARCH" == "x86_64" ]]; then
-    ROS_WS=${HOME}/j7ros_home/ros_ws
-    SDK_DIR=$ROS_WS/src/robotics_sdk
-else
-    echo "Error: $ARCH is not supported"
-    exit 1
+if [[ -z "$SDK_DIR" ]]; then
+    if [[ "$ARCH" == "aarch64" ]]; then
+        SDK_DIR=/opt/robotics_sdk
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        ROS_WS=${HOME}/j7ros_home/ros_ws
+        SDK_DIR=$ROS_WS/src/robotics_sdk
+    else
+        echo "Error: $ARCH is not supported"
+        exit 1
+    fi
 fi
-cp -p ${SDK_DIR}/docker/setup_proxy.sh ${DST_DIR}
-cp -p ${SDK_DIR}/docker/ros_setup.sh ${DST_DIR}
-cp -p ${SDK_DIR}/docker/set_aliases.sh ${DST_DIR}
-cp -p ${SDK_DIR}/docker/entrypoint_*.sh ${DST_DIR}
-cp -p ${SDK_DIR}/tools/mono_camera/requirements.txt ${DST_DIR}
-
+cp ${SDK_DIR}/docker/setup_proxy.sh ${DST_DIR}
+cp ${SDK_DIR}/docker/ros_setup.sh ${DST_DIR}
+cp ${SDK_DIR}/docker/set_aliases.sh ${DST_DIR}
+cp ${SDK_DIR}/docker/entrypoint_*.sh ${DST_DIR}
+cp ${SDK_DIR}/tools/mono_camera/requirements.txt ${DST_DIR}
 if [[ "$ARCH" == "aarch64" ]]; then
-    if [ -d "/opt/proxy" ]; then
-        cp -rp /opt/proxy/* ${DST_DIR}/proxy
+    cp ${SDK_DIR}/docker/install_gst_v4l2_lib.sh ${DST_DIR}
+    cp ${SDK_DIR}/docker/install_vision_apps_lib.sh ${DST_DIR}
+    cp ${SDK_DIR}/docker/install_osrt_libs.sh ${DST_DIR}
+    cp ${SDK_DIR}/docker/install_tidl_libs.sh ${DST_DIR}
+fi
+
+# check if PROXY_DIR is already set, if not, set it based on conditions
+if [[ -z "$PROXY_DIR" ]]; then
+    if [[ "$ARCH" == "aarch64" && "$(whoami)" == "root" ]]; then
+        PROXY_DIR="/opt/proxy"
+    else
+        PROXY_DIR="$HOME/proxy"
     fi
 fi
 
-if [[ "$ARCH" == "x86_64" ]]; then
-    if [ -d "$HOME/proxy" ]; then
-        cp -rp $HOME/proxy/* ${DST_DIR}/proxy
+if [ -d "$PROXY_DIR" ]; then
+    cp -rp $PROXY_DIR/* ${DST_DIR}/proxy
+fi
+
+if [[ "$ARCH" == "aarch64" ]]; then
+    if [[ -z "$SOC" ]]; then
+        echo "SOC is not defined. Sourcing detect_soc.sh."
+        source ${SDK_DIR}/docker/scripts/detect_soc.sh
+    else
+        echo "SOC=$SOC already defined."
     fi
 fi
 
+# for testing using a local libs folder
 if [[ "$ARCH" == "aarch64" ]]; then
-    source ${SDK_DIR}/docker/scripts/detect_soc.sh
-    # Installation of OSRT libs is now part of edgeai-gst-app/scripts/install_dl_inferer.sh
-    cp -p /opt/edgeai-gst-apps/scripts/install_apps_utils.sh ${DST_DIR}
-    cp -p /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh ${DST_DIR}
-    cp -p /opt/edgeai-gst-apps/scripts/install_tiovx_kernels.sh ${DST_DIR}
-    cp -p /opt/edgeai-gst-apps/scripts/install_gst_plugins.sh ${DST_DIR}
-    cp -p /opt/edgeai-gst-apps/scripts/install_ti_gpio_libs.sh ${DST_DIR}
-fi
-
-# Copy library files to the temporary folder
-if [[ "$ARCH" == "aarch64" ]]; then
-    mkdir -p ${DST_DIR}/lib
-    Lib_files=(
-        # Processor SDK libraries
-        /usr/lib/libtivision_apps.so.${TIVA_LIB_VER}
-        /usr/lib/libti_rpmsg_char.so.${RPMSG_LIB_VER}
-        /usr/lib/libtidl_tfl_delegate.so
-        /usr/lib/libtidl_onnxrt_EP.so.1.0
-        /usr/lib/libvx_tidl_rt.so.1.0
-    )
-    for Lib_file in ${Lib_files[@]}; do
-        cp $Lib_file ${DST_DIR}/lib
-    done
-
-    # Copy a GST lib that was updated from PSDK
-    mkdir -p ${DST_DIR}/lib_gstreamer-1.0
-    cp /usr/lib/gstreamer-1.0/libgstvideo4linux2.so ${DST_DIR}/lib_gstreamer-1.0
-
-    # Copy header files
-    mkdir -p ${DST_DIR}/include
-    cp -rp /usr/include/processor_sdk ${DST_DIR}/include
+    if [ -f "$HOME/ubuntu22-deps.tar.gz" ]; then
+        cp "$HOME/ubuntu22-deps.tar.gz" ${DST_DIR}
+    fi
 fi

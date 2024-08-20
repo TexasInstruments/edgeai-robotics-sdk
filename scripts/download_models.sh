@@ -1,6 +1,6 @@
 #!/bin/bash
 # Download models from the EdgeAI Model Zoo
-ARCH=`arch`
+ARCH=$(arch)
 CURRENT_DIR=$(pwd)
 MODEL_DIR=/opt/model_zoo
 

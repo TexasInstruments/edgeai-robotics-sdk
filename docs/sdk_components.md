@@ -7,14 +7,14 @@ The Robotics SDK gets all the Linux kernel, filesystem, device-drivers and more 
 
 For more information visit:
 
-
 ```{only} tag_j7x
-- [Processor SDK Linux for TDA4VM](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-SK-TDA4VM)
-- [Processor SDK Linux for AM68A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM68A)
-- [Processor SDK Linux for AM69A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM69A)
+- [Processor SDK Linux for TDA4VM](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-sk-tda4vm/latest/exports/edgeai-docs/common/sdk_components.html)
+- [Processor SDK Linux for AM67A](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-am67a/latest/exports/edgeai-docs/common/sdk_components.html)
+- [Processor SDK Linux for AM68A](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-am68a/latest/exports/edgeai-docs/common/sdk_components.html)
+- [Processor SDK Linux for AM69A](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-am69a/latest/exports/edgeai-docs/common/sdk_components.html)
 ```
 ```{only} tag_am62a
-- [Processor SDK Linux for AM62A](https://www.ti.com/tool/download/PROCESSOR-SDK-LINUX-AM62A)
+- [Processor SDK Linux for AM62A](https://software-dl.ti.com/processor-sdk-linux/esd/AM62AX/latest/exports/edgeai-docs/common/sdk_components.html)
 ```
 
 The Robotics SDK has dependency on the following software components of the Processor SDK Linux.

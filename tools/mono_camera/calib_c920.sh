@@ -9,19 +9,22 @@
 
 PYTHON=python3
 J7ROS_DIR=${HOME}/j7ros_home
-if [[ `arch` == "x86_64" ]]; then
+ARCH=$(arch)
+if [[ "$ARCH" == "x86_64" ]]; then
     VIZ_FLAG=True
 else
     VIZ_FLAG=False
 fi
-ARCH=`arch`
-if [[ "$ARCH" == "aarch64" ]]; then
-    export SDK_DIR=/opt/robotics_sdk
-elif [[ "$ARCH" == "x86_64" ]]; then
-    export SDK_DIR=$ROS_WS/src/robotics_sdk
-else
-    echo "$ARCH is not supported"
-    exit 1
+
+if [[ -z "$SDK_DIR" ]]; then
+    if [[ "$ARCH" == "aarch64" ]]; then
+        export SDK_DIR=/opt/robotics_sdk
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        export SDK_DIR=$ROS_WS/src/robotics_sdk
+    else
+        echo "$ARCH is not supported"
+        exit 1
+    fi
 fi
 CAMINFO_FILE="${SDK_DIR}/ros1/drivers/mono_capture/config/C920_HD_camera_info.yaml"
 CAMERA_NAME=C920

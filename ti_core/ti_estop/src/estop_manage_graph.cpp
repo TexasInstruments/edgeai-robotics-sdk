@@ -411,12 +411,12 @@ vx_status ESTOP_APP_init_SS(ESTOP_APP_Context *appCntxt)
     if (taskType == "segmentation")
     {
         /* The SDE PC node expects a tensor of size 3 only. */
-        // ifInfo->shape = [1, 1, 1, 1, H, W]  => outTensorDims = [1, H, W]
-        appCntxt->outTensorNumDim = ifInfo->dim - 3;
+        // SDK 10.0.0.8: ifInfo->shape = [1, 1, H, W]  => outTensorDims = [1, H, W]
+        appCntxt->outTensorNumDim = ifInfo->dim - 1;
 
         for (int32_t i = 0; i < appCntxt->outTensorNumDim; i++)
         {
-            appCntxt->outTensorDims[i] = ifInfo->shape[i+3];
+            appCntxt->outTensorDims[i] = ifInfo->shape[i+1];
         }
     }
     else

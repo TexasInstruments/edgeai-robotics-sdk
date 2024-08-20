@@ -183,7 +183,7 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
         const std::string   taskType = appCntxt->postProcObj->getTaskType();
         int32_t             elementSize;
         appCntxt->outTensorNumDim = ifInfo->dim;
-        elementSize               = getTypeSize(ifInfo->type);
+        elementSize = getTypeSize(ifInfo->type);
 
         for (int32_t i = 0; i < appCntxt->outTensorNumDim; i++)
         {
@@ -234,32 +234,6 @@ vx_status VISION_CNN_init_SS(VISION_CNN_Context *appCntxt)
                 appCntxt->outTensorSize *= appCntxt->outTensorDims[i];
             }
 
-            int32_t first = 0;
-            int32_t last  = 1;
-
-            while (last != appCntxt->outTensorNumDim)
-            {
-                if (appCntxt->outTensorDims[first] == 1 && appCntxt->outTensorDims[last] != 1)
-                {
-                    auto temp = appCntxt->outTensorDims[first];
-                    appCntxt->outTensorDims[first] = appCntxt->outTensorDims[last];
-                    appCntxt->outTensorDims[last] = temp;
-                    first++;
-                }
-                else if (appCntxt->outTensorDims[first] != 1)
-                {
-                    first++;
-                }
-                else
-                {
-                    last++;
-                }
-            }
-
-            if (appCntxt->outTensorDims[first] == 1)
-            {
-                appCntxt->outTensorNumDim = first;
-            }
 
             // vxCreateTensor
             for (i = 0; i < appCntxt->pipelineDepth; i++)
@@ -820,6 +794,12 @@ vx_status VISION_CNN_createOutTensor(VISION_CNN_Context   *appCntxt,
     vx_status   vxStatus;
 
     memset(start, 0, sizeof(start));
+
+    //==>> 10.0 debug
+    // LOG_INFO("==> outTensorNumDim = %d \n", appCntxt->outTensorNumDim);
+    // LOG_INFO("==> outTensorDims = [%ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld]\n",
+    //     appCntxt->outTensorDims[0],appCntxt->outTensorDims[1],appCntxt->outTensorDims[2],appCntxt->outTensorDims[3],
+    //     appCntxt->outTensorDims[4],appCntxt->outTensorDims[5],appCntxt->outTensorDims[6],appCntxt->outTensorDims[7]);
 
     vxStatus = tivxMapTensorPatch(vxOutTensor,
                                   appCntxt->outTensorNumDim,
