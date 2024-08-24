@@ -32,19 +32,19 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     ```
     root@am6x-sk:~/j7ros_home$ make scripts ROS_VER=2
     ```
-    Make sure that two bash scripts, `docker_build_ros2.sh` and `docker_run_ros2.sh`, are generated.
+    Make sure that two bash scripts, `docker_build.sh` and `docker_run.sh`, are generated.
 
 2. To build the Docker image:
     ```
-    root@am6x-sk:~/j7ros_home$ ./docker_build_ros2.sh
+    root@am6x-sk:~/j7ros_home$ ./docker_build.sh
     ```
     This step may take some time depending on the network speed. Once "docker build" is completed, you can check the resulting Docker image with `docker images`.
 
 3. To start/run the Docker container:
     ```
-    root@am6x-sk:~/j7ros_home$ ./docker_run_ros2.sh
+    root@am6x-sk:~/j7ros_home$ ./docker_run.sh
     ```
-    It is important to use `docker_run_ros2.sh` script to start a Docker container since the script includes all the necessary settings to leverage all the cores and hardware accelerators of the TI Processor.
+    It is important to use `docker_run.sh` script to start a Docker container since the script includes all the necessary settings to leverage all the cores and hardware accelerators of the TI Processor.
 
 4. To build the ROS applications, inside the Docker container:
     ````{only} tag_j7x
@@ -67,30 +67,30 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
 ## Set Up Docker Environment on the Remote PC for Visualization
 
 ```{note}
-If your Ubuntu PC (for visualization) uses an Nvidia GPU driver, please ensure that the Nvidia Container Toolkit ("nvidia-docker" or "nvidia-docker2" depending on Ubuntu distro) is installed before running `docker_run_ros2.sh` script. Additionally, when generating scripts, make sure to add the argument `GPUS=y` (see Step 1 below).
+If your Ubuntu PC (for visualization) uses an Nvidia GPU driver, please ensure that the Nvidia Container Toolkit ("nvidia-docker" or "nvidia-docker2" depending on Ubuntu distro) is installed before running `docker_run.sh` script. Additionally, when generating scripts, make sure to add the argument `GPUS=y` (see Step 1 below).
 ```
 
 You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_home` as the working directory.
 
 1. To generate bash scripts for building and running a Docker image for ROS 2 {{ROS2_DISTRO}}:
     ```
-    user@pc:~/j7ros_home$ make scripts ROS_VER=2
+    user@pc:~/j7ros_home$ PLATFORM=pc make scripts
     ```
     If the Ubuntu PC uses an Nvidia GPU driver, please add one more argument `GPUS=y`:
     ```
-    user@pc:~/j7ros_home$ make scripts ROS_VER=2 GPUS=y
+    user@pc:~/j7ros_home$ PLATFORM=pc make scripts GPUS=y
     ```
-    Make sure that two bash scripts, `docker_build_ros2.sh` and `docker_run_ros2.sh`, are generated.
+    Make sure that two bash scripts, `docker_build.sh` and `docker_run.sh`, are generated.
 
 2. To build the ROS 2 Docker image:
     ```
-    user@pc:~/j7ros_home$ ./docker_build_ros2.sh
+    user@pc:~/j7ros_home$ ./docker_build.sh
     ```
     It may take some time building the Docker image. The Docker image built can be listed with `docker images`.
 
 3. Run the ROS 2 Docker container:
     ```
-    user@pc:~/j7ros_home$ ./docker_run_ros2.sh
+    user@pc:~/j7ros_home$ ./docker_run.sh
     ```
 
 4. Build the ROS nodes for visualization:

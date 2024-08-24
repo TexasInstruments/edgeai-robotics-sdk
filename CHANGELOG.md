@@ -4,7 +4,7 @@ Change Log
 ## Release 10.0.0 (2024-08-16)
 
 - The Robotics SDK has been migrated to be compatible with Yocto Scathgap-based Processor-SDK Linux 10.0.
-- The Robotics SDK Docker build process is now independent of the host Linux file system. The SDK Docker image can be built on any ARM64 Linux machine, or on an x86_64 Linux machine using QEMU, by passing the `SOC` environment variable when running `docker_build_ros2.sh`.
+- The Robotics SDK Docker build process is now independent of the host Linux file system. The SDK Docker image can be built on any ARM64 Linux machine, or on an x86_64 Linux machine using QEMU, by passing the `SOC` environment variable when running `docker_build.sh`.
 - Pre-built libraries and packages for all dependency packages (including `ti-vision-apps`, `onnx-runtime`, `tflite-runtime`, `neo-ai-dlr,` TIDL runtime modules, and GST-V4L2 libraries) are provided for the SDK Docker container (Ubuntu 22.04).
 
 ## Release 9.2.0 (2024-04-05)

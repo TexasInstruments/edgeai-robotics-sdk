@@ -9,7 +9,7 @@ GPUS             ?= n
 
 # Robotics SDK version
 SDK_VER          ?= 10.0.0
-EDGEAI_VER       ?= 10.0.0.7
+EDGEAI_VER       ?= 10.0.0.8
 TIVA_LIB_VER     ?= 10.0.0
 RPMSG_LIB_VER    ?= 0.6.7
 
@@ -31,22 +31,20 @@ ifeq ($(ROS_VER), 1)
 	EXCLUDE       = ros2
 endif
 
-# set PLATFORM based on "uname -m"
-PLATFORM         ?= j7
-ARCH             ?= arm64v8
-ifeq ($(shell uname -m), x86_64)
-	PLATFORM      = pc
-	ARCH          = x86_64
+# set PLATFORM: j7 (target) or pc (visualization PC)
+PLATFORM ?= j7
+ifeq ($(PLATFORM), j7)
+	ARCH    ?= arm64
+	SDK_DIR ?= /opt/$(REPO_NAME)
+else ifeq ($(PLATFORM), pc)
+	ARCH    ?= amd64
+	SDK_DIR ?= $(WORK_PATH_HOST)/ros_ws/src/$(REPO_NAME)
+else
+	$(error "Unsupported PLATFORM: $(PLATFORM)")
 endif
 
-WORK_PATH_HOST    = $(HOME)/$(WORK_DIR)
-ifeq ($(PLATFORM), j7)
-	SDK_DIR      ?= /opt/$(REPO_NAME)
-endif
-ifeq ($(PLATFORM), pc)
-	SDK_DIR      ?= $(WORK_PATH_HOST)/ros_ws/src/$(REPO_NAME)
-endif
-DATA_DIR          = $(WORK_PATH_HOST)/data
+WORK_PATH_HOST = $(HOME)/$(WORK_DIR)
+DATA_DIR       = $(WORK_PATH_HOST)/data
 
 ifeq ($(ROS_DOCKER_INTERNAL),)
 	USE_PROXY = 0
@@ -119,14 +117,14 @@ docker_build:
 	@echo "ROS_DISTRO=$(ROS_DISTRO)"                          >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-base" >> $(TGT_NAME)
-endif
-ifeq ($(PLATFORM), pc)
+else ifeq ($(PLATFORM), pc)
 	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-viz" >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_TAG2=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-\$$SOC" >> $(TGT_NAME)
 endif
 	@echo "export SDK_DIR=$(SDK_DIR)"                         >> $(TGT_NAME)
+	@echo "export ARCH=$(ARCH)"                               >> $(TGT_NAME)
 	@echo "DOCKER_DIR=\$$SDK_DIR/docker"                      >> $(TGT_NAME)
 	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
 	@echo "# modify the server and proxy URLs as requied"     >> $(TGT_NAME)
@@ -148,7 +146,7 @@ ifeq ($(PLATFORM), j7)
 endif
 	@echo "bash \$$DOCKER_DIR/scripts/prepare_docker_build.sh \$$DST_DIR" >> $(TGT_NAME)
 	@echo "cd $(WORK_PATH_HOST)"                              >> $(TGT_NAME)
-	@echo "if [ \"\$$(docker images -q \$$DOCKER_TAG 2> /dev/null)\" == \"\" ]; then" >> $(TGT_NAME)
+	@echo "if [ -z \$$1 ] || [ \$$1 == stage1_only ]; then "      >> $(TGT_NAME)
 	@echo "    docker build \\"                                   >> $(TGT_NAME)
 	@echo "        -t \$$DOCKER_TAG \\"                           >> $(TGT_NAME)
 	@echo "        --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
@@ -158,26 +156,30 @@ endif
 ifeq ($(PLATFORM), pc)
 	@echo "        --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
 endif
+ifeq ($(PLATFORM), j7)
 	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).\$$ROS_DISTRO ./docker_src"  >> $(TGT_NAME)
+else ifeq ($(PLATFORM), pc)
+	@echo "        -f \$$DOCKER_DIR/Dockerfile.viz.\$$ROS_DISTRO ./docker_src"  >> $(TGT_NAME)
+endif
 	@echo "    echo \"Docker build -t \$$DOCKER_TAG completed!\"" >> $(TGT_NAME)
-	@echo "else"                                              >> $(TGT_NAME)
-	@echo "    echo \"\$$DOCKER_TAG already exists.\""        >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "docker build \\"                                   >> $(TGT_NAME)
-	@echo "    -t \$$DOCKER_TAG2 \\"                          >> $(TGT_NAME)
-	@echo "    --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
-	@echo "    --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
-	@echo "    --build-arg TIVA_LIB_VER=\$$TIVA_LIB_VER \\"   >> $(TGT_NAME)
-	@echo "    --build-arg RPMSG_LIB_VER=\$$RPMSG_LIB_VER \\" >> $(TGT_NAME)
-	@echo "    --build-arg SOC_NAME=\$$SOC \\"                >> $(TGT_NAME)
-	@echo "    --build-arg ROS_DISTRO=\$$ROS_DISTRO \\"       >> $(TGT_NAME)
-	@echo "    --build-arg SDK_VER=\$$SDK_VER \\"             >> $(TGT_NAME)
-	@echo "    --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
-	@echo "    --build-arg BASE_URL=\$$BASE_URL \\"           >> $(TGT_NAME)
-	@echo "    --build-arg SDK_VER_STR=\$$SDK_VER_STR \\"     >> $(TGT_NAME)
-	@echo "    -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
-	@echo "echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
+	@echo "if [ -z \$$1 ] || [ \$$1 == stage2_only ]; then "      >> $(TGT_NAME)
+	@echo "    docker build \\"                                   >> $(TGT_NAME)
+	@echo "        -t \$$DOCKER_TAG2 \\"                          >> $(TGT_NAME)
+	@echo "        --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
+	@echo "        --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
+	@echo "        --build-arg TIVA_LIB_VER=\$$TIVA_LIB_VER \\"   >> $(TGT_NAME)
+	@echo "        --build-arg RPMSG_LIB_VER=\$$RPMSG_LIB_VER \\" >> $(TGT_NAME)
+	@echo "        --build-arg SOC_NAME=\$$SOC \\"                >> $(TGT_NAME)
+	@echo "        --build-arg ROS_DISTRO=\$$ROS_DISTRO \\"       >> $(TGT_NAME)
+	@echo "        --build-arg SDK_VER=\$$SDK_VER \\"             >> $(TGT_NAME)
+	@echo "        --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
+	@echo "        --build-arg BASE_URL=\$$BASE_URL \\"           >> $(TGT_NAME)
+	@echo "        --build-arg SDK_VER_STR=\$$SDK_VER_STR \\"     >> $(TGT_NAME)
+	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
+	@echo "     echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
+	@echo "fi"                                                >> $(TGT_NAME)
 endif
 	@echo "duration=\$$SECONDS"                               >> $(TGT_NAME)
 	@echo "echo \"\$$((\$$duration / 60)) minutes and \$$((\$$duration % 60)) seconds elapsed.\"" >> $(TGT_NAME)
@@ -192,8 +194,7 @@ docker_run:
 	@echo "ROS_DISTRO=$(ROS_DISTRO)"                          >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
 	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-\$$SOC" >> $(TGT_NAME)
-endif
-ifeq ($(PLATFORM), pc)
+else ifeq ($(PLATFORM), pc)
 	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-viz" >> $(TGT_NAME)
 endif
 	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
@@ -265,16 +266,16 @@ scripts: scripts_$(PLATFORM)
 scripts_$(PLATFORM): docker_build_$(PLATFORM) docker_run_$(PLATFORM)
 
 docker_build_j7:
-	@$(MAKE) docker_build TGT_NAME=docker_build_$(ROS_TAG).sh
+	@$(MAKE) docker_build TGT_NAME=docker_build.sh
 
 docker_run_j7:
-	@$(MAKE) docker_run TGT_NAME=docker_run_$(ROS_TAG).sh
+	@$(MAKE) docker_run TGT_NAME=docker_run.sh
 
 docker_build_pc:
-	@$(MAKE) docker_build TGT_NAME=docker_build_$(ROS_TAG).sh
+	@$(MAKE) docker_build TGT_NAME=docker_build.sh
 
 docker_run_pc:
-	@$(MAKE) docker_run TGT_NAME=docker_run_$(ROS_TAG).sh
+	@$(MAKE) docker_run TGT_NAME=docker_run.sh
 
 ## data files
 data_download: rosbag_download vl_data_download calib_download

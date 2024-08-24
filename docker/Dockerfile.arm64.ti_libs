@@ -41,7 +41,7 @@ ARG BASE_URL
 ARG SDK_VER_STR
 
 #=========================================================================
-FROM robotics-sdk:${SDK_VER}-${ROS_DISTRO}-base as base-0
+FROM --platform=linux/arm64 robotics-sdk:${SDK_VER}-${ROS_DISTRO}-base as base-0
 
 #=========================================================================
 FROM base-0 AS base-1
@@ -128,7 +128,7 @@ RUN cd /opt/edgeai-gst-apps/scripts/perf_stats && \
     cp /opt/edgeai-gst-apps/scripts/perf_stats/bin/Release/perf_stats /usr/local/bin/perf_stats
 
 # add scripts
-COPY entrypoint_arm64v8.sh /root/entrypoint.sh
+COPY entrypoint_arm64.sh /root/entrypoint.sh
 ADD ros_setup.sh /root/
 ADD set_aliases.sh /root/
 

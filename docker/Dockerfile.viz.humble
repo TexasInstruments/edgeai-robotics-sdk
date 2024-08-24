@@ -32,12 +32,12 @@ ARG USE_PROXY
 ARG HTTP_PROXY
 ARG REPO_LOCATION
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BASE_URL
+ARG EDGEAI_VER
 
 #=========================================================================
 # The environment variable REPO_LOCATION is set from outside as needed,
 # based on network
-FROM ${REPO_LOCATION}arm64v8/ros:humble-perception-jammy AS base-0
+FROM --platform=linux/amd64 ${REPO_LOCATION}amd64/ros:humble-perception-jammy AS base-0
 
 #=========================================================================
 FROM base-0 AS base-1
@@ -48,20 +48,28 @@ ENV http_proxy=${HTTP_PROXY}
 ENV https_proxy=${HTTP_PROXY}
 
 #=========================================================================
-FROM base-${USE_PROXY} AS ros-gst
+FROM base-${USE_PROXY} AS ros
 ARG DEBIAN_FRONTEND
-ARG BASE_URL
 
 # setup proxy settings
 ADD setup_proxy.sh /root/
 ADD proxy /root/proxy
 RUN /root/setup_proxy.sh
 
+# install python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip && \
+    python3 -m pip install --upgrade pip && \
+    rm -rf /var/lib/apt/lists/*
+
+#=========================================================================
+FROM ros as ros-utils
+ARG DEBIAN_FRONTEND
+
 # intsall utils and miscellaneous packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
-    git \
     vim \
     tmux \
     gdb \
@@ -70,62 +78,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rsync \
     strace \
     sysstat \
+    gdb \
     net-tools \
     dialog \
     chrony \
     nfs-common \
     corkscrew \
-    v4l-utils \
-    unzip \
-    plocate && \
+    v4l-utils && \
     rm -rf /var/lib/apt/lists/*
-
-# install gstreamer dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgstreamer1.0-0 \
-    libgstreamer1.0-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libgstreamer-plugins-good1.0-dev \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-libav \
-    gstreamer1.0-tools \
-    gir1.2-gst-rtsp-server-1.0 \
-    ninja-build && \
-    rm -rf /var/lib/apt/lists/*
-
-# install python packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-pip && \
-    python3 -m pip install --upgrade pip && \
-    python3 -m pip install --no-cache-dir \
-        meson \
-        configparser \
-        argparse && \
-    rm -rf /var/lib/apt/lists/*
-
-# install the gstreamer v4l2 library
-WORKDIR /root/scripts
-ADD install_gst_v4l2_lib.sh ./
-RUN ./install_gst_v4l2_lib.sh
 
 #=========================================================================
-FROM ros-gst as j7ros-common
+FROM ros-utils
 ARG DEBIAN_FRONTEND
-
-# install dependency for tivision_apps.so
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libdevil-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ncurses-dev \
-    libopencv-core-dev \
-    libopencv-imgproc-dev \
-    libopencv-imgcodecs-dev \
-    libyaml-cpp-dev && \
-    rm -rf /var/lib/apt/lists/*
+ARG EDGEAI_VER
 
 # setup sources.list
 RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources.list.d/ros2-latest.list
@@ -135,13 +100,23 @@ RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" > /etc/apt/sources
 # workaround in case apt-key above does not work, e.g., behind a proxy
 RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | gpg --dearmor -o /etc/apt/trusted.gpg.d/ros.gpg
 
-# install additional ROS packages
+# install additional ROS packages beyond humble-ros-base-jammy
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rmw-cyclonedds-cpp \
     ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-camera-info-manager \
-    libeigen3-dev && \
+    libeigen3-dev \
+    ros-humble-rviz2 \
+    ros-humble-image-view \
+    ros-humble-rqt-image-view \
+    ros-humble-rqt-console \
+    ros-humble-rqt-graph \
+    ros-humble-rqt-topic \
+    ros-humble-rqt-msg \
+    libcanberra-gtk-module \
+    libcanberra-gtk3-0 \
+    libcanberra-gtk3-module && \
     python3 -m pip install --no-cache-dir rosbags && \
     rm -rf /var/lib/apt/lists/*
 
@@ -154,3 +129,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-venv &&
     pip install --no-cache-dir -r /root/camera_tools_requirements.txt && \
     rm /root/camera_tools_requirements.txt && \
     rm -rf /var/lib/apt/lists/*
+
+#=========================================================================
+# add scripts
+COPY entrypoint_viz.sh /root/entrypoint.sh
+ADD  ros_setup.sh /root/
+ADD  set_aliases.sh /root/
+
+# .profile and .bashrc
+WORKDIR /root
+RUN echo "if [ -n \"$BASH_VERSION\" ]; then"     >  .profile && \
+    echo "    # include .bashrc if it exists"    >> .profile && \
+    echo "    if [ -f \"$HOME/.bashrc\" ]; then" >> .profile && \
+    echo "        . \"$HOME/.bashrc\""           >> .profile && \
+    echo "    fi"                                >> .profile && \
+    echo "fi"                                    >> .profile && \
+    echo "#!/bin/bash"                           >  .bashrc  && \
+    echo "export PS1=\"${debian_chroot:+($debian_chroot)}\u@pc-docker:\w\$ \"" >> .bashrc && \
+    echo "source $HOME/set_aliases.sh"                                         >> .bashrc
+
+# add labels
+LABEL TI_IMAGE_SOURCE=amd64/ros:humble-perception-jammy
+LABEL EDGEAI_VER=$EDGEAI_VER
+
+# workdir for ROS apps
+ARG PROJECT_HOME=j7ros_home
+ENV WORK_DIR=/root/${PROJECT_HOME}
+ENV ROS_WS=${WORK_DIR}/ros_ws
+WORKDIR ${ROS_WS}
+
+# setup entrypoint
+ENTRYPOINT ["/root/entrypoint.sh"]
