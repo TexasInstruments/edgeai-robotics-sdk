@@ -1,28 +1,46 @@
 # Docker Setup for ROS 2
 
-In the ROS 2 Docker images both for the target SK board and Ubuntu PC, two popular DDS implementations are installed by default:
+## Quick Start Guide
 
-- eProsima Fast DDS (default DDS for ROS 2 {{ROS2_DISTRO}})
-- Eclipse Cyclone DDS (additionally installed)
-
-To ensure smooth running of the out-of-box demos, the following DDS selections are made in the ROS 2 Docker containers by default on each platform.
-
-| Platform          | DDS Choice           | Note                                            |
-|-------------------|----------------------|-------------------------------------------------|
-| Target SK board   | Eclipse Cyclone DDS  | Provides better performance, especially with "rosbag play" |
-| Visualization PC  | eProsima Fast DDS    | Provides better `Ctrl+C` response                 |
-
-You can switch the DDS implementation in each launch session by setting the environment variable `RMW_IMPLEMENTATION`. For example,
-
-To use the eProsima Fast DDS,
-```
-RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 ...
+```{note}
+For a quick started, it is recommended to use the pre-built SDK Docker images. In the SDK Docker container, pre-built ROS packages for the Robotics SDK are already installed (under `/opt/ros/robotics_sdk_install` in the container filesystem).
 ```
 
-To use the Eclipse Cyclone DDS,
-```
-RMW_IMPLEMENTATION=rmw_cyclonedds_cpp ros2 ...
-```
+### On the Target
+
+1. Set up the SDK git repository and the workspace:
+    ```bash
+    source /opt/edgeai-gst-apps/scripts/install_robotics_sdk.sh
+    cd ~/j7ros_home
+    make scripts
+    ```
+
+2. Pull and Run the SDK Docker image:
+    ```bash
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC robotics-sdk:10.0.0-humble-$SOC
+    ./docker_run.sh
+    ```
+3. Run the demos by referring to the ["Run Demo Applications" section](#run-demos).
+
+### On the Visualization PC
+
+1. Set up the SDK git repository and the workspace:
+    ```bash
+    wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
+    source ./init_setup.sh
+    cd ~/j7ros_home
+    make scripts [GPUS=y]
+    ```
+
+2. Pull and Run the Docker image for the visualization PC.
+    ```bash
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz robotics-sdk:10.0.0-humble-viz
+    ./docker_run.sh
+    ```
+
+For those interested in building the SDK Docker image and the SDK ROS packages, please refer to the following sections.
 
 ## Set Up Docker Environment on the Target
 
@@ -99,13 +117,14 @@ You can choose any folder, but `init_setup.sh` script sets up `${HOME}/j7ros_hom
     root@pc-docker:~/j7ros_home/ros_ws$ source install/setup.bash
     ```
 
+(run-demos)=
 ## Run Demo Applications
 
 The table below summarizes the launch commands that you can use in the Docker container for each demo, on the target SK board, and on the remote visualization PC. For more details, see the following subsections.
 
 Launch arguments can be passed to the following launch commands.
 
-```{note}
+```{note} Installed
 Camera ID and subdev ID for cameras: You can check the camera ID (`cam_id`) and subdev ID (`subdev_id`) for the camera
 attached to the SK board by running `/opt/edgeai-gst-apps/scripts/setup_cameras.sh`. You can use the alias `setup_cameras` inside the SDK container.
 
@@ -178,4 +197,29 @@ You can use TMUX inside the ROS Docker container to split the current terminal w
 - `Ctrl + b`, followed by `"`: Split pane vertically.
 - `Ctrl + b`, followed by `↑` or `↓`: Switch to the pane in the respective direction.
 - `Ctrl + b`, followed by `x`: Close the current pane.
+```
+
+## DDS Implementation Options
+In the ROS 2 Docker images both for the target SK board and Ubuntu PC, two popular DDS implementations are installed by default:
+
+- eProsima Fast DDS (default DDS for ROS 2 {{ROS2_DISTRO}})
+- Eclipse Cyclone DDS (additionally installed)
+
+To ensure smooth running of the out-of-box demos, the following DDS selections are made in the ROS 2 Docker containers by default on each platform.
+
+| Platform          | DDS Choice           | Note                                            |
+|-------------------|----------------------|-------------------------------------------------|
+| Target SK board   | Eclipse Cyclone DDS  | Provides better performance, especially with "rosbag play" |
+| Visualization PC  | eProsima Fast DDS    | Provides better `Ctrl+C` response                 |
+
+You can switch the DDS implementation in each launch session by setting the environment variable `RMW_IMPLEMENTATION`. For example,
+
+To use the eProsima Fast DDS,
+```
+RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 ...
+```
+
+To use the Eclipse Cyclone DDS,
+```
+RMW_IMPLEMENTATION=rmw_cyclonedds_cpp ros2 ...
 ```

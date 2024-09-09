@@ -1,17 +1,17 @@
 #!/bin/bash
 set -e
 
-# setup proxy as required
+# set up proxy as needed
 source /root/setup_proxy.sh
 
 # Ubuntu version and ROS distro
 UBUNTU_VER=$(lsb_release -r | cut -f2)
 echo "Ubuntu $UBUNTU_VER. ROS-$ROS_DISTRO"
 
-# set up ROS environment
+# set up the ROS environment
 source "/opt/ros/$ROS_DISTRO/setup.bash"
 
-# setup TI Processor SDK environment
+# set up the TI Processor SDK environment
 SRC_PATH=/opt/robotics_sdk/docker
 FILE="$SRC_PATH/setup_ti_processor_sdk.sh"
 if [ -f $FILE ]; then
@@ -20,6 +20,13 @@ else
     echo "$FILE does not exist"
 fi
 
+# set up the SDK ROS packages pre-installed in the container
+SETUP_FILE="/opt/ros/robotics_sdk_install/setup.bash"
+if [ -f "$SETUP_FILE" ]; then
+    source "$SETUP_FILE"
+fi
+
+# set up the ROS packages in the ROS workspace
 if [ "$ROS_VERSION" == "1" ]; then
     # ROS network settings
     if [ -z "$J7_IP_ADDR" ]; then
