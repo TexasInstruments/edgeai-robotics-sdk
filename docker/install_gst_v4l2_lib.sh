@@ -34,12 +34,12 @@ set -e
 
 echo "$(basename "$0"): Processing..."
 
-# Example BASE_URL="https://software-dl.ti.com/jacinto7/esd/robotics-sdk/10_00_00/deps"
-if [ -z "$BASE_URL" ]; then
-    echo "Error: BASE_URL is not defined."
+# Example BASE_URL_RT="https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build/releases/download/rel.10.01.00.01-ubuntu22.04"
+if [ -z "$BASE_URL_RT" ]; then
+    echo "Error: BASE_URL_RT is not defined."
     exit 1
 else
-    echo "BASE_URL=$BASE_URL"
+    echo "BASE_URL_RT=$BASE_URL_RT"
 fi
 
 # package name
@@ -56,7 +56,7 @@ fi
 # download the lib file
 if [ "$DOWNLOAD_LIBS" = true ]; then
     mkdir -p "$LIB_DIR"
-    wget -q --no-proxy "${BASE_URL}/${PKG}" -O "${LIB_DIR}/${PKG}"
+    wget -q --no-proxy "${BASE_URL_RT}/${PKG}" -O "${LIB_DIR}/${PKG}"
     if [ $? -ne 0 ]; then
         echo "Error: Failed to download $PKG"
         exit 1

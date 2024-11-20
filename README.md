@@ -2,7 +2,7 @@
 
 ## Git Repository
 
-[Robotics SDK Git Repository](https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/about/)
+[Robotics SDK Git Repository](https://github.com/TexasInstruments/edgeai-robotics-sdk)
 
 ## User Guide Documentation
 

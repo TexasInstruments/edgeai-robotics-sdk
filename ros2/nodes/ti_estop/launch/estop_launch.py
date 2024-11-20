@@ -11,7 +11,7 @@ def finalize_node(context, *args, **kwargs):
     zed_sn = LaunchConfiguration("zed_sn").perform(context)
     dl_model_path = "/opt/model_zoo/ONR-SS-7618-deeplabv3lite-mobv2-qat-robokit-768x432"
 
-    lut_folder = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
+    lut_folder = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     left_lut_file_path  = os.path.join(lut_folder, zed_sn+"_HD_LUT_left.bin")
     right_lut_file_path = os.path.join(lut_folder, zed_sn+"_HD_LUT_right.bin")
 

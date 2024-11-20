@@ -34,20 +34,31 @@ set -e
 
 echo "$(basename "$0"): Processing..."
 
-# Example BASE_URL="https://software-dl.ti.com/jacinto7/esd/robotics-sdk/10_00_00/deps"
-if [ -z "$BASE_URL" ]; then
-    echo "Error: BASE_URL is not defined."
+# Example BASE_URL_RT="https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build/releases/download/rel.10.01.00.01-ubuntu22.04"
+if [ -z "$BASE_URL_RT" ]; then
+    echo "Error: BASE_URL_RT is not defined."
     exit 1
 else
-    echo "BASE_URL=$BASE_URL"
+    echo "BASE_URL_RT=$BASE_URL_RT"
 fi
 
 if [ -z "$SOC" ]; then
-    echo "SOC=$SOC: SOC should be defined."
+    echo "Error: SOC is not defined."
     exit 1
 else
     echo "SOC=$SOC"
 fi
+
+if [ -z "$SDK_VER_MAJOR" ]; then
+    echo "Error: SDK_VER_MAJOR is not defined."
+    exit 1
+else
+    echo "SDK_VER_MAJOR=$SDK_VER_MAJOR"
+fi
+
+# lib tarball filename
+TARBALL_BASE=arm-tidl-${SOC}_${SDK_VER_MAJOR}-ubuntu22.04
+TARBALL=${TARBALL_BASE}.tar.gz
 
 # TIDL runtime modules
 LIB_TIDL_RT=libvx_tidl_rt.so
@@ -57,9 +68,9 @@ TIDL_SO_VER=1.0
 
 # list of files to download
 FILES=(
-    "arm-tidl/${SOC}/${LIB_TIDL_RT}.${TIDL_SO_VER}"
-    "arm-tidl/${SOC}/${LIB_ONNX_RT_EP}.${TIDL_SO_VER}"
-    "arm-tidl/${SOC}/${LIB_TFLITE_RT_DELEGATE}.${TIDL_SO_VER}"
+    "${LIB_TIDL_RT}.${TIDL_SO_VER}"
+    "${LIB_ONNX_RT_EP}.${TIDL_SO_VER}"
+    "${LIB_TFLITE_RT_DELEGATE}.${TIDL_SO_VER}"
 )
 
 LINK_FILES=(
@@ -79,18 +90,18 @@ fi
 # destination folder for lib files
 LIB_DST="/usr/lib"
 
-# function to download the lib files
-download_files() {
+# function to download the lib tarball
+download_and_extract_tarball() {
+    echo "$(basename "$0"): Downloading and extracting $TARBALL. DOWNLOAD_LIBS=$DOWNLOAD_LIBS"
     if [ "$DOWNLOAD_LIBS" = true ]; then
         mkdir -p "$LIB_DIR"
-        for file in "${FILES[@]}"; do
-            mkdir -p "$LIB_DIR/$(dirname "$file")"
-            wget -q --no-proxy "$BASE_URL/$file" -O "$LIB_DIR/$file"
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to download $file"
-                exit 1
-            fi
-        done
+        wget -q --no-proxy "$BASE_URL_RT/$TARBALL" -O "$LIB_DIR/$TARBALL"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download $TARBALL"
+            exit 1
+        fi
+        tar -xzf "$LIB_DIR/$TARBALL" -C "$LIB_DIR"
+        echo "$(basename "$0"):Successfully downloaded and extracted $TARBALL"
     fi
 }
 
@@ -101,11 +112,12 @@ copy_and_link_files() {
         link_file="${LINK_FILES[$i]}"
 
         # copy the file to /usr/lib
-        cp "$LIB_DIR/$file" "${LIB_DST}/$(basename "$file")"
+        cp "$LIB_DIR/$TARBALL_BASE/$file" "${LIB_DST}/$(basename "$file")"
 
         # create the symbolic link
         ln -snf "${LIB_DST}/$(basename "$file")" "${LIB_DST}/${link_file}"
     done
+    echo "Successfully copied and linked the library files"
 }
 
 # clean up
@@ -115,7 +127,8 @@ clean_up() {
     fi
 }
 
-download_files
+# main
+download_and_extract_tarball
 copy_and_link_files
 clean_up
 

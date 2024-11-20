@@ -9,7 +9,7 @@ from launch.substitutions import TextSubstitution
 from launch.substitutions import LaunchConfiguration
 
 # Folder that contains camera params
-config_dir = "/opt/robotics_sdk/ros1/drivers/zed_capture/config/"
+config_dir = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
 
 def get_launch_file(pkg, file_name):
     pkg_dir = get_package_share_directory(pkg)
@@ -32,7 +32,7 @@ def generate_launch_description():
     )
 
     lut_file_path_arg = DeclareLaunchArgument(
-        "lut_file_path", default_value=[config_dir, LaunchConfiguration('zed_sn'), "_HD_LUT_right.bin"]
+        "lut_file_path", default_value=os.path.join(config_dir, LaunchConfiguration('zed_sn') + '_HD_LUT_right.bin')
     )
 
     # Include SEMSEG launch file

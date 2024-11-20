@@ -10,7 +10,8 @@ import math
 # Input image format: 0 - VX_DF_IMAGE_U8, 1 - VX_DF_IMAGE_NV12, 2 - VX_DF_IMAGE_UYVY
 image_format = 1
 enable_ldc_node = 1
-lut_file_path = "/opt/robotics_sdk/tools/camera_info/IMX219_HD_LUT.bin"
+sdk_dir = os.getenv('SDK_DIR', '/opt/robotics_sdk')
+lut_file_path = os.path.join(sdk_dir, 'tools', 'camera_info', 'IMX219_HD_LUT.bin')
 
 # path to the DL model
 soc = os.getenv('SOC')
@@ -91,7 +92,7 @@ def generate_launch_description():
             'outout_topic': 'camera/fused_objdet_radar',
             'radar_frame_id': 'ti_mmwave_0',
             'camera_frame_id': 'camera',
-            'camera_info_file': 'file:///opt/robotics_sdk/tools/camera_info/IMX219_HD_camera_info.yaml',
+            'camera_info_file': f'file://{sdk_dir}/tools/camera_info/IMX219_HD_camera_info.yaml',
             'radar_track_xy_only': True,
             'max_sync_offset': LaunchConfiguration('max_sync_offset'),
             'use_sim_time': LaunchConfiguration('use_sim_time'),

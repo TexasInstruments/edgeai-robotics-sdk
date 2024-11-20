@@ -26,7 +26,7 @@ def generate_launch_description():
     exportPerfStats_str_arg = DeclareLaunchArgument("exportPerfStats_str", default_value=[LaunchConfiguration('exportPerfStats')])
     detVizThreshold_str_arg = DeclareLaunchArgument("detVizThreshold_str", default_value=[LaunchConfiguration('detVizThreshold')])
 
-    lut_folder = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
+    lut_folder = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     left_lut_file_arg  = DeclareLaunchArgument('left_lut_file', default_value=[LaunchConfiguration('zed_sn'), '_HD_LUT_left.bin'])
     right_lut_file_arg = DeclareLaunchArgument('right_lut_file', default_value=[LaunchConfiguration('zed_sn'), '_HD_LUT_right.bin'])
     left_lut_file_path  = PathJoinSubstitution([lut_folder, LaunchConfiguration('left_lut_file')])

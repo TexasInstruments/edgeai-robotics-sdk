@@ -34,16 +34,16 @@ set -e
 
 echo "$(basename "$0"): Processing..."
 
-# Example BASE_URL="https://software-dl.ti.com/jacinto7/esd/robotics-sdk/10_00_00/deps"
-if [ -z "$BASE_URL" ]; then
-    echo "Error: BASE_URL is not defined."
+# Example BASE_URL_RT="https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build/releases/download/rel.10.01.00.01-ubuntu22.04"
+if [ -z "$BASE_URL_RT" ]; then
+    echo "Error: BASE_URL_RT is not defined."
     exit 1
 else
-    echo "BASE_URL=$BASE_URL"
+    echo "BASE_URL_RT=$BASE_URL_RT"
 fi
 
 if [ -z "$SDK_VER_STR" ]; then
-    echo "Error: BASE_URL is not defined."
+    echo "Error: BASE_URL_RT is not defined."
     exit 1
 else
     echo "SDK_VER_STR=$SDK_VER_STR"
@@ -81,7 +81,7 @@ download_files() {
     if [ "$DOWNLOAD_LIBS" = true ]; then
         mkdir -p "$LIB_DIR"
         for file in "${FILES[@]}"; do
-            wget -q --no-proxy "$BASE_URL/$file" -O "$LIB_DIR/$file"
+            wget -q --no-proxy "$BASE_URL_RT/$file" -O "$LIB_DIR/$file"
             if [ $? -ne 0 ]; then
                 echo "Error: Failed to download $file"
                 exit 1

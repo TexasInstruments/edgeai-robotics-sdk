@@ -1,0 +1,92 @@
+name: docker-build-stage1 reusable
+
+on:
+  workflow_call:
+    inputs:
+      soc:
+        required: true
+        type: string
+    secrets:
+      env_PAT:
+        required: true
+
+env:
+  # SDK_VER should match to the SDK_VER defined in docker/Makefile
+  SDK_VER: 10.1.0.1
+  SDK_DIR: ${{ github.workspace }}
+  GH_TOKEN: ${{ secrets.env_PAT }}
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.env_PAT }}
+
+      - name: Verify the SDK repository
+        run: ls -l $SDK_DIR
+
+      - name: Set up Docker build script
+        run: |
+          mkdir -p $HOME/j7ros_home
+          cd $HOME/j7ros_home
+          makefile_path=${{ env.SDK_DIR }}/docker/Makefile
+          if [ -f $makefile_path ]; then
+            ln -snf $makefile_path .
+          else
+            echo "Error: $makefile_path does not exist"
+            exit 1
+          fi
+          PLATFORM=j7 SDK_DIR=${{ env.SDK_DIR }} make scripts
+
+      - name: Verify script generation
+        run: |
+          ls -l $HOME/j7ros_home
+          more $HOME/j7ros_home/docker_build.sh
+
+      - name: Build Docker image
+        run: |
+          cd $HOME/j7ros_home
+          SOC=${{ inputs.soc }} ./docker_build.sh stage1_only
+
+      - name: Add a Docker label
+        run: |
+          docker_tag=robotics-sdk:${{ env.SDK_VER }}-humble-base
+          docker images
+          if [ "$(docker images -q $docker_tag 2> /dev/null)" == "" ]; then
+            echo "Docker image $docker_tag does not exist."
+            exit 1
+          else
+            echo "FROM --platform=linux/arm64 $docker_tag" | docker build --label org.opencontainers.image.source=https://github.com/${{ github.repository }} -t $docker_tag -
+            docker inspect --format='{{json .Config.Labels}}' $docker_tag
+          fi
+
+      - name: Push Docker image
+        run: |
+          docker_tag=robotics-sdk:${{ env.SDK_VER }}-humble-base
+          remote_docker_tag=ghcr.io/${{ github.repository_owner }}/$docker_tag
+          remote_docker_tag=${remote_docker_tag,,}
+          docker tag $docker_tag $remote_docker_tag
+          for i in 1 2 3; do
+            if docker push $remote_docker_tag; then
+              break
+            fi
+            echo "Retry $i pushing image..."
+            sleep 10
+          done

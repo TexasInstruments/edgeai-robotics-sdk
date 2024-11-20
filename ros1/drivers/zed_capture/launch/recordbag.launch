@@ -1,6 +1,0 @@
-<launch>
-
-	<node pkg="rosbag" type="record" name="rosbag_record" output="screen"
-		args="--duration 15 /camera/left/image_raw /camera/left/camera_info /camera/right/image_raw /camera/right/camera_info" />
-
-</launch>

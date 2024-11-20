@@ -11,7 +11,7 @@ from launch.substitutions import LaunchConfiguration
 # Input image format: 0 - VX_DF_IMAGE_U8, 1 - VX_DF_IMAGE_NV12, 2 - VX_DF_IMAGE_UYVY
 image_format = 2
 enable_ldc_node = 1
-lut_file_path = "/opt/robotics_sdk/ros1/drivers/mono_capture/config/C920_HD_LUT.bin"
+lut_file_path = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info', 'C920_HD_LUT.bin')
 
 # path to the DL model
 dl_model_path = "/opt/model_zoo/ONR-6DP-7200-yolox-s-6d-object_pose-640x480"

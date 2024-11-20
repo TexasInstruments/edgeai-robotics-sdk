@@ -19,7 +19,7 @@ else:
 def finalize_node(context, *args, **kwargs):
     image_format = int(LaunchConfiguration("image_format").perform(context))
     zed_sn = LaunchConfiguration("zed_sn").perform(context)
-    lut_folder = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
+    lut_folder = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     lut_file_path = os.path.join(lut_folder, zed_sn+"_HD_LUT_right.bin")
     enable_ldc_node = int(LaunchConfiguration("enable_ldc_node").perform(context))
     dl_model_path = LaunchConfiguration("dl_model_path").perform(context)

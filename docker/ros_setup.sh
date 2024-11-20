@@ -42,7 +42,7 @@ if [ "$ROS_VERSION" == "1" ]; then
     fi
     export ROS_MASTER_URI=http://$J7_IP_ADDR:11311
 
-    if [[ `arch` == "aarch64" ]]; then
+    if [[ $(arch) == "aarch64" ]]; then
         export ROS_IP=$J7_IP_ADDR
     else
         if [ -z "$PC_IP_ADDR" ]; then

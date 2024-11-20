@@ -30,7 +30,7 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
+import os
 from rosbags.rosbag2 import Reader
 from rosbags.serde import deserialize_cdr
 from rosbags.typesys import get_types_from_msg, register_types

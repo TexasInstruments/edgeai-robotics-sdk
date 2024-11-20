@@ -155,14 +155,14 @@ This script takes care of:
 #### On the Remote Ubuntu PC
 In a similar way, you can use a script to set up on the remote Ubuntu PC for visualization:
 ```
-user@pc:~$ wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
-user@pc:~$ source ./init_setup.sh REL.10.00.00
+user@pc:~$ wget -O init_setup.sh https://raw.githubusercontent.com/TexasInstruments/edgeai-robotics-sdk/master/init_setup.sh
+user@pc:~$ source ./init_setup.sh REL.10.01.00
 ```
 
 ````{note}
 In a proxy network, in case the `wget` command above does not work, you can try again with adding `--proxy off` argument:
 ```
-user@pc:~$ wget --proxy off -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
+user@pc:~$ wget --proxy off -O init_setup.sh https://raw.githubusercontent.com/TexasInstruments/edgeai-robotics-sdk/master/init_setup.sh
 ```
 ````
 
@@ -186,10 +186,6 @@ The following section describes the Docker environment setup, details of buildin
 
 ```{note}
 **Proxy Network**: If the board running the Docker container is behind a proxy server, the default settings for downloading files and installing packages via `apt-get` may not work, and proper settings for proxy should be established for building and running the SDK Docker image.
-```
-
-```{tip}
-**Docker Run**: After "docker build" is completed, it is important to use `docker_run_rosX.sh` script to start a Docker container, since the script includes all the necessary settings to leverage all the cores and hardware accelerators of the processor. Please note that `docker_run_rosX.sh` includes `--rm` argument by default. Just remove the `--rm` argument in `docker_run_rosX.sh` in case you want to do "docker commit" after exiting a Docker container. A short information about several useful Docker commands is provided in {{'[this link](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/common/docker_environment.html#additional-docker-commands)'.format(SDK_VER)}}.
 ```
 
 `````{only} tag_ros1n2
