@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
 
 env:
-  # SDK_VER should match to the SDK_VER defined in docker/Makefile
-  SDK_VER: 10.1.0.1
   SDK_DIR: ${{ github.workspace }}
   GH_TOKEN: ${{ secrets.GHCR_PAT }}
 
@@ -30,11 +28,11 @@ jobs:
       - name: Initial setup for the SDK repository
         run: |
           SDK_DIR=$SDK_DIR $SDK_DIR/scripts/install_gscam.sh
-          SDK_DIR=$SDK_DIR $SDK_DIR/scripts/install_mmwave_rospkg.sh 2
+          SDK_DIR=$SDK_DIR $SDK_DIR/scripts/install_mmwave_rospkg.sh
           # verify
           ls -l $SDK_DIR/ros2/drivers
 
-      - name: Set up Docker build script
+      - name: Set up j7ros_home folder and parse SDK_VER
         run: |
           mkdir -p $HOME/j7ros_home
           cd $HOME/j7ros_home
@@ -45,10 +43,16 @@ jobs:
             echo "Error: $makefile_path does not exist"
             exit 1
           fi
-          PLATFORM=pc SDK_DIR=$SDK_DIR make scripts
+          OUTPUT=$(make info)
+          SDK_VER=$(echo "$OUTPUT" | grep 'SDK_VER:' | awk '{print $2}')
+          echo "Parsed SDK_VER: $SDK_VER"
+          echo "SDK_VER=$SDK_VER" >> $GITHUB_ENV
 
-      - name: Verify script generation
+      - name: Set up Docker build script
         run: |
+          cd $HOME/j7ros_home
+          PLATFORM=pc SDK_DIR=$SDK_DIR make scripts
+          # verify
           ls -l $HOME/j7ros_home
           more $HOME/j7ros_home/docker_build.sh
 

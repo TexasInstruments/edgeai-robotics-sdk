@@ -40,7 +40,6 @@ ARG EDGEAI_VER
 ARG BASE_URL_VA
 ARG BASE_URL_RT
 ARG SDK_VER_MAJOR
-ARG SDK_VER_STR
 
 #=========================================================================
 FROM --platform=linux/arm64 robotics-sdk:${SDK_VER}-${ROS_DISTRO}-base as base-0
@@ -64,7 +63,6 @@ ENV SOC=$SOC_NAME
 ARG BASE_URL_VA
 ARG BASE_URL_RT
 ARG SDK_VER_MAJOR
-ARG SDK_VER_STR
 
 # setup proxy settings
 RUN /root/setup_proxy.sh
@@ -95,27 +93,27 @@ RUN apt-get update && \
 
 # git-clone edgeai-gst-apps
 WORKDIR /opt
-RUN git clone --single-branch --branch 10.01.00.01 https://github.com/TexasInstruments/edgeai-gst-apps.git
+RUN git clone --single-branch --branch 10.01.00.02 https://github.com/TexasInstruments/edgeai-gst-apps.git
 
 # install apps-utils
-RUN /opt/edgeai-gst-apps/scripts/install_apps_utils.sh -b 10.01.00.01 && \
+RUN /opt/edgeai-gst-apps/scripts/install_apps_utils.sh -b 10.01.00.02 && \
     rm -rf /opt/edgeai-apps-utils
 
 # install dl-inferer
-RUN git clone --single-branch --branch 10.01.00.01 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
+RUN git clone --single-branch --branch 10.01.00.02 https://git.ti.com/cgit/edgeai/edgeai-dl-inferer && \
     /opt/edgeai-dl-inferer/scripts/build_dl_inferer.sh && \
     rm -rf /opt/edgeai-dl-inferer
 
 # install edgeai-tiovx-kernels
-RUN /opt/edgeai-gst-apps/scripts/install_tiovx_kernels.sh -b 10.01.00.01 && \
+RUN /opt/edgeai-gst-apps/scripts/install_tiovx_kernels.sh -b 10.01.00.02 && \
     rm -rf /opt/edgeai-tiovx-kernels
 
 # install edgeai-tiovx-modules
-RUN /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh -b 10.01.00.01 && \
+RUN /opt/edgeai-gst-apps/scripts/install_tiovx_modules.sh -b 10.01.00.02 && \
     rm -rf /opt/edgeai-tiovx-modules
 
 # install edgeai-gst-plugins
-RUN /opt/edgeai-gst-apps/scripts/install_gst_plugins.sh -b 10.01.00.01 && \
+RUN /opt/edgeai-gst-apps/scripts/install_gst_plugins.sh -b 10.01.00.02 && \
     rm -rf /opt/edgeai-gst-plugins
 
 # install python modules for DL RT
@@ -124,7 +122,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 -m pip install --no-cache-dir PyYAML
 
 # install ti-gpio-cpp
-RUN /opt/edgeai-gst-apps/scripts/install_ti_gpio_libs.sh -b 10.01.00.01
+RUN /opt/edgeai-gst-apps/scripts/install_ti_gpio_libs.sh -b 10.01.00.02
 
 # build perf_stats tool
 RUN cd /opt/edgeai-gst-apps/scripts/perf_stats && \

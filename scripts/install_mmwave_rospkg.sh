@@ -1,5 +1,4 @@
 #!/bin/bash
-ROS_VER=${1:-"2"}
 ROS_WS=$HOME/j7ros_home/ros_ws
 ARCH=$(arch)
 if [[ -z "$SDK_DIR" ]]; then
@@ -17,14 +16,7 @@ fi
 REPO_URL="https://git.ti.com/git/mmwave_radar/mmwave_ti_ros.git"
 COMMIT="3cfb96e29db1a5728a9c45f968ae2739d370f58f"
 BRANCH="master"
-if [ "$ROS_VER" == "1" ]; then
-    WORK_PATH=$SDK_DIR/ros1/drivers
-elif [ "$ROS_VER" == "2" ]; then
-    WORK_PATH=$SDK_DIR/ros2/drivers
-else
-    echo "ROS_VER=$ROS_VER not supported"
-    exit 1
-fi
+WORK_PATH=$SDK_DIR/ros2/drivers
 
 CURRENT_DIR=$(pwd)
 cd $WORK_PATH
@@ -42,8 +34,9 @@ if [[ ! -d "ti_mmwave_rospkg" ]]; then
         exit 1
     fi
     cd ..
-    cp -r mmwave_ti_ros/ros${ROS_VER}_driver/src/* .
+    cp -r mmwave_ti_ros/ros2_driver/src/* .
     rm -rf mmwave_ti_ros
     echo "[ti_mmwave_rospkg] Done"
 fi
+
 cd $CURRENT_DIR

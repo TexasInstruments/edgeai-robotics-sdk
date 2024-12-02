@@ -8,15 +8,14 @@ ROS_VER          ?= 2
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER          ?= 10.1.0.1
-EDGEAI_VER       ?= 10.1.0.1
+SDK_VER          ?= 10.1.0.2
+EDGEAI_VER       ?= 10.1.0.2
 TIVA_LIB_VER     ?= 10.1.0
 RPMSG_LIB_VER    ?= 0.6.7
 
 # Used in install_vision_apps_lib.sh, install_osrt_libs.sh, install_tidl_libs.sh
-LIB_REL_TAG      ?= 10.01.00.01
+LIB_REL_TAG      ?= 10.01.00.02
 SDK_VER_MAJOR    ?= 10.1.0
-SDK_VER_STR      ?= 10000005
 
 # Set the operating variables based on the ROS version specified
 ROS_DISTRO        = humble
@@ -104,12 +103,14 @@ ip_show:
 	@echo "$(J7_IP_ADDR)"
 
 info:
-	$(info PLATFORM          = $(PLATFORM))
-	$(info WORK_DIR          = $(WORK_DIR))
-	$(info REPO_NAME         = $(REPO_NAME))
-	$(info WORK_PATH_HOST    = $(WORK_PATH_HOST))
-	$(info SDK_DIR           = $(SDK_DIR))
-	$(info DATA_DIR          = $(DATA_DIR))
+	$(info SDK_VER: $(SDK_VER))
+	$(info EDGEAI_VER: $(EDGEAI_VER))
+	$(info PLATFORM: $(PLATFORM))
+	$(info WORK_DIR: $(WORK_DIR))
+	$(info REPO_NAME: $(REPO_NAME))
+	$(info WORK_PATH_HOST: $(WORK_PATH_HOST))
+	$(info SDK_DIR: $(SDK_DIR))
+	$(info DATA_DIR: $(DATA_DIR))
 
 ## Docker
 # generate "docker build" script
@@ -148,7 +149,6 @@ ifeq ($(PLATFORM), j7)
 	@echo ": \"\$${BASE_URL_VA:=$(LIB_BASE_URL_VA)}\""        >> $(TGT_NAME)
 	@echo ": \"\$${BASE_URL_RT:=$(LIB_BASE_URL_RT)}\""        >> $(TGT_NAME)
 	@echo "SDK_VER_MAJOR=$(SDK_VER_MAJOR)"                    >> $(TGT_NAME)
-	@echo "SDK_VER_STR=$(SDK_VER_STR)"                        >> $(TGT_NAME)
 endif
 	@echo "bash \$$DOCKER_DIR/scripts/prepare_docker_build.sh \$$DST_DIR" >> $(TGT_NAME)
 	@echo "cd $(WORK_PATH_HOST)"                              >> $(TGT_NAME)
@@ -186,7 +186,6 @@ ifeq ($(PLATFORM), j7)
 	@echo "        --build-arg BASE_URL_VA=\$$BASE_URL_VA \\"     >> $(TGT_NAME)
 	@echo "        --build-arg BASE_URL_RT=\$$BASE_URL_RT \\"     >> $(TGT_NAME)
 	@echo "        --build-arg SDK_VER_MAJOR=\$$SDK_VER_MAJOR \\" >> $(TGT_NAME)
-	@echo "        --build-arg SDK_VER_STR=\$$SDK_VER_STR \\"     >> $(TGT_NAME)
 	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
 	@echo "     echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)

@@ -42,18 +42,14 @@ else
     echo "BASE_URL_RT=$BASE_URL_RT"
 fi
 
-if [ -z "$SDK_VER_STR" ]; then
-    echo "Error: BASE_URL_RT is not defined."
-    exit 1
-else
-    echo "SDK_VER_STR=$SDK_VER_STR"
-fi
-
 # package names
-ONNX_RT_WHL=onnxruntime_tidl-1.14.0+${SDK_VER_STR}-cp310-cp310-linux_aarch64.whl
-ONNX_PKG=onnx-1.14.0+${SDK_VER_STR}-ubuntu22.04_aarch64
+ONNX_RT_WHL=onnxruntime_tidl-1.15.0-cp310-cp310-linux_aarch64.whl
+ONNX_PKG=onnx-1.15.0-ubuntu22.04_aarch64
+ONNX_LIB=libonnxruntime.so.1.15.0
 TFLITE_RT_WHL=tflite_runtime-2.12.0-cp310-cp310-linux_aarch64.whl
 TFLITE_PKG=tflite-2.12-ubuntu22.04_aarch64
+TFLITE_DIR=tflite_2.12
+TFLITE_LIB=libtensorflow-lite.a
 DLR_WHL=dlr-1.13.0-py3-none-any.whl
 
 # python dist-packages path
@@ -118,8 +114,8 @@ install_libs() {
     if [ ! -d /usr/include/tensorflow ]; then
         extract_pkg $TFLITE_PKG.tar.gz
         mv "$TFLITE_PKG/tensorflow" /usr/include
-        mv "$TFLITE_PKG/tflite_2.12" /usr/lib/
-        cp "$TFLITE_PKG/libtensorflow-lite.a" /usr/lib/
+        mv "$TFLITE_PKG/${TFLITE_DIR}" /usr/lib/
+        cp "$TFLITE_PKG/${TFLITE_LIB}" /usr/lib/
     else
         echo "skipping tensorflow setup: found /usr/include/tensorflow"
     fi
@@ -127,7 +123,7 @@ install_libs() {
     if [ ! -d /usr/include/onnxruntime ]; then
         extract_pkg $ONNX_PKG.tar.gz
         cp -r $ONNX_PKG/libonnxruntime.so* /usr/lib/
-        ln -s "/usr/lib/libonnxruntime.so.1.14.0+${SDK_VER_STR}" /usr/lib/libonnxruntime.so
+        ln -s "/usr/lib/${ONNX_LIB}" /usr/lib/libonnxruntime.so
         mv "$ONNX_PKG/onnxruntime" /usr/include/
     else
         echo "skipping onnxruntime setup: found /usr/include/onnxruntime"
