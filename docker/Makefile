@@ -8,13 +8,13 @@ ROS_VER          ?= 2
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER          ?= 10.1.0.2
-EDGEAI_VER       ?= 10.1.0.2
+SDK_VER          ?= 10.1.0.3
+EDGEAI_VER       ?= 10.1.0.3
 TIVA_LIB_VER     ?= 10.1.0
 RPMSG_LIB_VER    ?= 0.6.7
 
 # Used in install_vision_apps_lib.sh, install_osrt_libs.sh, install_tidl_libs.sh
-LIB_REL_TAG      ?= 10.01.00.02
+LIB_REL_TAG      ?= 10.01.00.03
 SDK_VER_MAJOR    ?= 10.1.0
 
 # Set the operating variables based on the ROS version specified

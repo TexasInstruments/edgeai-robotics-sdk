@@ -1,0 +1,8 @@
+# particular versions below comes from Jesse's debugs in psdk_rtos_auto (to enable search feature and etc)
+sphinx
+sphinx-rtd-theme
+myst-parser
+sphinx-copybutton
+# Sphinx not rendering bullet list from rst file
+# https://stackoverflow.com/questions/67542699/readthedocs-sphinx-not-rendering-bullet-list-from-rst-file
+docutils==0.16

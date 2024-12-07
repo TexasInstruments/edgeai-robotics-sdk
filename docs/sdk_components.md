@@ -19,8 +19,24 @@ For more information visit:
 
 The Robotics SDK has dependency on the following software components of the Processor SDK Linux.
 
-* [TI OpenVX](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/index.html)
+- [TI OpenVX](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/index.html)
 
-* [Vision Apps Lib](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/index.html)
+- [Vision Apps Lib](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/vision_apps/docs/user_guide/index.html)
 
-* [Perception Tool Kit](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/ti-perception-toolkit/docs/ptk_api_guide/index.html)
+- [Perception Tool Kit](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/ti-perception-toolkit/docs/ptk_api_guide/index.html)
+
+## Vision-Apps Library for ARM64 Ubuntu
+
+GIT Repository: [https://github.com/TexasInstruments-Sandbox/edgeai-vision-apps-lib-build](https://github.com/TexasInstruments-Sandbox/edgeai-vision-apps-lib-build)
+
+The GIT repository provides:
+- Recipes and scripts for building the Vision-Apps Linux library for ARM64 Ubuntu/Debian filesystems, specifically for TI EdgeAI platforms (TDA4VM, AM62A, AM67A, AM68A, and AM69A).
+- Pre-built Vision-Apps Linux library for ARM64 Ubuntu/Debian filesystems.
+
+## Open-Source Deep-Learning Runtime Libraries for ARM64 Ubuntu
+
+GIT Repository: [https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build](https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build)
+
+The GIT repository provides:
+- Recipes and scripts for building open-source deep-learning runtime libraries, including ONNX-runtime, TFLite-runtime, NEO-AI-DLR, and TIDL runtime modules for ARM64 Ubuntu/Debian filesystems, specifically for TI EdgeAI platforms (TDA4VM, AM62A, AM67A, AM68A, and AM69A).
+- Pre-built open-source deep-learning runtime libraries for ARM64 Ubuntu/Debian filesystems.

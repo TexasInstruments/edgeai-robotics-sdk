@@ -45,26 +45,11 @@ The SD card image contains Processor SDK Linux and libraries that are necessary 
 
 A Ubuntu PC is required for visualization of ROS topics published from the TI EdgeAI Starter Kit (SK) board. We have tested only with native x86_64 Ubuntu PCs and have **not** tested with any other Ubuntu systems: including Ubuntu virtual machines and Docker Desktop on Mac or Windows.
 
-```{only} tag_ros1n2
-It is assumed that a matching ROS distro (either ROS 1 {{ROS1_DISTRO}} or ROS 2 {{ROS2_DISTRO}}) is installed on the remote Ubuntu PC, either in the host Ubuntu filesystem natively or in a Docker container. In case you want to install ROS natively on the remote Ubuntu filesystem:
-
-- For ROS {{ROS1_DISTRO}} installation steps, please refer to [this ROS wiki page](http://wiki.ros.org/noetic/Installation/Ubuntu).
-- For ROS 2 {{ROS2_DISTRO}} installation steps, please refer to [this ROS 2 documentation](https://docs.ros.org/en/humble/Installation.html).
-```
-
-```{only} tag_ros2only
 It is assumed that a matching ROS distro (ROS 2 {{ROS2_DISTRO}}) is installed on the remote Ubuntu PC, either in the host Ubuntu filesystem natively or in a Docker container. In case you want to install ROS natively on the remote Ubuntu filesystem:
 
 - For ROS 2 {{ROS2_DISTRO}} installation steps, please refer to [this ROS 2 documentation](https://docs.ros.org/en/humble/Installation.html).
-```
 
-```{only} tag_ros1n2
-We also provide Dockerfiles (`docker/Dockerfile.x86_64.{noetic,humble}`) that can build and run on the remote Ubuntu PC for both ROS {{ROS1_DISTRO}} and ROS 2 {{ROS2_DISTRO}}, with detailed steps for setting up the Docker environment on the remote PC. For installation of Docker on the Ubuntu PC, the following links may be useful:
-```
-
-```{only} tag_ros2only
 We also provide Dockerfiles (`docker/Dockerfile.x86_64.humble`) that can build and run on the remote Ubuntu PC for ROS 2 {{ROS2_DISTRO}}, with detailed steps for setting up the Docker environment on the remote PC. For installation of Docker on the Ubuntu PC, the following links may be useful:
-```
 
 - [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 - [Manage Docker as a non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user)
@@ -172,35 +157,10 @@ The Robotics SDK runs in a Docker container environment on the Processor SDK Lin
 
 First, following [this link](https://docs.docker.com/get-started/#test-docker-installation), please check that Docker and network work correctly on the target SK board.
 
-```{only} tag_ros1n2
-The following two sections describe the Docker environment setup, details of building, and running apps under Docker, for ROS 1 and ROS 2, respectively. Please note that it will take several minutes to build the Docker image. The Docker image built can be listed with `docker images`.
-
-- [Docker Setup for ROS 1 {{ROS1_DISTRO}}](./setting_docker_ros1.md)
-- [Docker Setup for ROS 2 {{ROS2_DISTRO}}](./setting_docker_ros2.md)
-```
-```{only} tag_ros2only
 The following section describes the Docker environment setup, details of building, and running apps under Docker. Please note that it will take several minutes to build the Docker image. The Docker image built can be listed with `docker images`.
 
 - [Docker Setup for ROS 2 {{ROS2_DISTRO}}](./setting_docker_ros2.md)
-```
 
 ```{note}
 **Proxy Network**: If the board running the Docker container is behind a proxy server, the default settings for downloading files and installing packages via `apt-get` may not work, and proper settings for proxy should be established for building and running the SDK Docker image.
 ```
-
-`````{only} tag_ros1n2
-````{tip}
-**Switching between ROS 1 and ROS 2 Docker Containers**: When the applications are built under the ROS 1 container, two directories, `{build, devel}` are created under **ros_ws** directory under target host and similarly `{build, install, log}` directories are created when applications are built under ROS 2 container. Since the containers share the common space `ros_ws` on target host Linux filesystem, these directories need to be removed if switching between ROS 1 and ROS 2 containers. Alternatively, we can create different folders for each of ROS distro and apply soft-links as shown below as example before running "docker run" script.
-
-```
-# Before launching ROS 1 container, establish the following soft-links:
-$ROS_WS/build -> $ROS_WS/build_noetic
-$ROS_WS/devel -> $ROS_WS/devel_noetic
-
-# Before launching ROS 2 container, establish the following soft-links:
-$ROS_WS/build -> $ROS_WS/build_humble
-$ROS_WS/install -> $ROS_WS/devel_humble
-$ROS_WS/log -> $ROS_WS/log_humble
-```
-````
-`````

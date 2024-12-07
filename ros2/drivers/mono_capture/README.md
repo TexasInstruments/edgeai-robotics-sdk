@@ -28,7 +28,7 @@ Mono Camera Tools and Capture Node
     ```
     For examples of how to use the tool, please refer to `$SDK_DIR/tools/mono_camera/calib_C920.sh`.
 
-2. **Rectification Map Generatio**n: A Python tool is provided for generating rectification map: `$SDK_DIR/tools/mono_camera/generate_rect_map_mono.py`. This tool takes the `camera_info` YAML file as input and generates a binary file for undistortion/rectification look-up-table (LUT). The generated LUT is required for offloading the undistortion/rectification processes to the VPAC/LDC hardware accelerator. Below is the usage of the tool.
+2. **Rectification Map Generation**: A Python tool is provided for generating rectification map: `$SDK_DIR/tools/mono_camera/generate_rect_map_mono.py`. This tool takes the `camera_info` YAML file as input and generates a binary file for undistortion/rectification look-up-table (LUT). The generated LUT is required for offloading the undistortion/rectification processes to the VPAC/LDC hardware accelerator. Below is the usage of the tool.
 
     ```
     usage: generate_rect_map_mono.py [-h] [--input INPUT] [--name NAME]
@@ -52,19 +52,12 @@ This ROS node has only been tested with Logitech C920 and C270 webcams in 'YUYV'
 1. Build the USB mono camera ROS node
     ```sh
     cd $ROS_WS
-    # ROS 1
-    catkin_make --source /opt/robotics_sdk/ros1 --force-cmake
-    source devel/setup.bash
-    # ROS 2
     colcon build --base-paths /opt/robotics_sdk/ros2 --cmake-force-configure
     source install/setup.bash
     ```
 
 2. Launch the mono camera node
     ```sh
-    # ROS 1
-    roslaunch mono_capture mono_capture.launch
-    # ROS 2
     ros2 launch mono_capture mono_capture_launch.py
     ```
 

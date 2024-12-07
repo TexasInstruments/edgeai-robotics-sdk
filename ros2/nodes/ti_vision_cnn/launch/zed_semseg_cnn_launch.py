@@ -32,7 +32,7 @@ def generate_launch_description():
     )
 
     lut_file_path_arg = DeclareLaunchArgument(
-        "lut_file_path", default_value=os.path.join(config_dir, LaunchConfiguration('zed_sn') + '_HD_LUT_right.bin')
+        "lut_file_path", default_value=[config_dir, '/', LaunchConfiguration('zed_sn'), '_HD_LUT_right.bin']
     )
 
     # Include SEMSEG launch file

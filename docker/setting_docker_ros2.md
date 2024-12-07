@@ -17,8 +17,8 @@ For a quick started, it is recommended to use the pre-built SDK Docker images. I
 
 2. Pull and Run the SDK Docker image:
     ```bash
-    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC
-    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC robotics-sdk:10.0.0-humble-$SOC
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-$SOC
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-$SOC robotics-sdk:10.1.0-humble-$SOC
     ./docker_run.sh
     ```
 3. Run the demos by referring to the ["Run Demo Applications" section](#run-demos).
@@ -35,8 +35,8 @@ For a quick started, it is recommended to use the pre-built SDK Docker images. I
 
 2. Pull and Run the Docker image for the visualization PC.
     ```bash
-    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz
-    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz robotics-sdk:10.0.0-humble-viz
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-viz
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-viz robotics-sdk:10.1.0-humble-viz
     ./docker_run.sh
     ```
 
@@ -48,7 +48,7 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
 
 1. To generate the scripts for building and running a Docker image for ROS 2 {{ROS2_DISTRO}}:
     ```
-    root@am6x-sk:~/j7ros_home$ make scripts ROS_VER=2
+    root@am6x-sk:~/j7ros_home$ make scripts
     ```
     Make sure that two bash scripts, `docker_build.sh` and `docker_run.sh`, are generated.
 

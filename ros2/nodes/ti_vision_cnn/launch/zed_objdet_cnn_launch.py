@@ -50,7 +50,7 @@ def generate_launch_description():
 
     # ref: https://answers.ros.org/question/384712/ros2-launch-how-to-concatenate-launchconfiguration-with-string/?answer=384740
     lut_file_path_arg = DeclareLaunchArgument(
-        "lut_file_path", default_value=os.path.join(config_dir, LaunchConfiguration('zed_sn') + '_HD_LUT_right.bin')
+        "lut_file_path", default_value=[config_dir, '/', LaunchConfiguration('zed_sn'), '_HD_LUT_right.bin']
     )
 
     # Include OBJDET launch file
