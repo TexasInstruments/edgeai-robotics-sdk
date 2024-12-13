@@ -49,7 +49,6 @@ alias gscam_ss="ros2 launch ti_vision_cnn gscam_semseg_cnn_launch.py cam_id:=\$C
 alias gscam_od="ros2 launch ti_vision_cnn gscam_objdet_cnn_launch.py cam_id:=\$CAM_ID"
 alias gscam_6dpose="ros2 launch ti_vision_cnn gscam_6dpose_cnn_launch.py cam_id:=\$CAM_ID"
 alias gscam_hp="ros2 launch ti_vision_cnn gscam_humanpose_cnn_launch.py cam_id:=\$CAM_ID"
-alias gscam_odradar="ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=\$CAM_ID"
 
 # demo launches with ZED stereo camera
 alias zed_cap="ros2 launch zed_capture zed_capture_launch.py cam_id:=\$CAM_ID zed_sn_str:=\$ZED_SN"
@@ -64,6 +63,7 @@ alias zed_odrange="ros2 launch ti_objdet_range zed_objdet_range_launch.py cam_id
 alias imx219_cap="ros2 launch gscam2 v4l_imx219_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
 alias imx219_ss="ros2 launch ti_vision_cnn gscam_semseg_cnn_imx219_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
 alias imx219_od="ros2 launch ti_vision_cnn gscam_objdet_cnn_imx219_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
+alias imx219_odradar="ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=\$CAM_ID subdev_id:=\$SUBDEV_ID"
 
 # demo launches with IMX390 CSI camera with Fusion board
 alias gen_imx390_ldc="bash /opt/robotics_sdk/tools/mono_camera/imx390_ldc.sh"
