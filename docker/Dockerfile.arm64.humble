@@ -32,7 +32,7 @@ ARG USE_PROXY
 ARG HTTP_PROXY
 ARG REPO_LOCATION
 ARG DEBIAN_FRONTEND=noninteractive
-ARG BASE_URL
+ARG BASE_URL_RT
 
 #=========================================================================
 # The environment variable REPO_LOCATION is set from outside as needed,
@@ -50,7 +50,7 @@ ENV https_proxy=${HTTP_PROXY}
 #=========================================================================
 FROM base-${USE_PROXY} AS ros-gst
 ARG DEBIAN_FRONTEND
-ARG BASE_URL
+ARG BASE_URL_RT
 
 # setup proxy settings
 ADD setup_proxy.sh /root/

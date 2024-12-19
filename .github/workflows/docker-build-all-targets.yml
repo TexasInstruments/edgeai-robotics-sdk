@@ -1,0 +1,52 @@
+name: docker-build-all-targets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_stage1:
+    uses: ./.github/workflows/docker-build-stage1.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: j784s4
+
+  build_am69a:
+    needs: build_stage1
+    uses: ./.github/workflows/docker-build-stage2.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: j784s4
+
+  build_am68a:
+    needs: build_stage1
+    uses: ./.github/workflows/docker-build-stage2.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: j721s2
+
+  build_tda4vm:
+    needs: build_stage1
+    uses: ./.github/workflows/docker-build-stage2.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: j721e
+
+  build_am67a:
+    needs: build_stage1
+    uses: ./.github/workflows/docker-build-stage2.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: j722s
+
+  build_am62a:
+    needs: build_stage1
+    uses: ./.github/workflows/docker-build-stage2.yml
+    secrets:
+      env_PAT: ${{ secrets.GHCR_PAT }}
+    with:
+      soc: am62a

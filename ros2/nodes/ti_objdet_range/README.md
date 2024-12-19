@@ -22,29 +22,6 @@ This demo takes stereo camera raw images either from ROSBAG file or live ZED cam
 
 ## Demo: 2D Object Detection with XYZ Information
 
-````{only} tag_ros1n2
-Launch the following launch file in the ROS 1 Docker container on the target.
-
-**[SK]**
-With stereo camera images from ROSBAG file:
-```
-roslaunch ti_objdet_range bag_objdet_range.launch
-```
-
-With a live ZED stereo camera as input:
-```
-roslaunch ti_objdet_range zed_objdet_range.launch video_id:=x zed_sn:=SNxxxxx
-```
-Please replace `x` and `SNxxxxx` based on your your set up.
-
-**[Visualization on Ubuntu PC]**
-Launch the following launch file in the remote PC ROS 1 Docker container.
-```
-roslaunch ti_viz_nodes rviz_objdet_range.launch
-```
-````
-
-````{only} tag_ros2only
 Launch the following launch file in the ROS 2 Docker container on the target.
 
 **[SK]**
@@ -64,7 +41,6 @@ Launch the following launch file in the remote PC ROS 2 Docker container.
 ```
 ros2 launch ti_viz_nodes rviz_objdet_range_launch.py
 ```
-````
 
 ## Launch File Parameters
 

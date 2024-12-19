@@ -17,8 +17,8 @@ For a quick started, it is recommended to use the pre-built SDK Docker images. I
 
 2. Pull and Run the SDK Docker image:
     ```bash
-    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC
-    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-$SOC robotics-sdk:10.0.0-humble-$SOC
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-$SOC
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-$SOC robotics-sdk:10.1.0-humble-$SOC
     ./docker_run.sh
     ```
 3. Run the demos by referring to the ["Run Demo Applications" section](#run-demos).
@@ -27,7 +27,7 @@ For a quick started, it is recommended to use the pre-built SDK Docker images. I
 
 1. Set up the SDK git repository and the workspace:
     ```bash
-    wget -O init_setup.sh https://git.ti.com/cgit/processor-sdk-vision/jacinto_ros_perception/plain/init_setup.sh
+    wget -O init_setup.sh https://raw.githubusercontent.com/TexasInstruments/edgeai-robotics-sdk/master/init_setup.sh
     source ./init_setup.sh
     cd ~/j7ros_home
     make scripts [GPUS=y]
@@ -35,8 +35,8 @@ For a quick started, it is recommended to use the pre-built SDK Docker images. I
 
 2. Pull and Run the Docker image for the visualization PC.
     ```bash
-    docker pull ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz
-    docker tag ghcr.io/texasinstruments/robotics-sdk:10.0.0-humble-viz robotics-sdk:10.0.0-humble-viz
+    docker pull ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-viz
+    docker tag ghcr.io/texasinstruments/robotics-sdk:10.1.0-humble-viz robotics-sdk:10.1.0-humble-viz
     ./docker_run.sh
     ```
 
@@ -48,7 +48,7 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
 
 1. To generate the scripts for building and running a Docker image for ROS 2 {{ROS2_DISTRO}}:
     ```
-    root@am6x-sk:~/j7ros_home$ make scripts ROS_VER=2
+    root@am6x-sk:~/j7ros_home$ make scripts
     ```
     Make sure that two bash scripts, `docker_build.sh` and `docker_run.sh`, are generated.
 
@@ -81,6 +81,10 @@ In the ROS 2 Docker container environment, ROS {{ROS2_DISTRO}} and necessary lib
     root@j7-docker:~/j7ros_home/ros_ws$ source install/setup.bash
     ```
     ````
+
+```{tip}
+**Docker Run**: Please note that `docker_run.sh` includes `--rm` argument by default. Just remove the `--rm` argument in `docker_run.sh` in case you want to do "docker commit" after exiting a Docker container. A short information about several useful Docker commands is provided in {{'[this link](https://software-dl.ti.com/jacinto7/esd/processor-sdk-linux-edgeai/TDA4VM/{}/exports/docs/common/docker_environment.html#additional-docker-commands)'.format(SDK_VER)}}.
+```
 
 ## Set Up Docker Environment on the Remote PC for Visualization
 
@@ -168,7 +172,7 @@ For your convenience, the SDK Docker container comes pre-configured with a varie
 | Object Detection with 3D Spatial Information (ROSBAG)  | ros2 launch ti_objdet_range bag_objdet_range_launch.py | ros2 launch ti_viz_nodes rviz_objdet_range_launch.py |
 | Object Detection with 3D Spatial Information (ZED camera)  | ros2 launch ti_objdet_range zed_objdet_range_launch.py cam_id:=X zed_sn:=SNxxxxx | same as above |
 | Visual Localization (ROSBAG)*    | ros2 launch ti_vl bag_visloc_launch.py              | ros2 launch ti_viz_nodes rviz_visloc_launch.py |
-| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_mmwave_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
+| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
 | Camera + Radar Fusion (IMX219, IWR6843)  | ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=X | same as above |
 
 \* Visual location is supported only on TDA4VM, AM68A, and AM69A.
@@ -186,7 +190,7 @@ For your convenience, the SDK Docker container comes pre-configured with a varie
 | Object Detection CNN (IMX390 camera) | ros2 launch ti_vision_cnn gscam_objdet_cnn_imx390_launch.py cam_id:=X subdev_id:=Y | same as above |
 | Human Pose Estimation CNN (ROSBAG) | ros2 launch ti_vision_cnn bag_humanpose_cnn_launch.py | ros2 launch ti_viz_nodes rviz_humanpose_cnn_launch.py |
 | Human Pose Estimation CNN (Mono camera) | ros2 launch ti_vision_cnn gscam_humanpose_cnn_launch.py cam_id:=X | same as above |
-| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_mmwave_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
+| Camera + Radar Fusion (ROSBAG)  | ros2 launch ti_objdet_radar bag_objdet_radar_launch.py | ros2 launch ti_viz_nodes rviz_objdet_radar_launch.py |
 | Camera + Radar Fusion (IMX219, IWR6843)  | ros2 launch ti_objdet_radar gscam_mmwave_objdet_radar_launch.py cam_id:=X | same as above |
 ```
 

@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## Release 10.1.0 (2024-12-13)
+
+- Pre-built Robotics SDK Docker images are now publicly available: [Robotics SDK Docker Images](https://github.com/TexasInstruments/edgeai-robotics-sdk/pkgs/container/robotics-sdk). Please refer to the "Quick Start Guide" in [this documentation section](docker/setting_docker_ros2.md). All SDK demos are pre-built and installed in the SDK container filesystem.
+- The GIT repository for the Robotics SDK has been migrated to GitHub: [https://github.com/TexasInstruments/edgeai-robotics-sdk](https://github.com/TexasInstruments/edgeai-robotics-sdk).
+- The build system for the Vision-Apps Linux libraries for ARM64 Ubuntu/Debian, specifically for TI EdgeAI platforms (TDA4VM, AM62A, AM67A, AM68A, and AM69A), is now public: [https://github.com/TexasInstruments-Sandbox/edgeai-vision-apps-lib-build](https://github.com/TexasInstruments-Sandbox/edgeai-vision-apps-lib-build). Pre-built Vision-Apps libraries are available for download in the repository.
+- The build system for the open-source deep-learning runtime libraries (ONNX Runtime, TFLite Runtime, NEO-AI-DLR) and TIDL runtime modules for ARM64 Ubuntu/Debian, specifically for TI EdgeAI platforms, is now available: [https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build](https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build). Pre-built libraries are available for download in the repository.
+
 ## Release 10.0.0 (2024-08-16)
 
 - The Robotics SDK has been migrated to be compatible with Yocto Scathgap-based Processor-SDK Linux 10.0.

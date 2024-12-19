@@ -14,7 +14,7 @@ def finalize_node(context, *args, **kwargs):
     print(f"sde_algo_type = {sde_algo_type}")
     print(f"enable_pc = {enable_pc}")
 
-    lut_folder = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
+    lut_folder = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     left_lut_file_path  = os.path.join(lut_folder, zed_sn+"_HD_LUT_left.bin")
     right_lut_file_path = os.path.join(lut_folder, zed_sn+"_HD_LUT_right.bin")
 

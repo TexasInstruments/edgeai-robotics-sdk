@@ -16,7 +16,7 @@ from launch_ros.actions import Node
 def finalize_node(context, *args, **kwargs):
     model_str   = LaunchConfiguration("model_str").perform(context)
     camera_mode = LaunchConfiguration("camera_mode").perform(context)
-    camera_info_base = "/opt/robotics_sdk/ros1/drivers/mono_capture/config"
+    camera_info_base = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     camera_info_yaml  = "file://" + os.path.join(camera_info_base, model_str+"_"+camera_mode+"_camera_info.yaml")
 
     topic_ns          = LaunchConfiguration("topic_ns").perform(context)

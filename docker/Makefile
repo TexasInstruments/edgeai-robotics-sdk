@@ -8,14 +8,14 @@ ROS_VER          ?= 2
 GPUS             ?= n
 
 # Robotics SDK version
-SDK_VER          ?= 10.0.0
-EDGEAI_VER       ?= 10.0.0.8
-TIVA_LIB_VER     ?= 10.0.0
+SDK_VER          ?= 10.1.0
+EDGEAI_VER       ?= 10.1.0.4
+TIVA_LIB_VER     ?= 10.1.0
 RPMSG_LIB_VER    ?= 0.6.7
 
 # Used in install_vision_apps_lib.sh, install_osrt_libs.sh, install_tidl_libs.sh
-REL_MAJOR        ?= 10_00_00
-SDK_VER_STR      ?= 10000005
+LIB_REL_TAG      ?= 10.01.00.04
+SDK_VER_MAJOR    ?= 10.1.0
 
 # Set the operating variables based on the ROS version specified
 ROS_DISTRO        = humble
@@ -71,8 +71,11 @@ VISLOC_DATA_URL       = $(URL_BASE)/$(VISLOC_DATA_FILE)
 LIDAR2D_LOC_URL       = $(URL_BASE)/$(LIDAR2D_FILE)
 CALIB_IMGS_URL        = $(URL_BASE)/$(CALIB_IMGS_FILE)
 
-# base URL for downloading dependency libs
-LIB_BASE_URL ?= https://software-dl.ti.com/jacinto7/esd/robotics-sdk/$(REL_MAJOR)/deps
+# base URL for TI vision-apps lib
+LIB_BASE_URL_VA=https://github.com/TexasInstruments-Sandbox/edgeai-vision-apps-lib-build/releases/download/$(LIB_REL_TAG)
+
+# base URL for OS-RT libs and TIDL libs
+LIB_BASE_URL_RT=https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build/releases/download/rel.$(LIB_REL_TAG)-ubuntu22.04
 
 # IP address
 J7_IP_ADDR := $(shell ifconfig | grep -A 1 'eth0' | tail -1 | awk '{print $$2}')
@@ -100,12 +103,14 @@ ip_show:
 	@echo "$(J7_IP_ADDR)"
 
 info:
-	$(info PLATFORM          = $(PLATFORM))
-	$(info WORK_DIR          = $(WORK_DIR))
-	$(info REPO_NAME         = $(REPO_NAME))
-	$(info WORK_PATH_HOST    = $(WORK_PATH_HOST))
-	$(info SDK_DIR           = $(SDK_DIR))
-	$(info DATA_DIR          = $(DATA_DIR))
+	$(info SDK_VER: $(SDK_VER))
+	$(info EDGEAI_VER: $(EDGEAI_VER))
+	$(info PLATFORM: $(PLATFORM))
+	$(info WORK_DIR: $(WORK_DIR))
+	$(info REPO_NAME: $(REPO_NAME))
+	$(info WORK_PATH_HOST: $(WORK_PATH_HOST))
+	$(info SDK_DIR: $(SDK_DIR))
+	$(info DATA_DIR: $(DATA_DIR))
 
 ## Docker
 # generate "docker build" script
@@ -116,12 +121,12 @@ docker_build:
 	@echo "SDK_VER=$(SDK_VER)"                                >> $(TGT_NAME)
 	@echo "ROS_DISTRO=$(ROS_DISTRO)"                          >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-base" >> $(TGT_NAME)
+	@echo "DOCKER_TAG=robotics-sdk:\$${SDK_VER}-\$${ROS_DISTRO}-base" >> $(TGT_NAME)
 else ifeq ($(PLATFORM), pc)
-	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-viz" >> $(TGT_NAME)
+	@echo "DOCKER_TAG=robotics-sdk:\$${SDK_VER}-\$${ROS_DISTRO}-viz" >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), j7)
-	@echo "DOCKER_TAG2=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-\$$SOC" >> $(TGT_NAME)
+	@echo "DOCKER_TAG2=robotics-sdk:\$${SDK_VER}-\$${ROS_DISTRO}-\$${SOC}" >> $(TGT_NAME)
 endif
 	@echo "export SDK_DIR=$(SDK_DIR)"                         >> $(TGT_NAME)
 	@echo "export ARCH=$(ARCH)"                               >> $(TGT_NAME)
@@ -141,8 +146,9 @@ endif
 ifeq ($(PLATFORM), j7)
 	@echo "TIVA_LIB_VER=$(TIVA_LIB_VER)"                      >> $(TGT_NAME)
 	@echo "RPMSG_LIB_VER=$(RPMSG_LIB_VER)"                    >> $(TGT_NAME)
-	@echo ": \"\$${BASE_URL:=$(LIB_BASE_URL)}\""              >> $(TGT_NAME)
-	@echo "SDK_VER_STR=$(SDK_VER_STR)"                        >> $(TGT_NAME)
+	@echo ": \"\$${BASE_URL_VA:=$(LIB_BASE_URL_VA)}\""        >> $(TGT_NAME)
+	@echo ": \"\$${BASE_URL_RT:=$(LIB_BASE_URL_RT)}\""        >> $(TGT_NAME)
+	@echo "SDK_VER_MAJOR=$(SDK_VER_MAJOR)"                    >> $(TGT_NAME)
 endif
 	@echo "bash \$$DOCKER_DIR/scripts/prepare_docker_build.sh \$$DST_DIR" >> $(TGT_NAME)
 	@echo "cd $(WORK_PATH_HOST)"                              >> $(TGT_NAME)
@@ -152,14 +158,16 @@ endif
 	@echo "        --build-arg USE_PROXY=\$$USE_PROXY \\"         >> $(TGT_NAME)
 	@echo "        --build-arg REPO_LOCATION=\$$REPO_LOCATION \\" >> $(TGT_NAME)
 	@echo "        --build-arg HTTP_PROXY=\$$HTTP_PROXY \\"       >> $(TGT_NAME)
-	@echo "        --build-arg BASE_URL=\$$BASE_URL \\"           >> $(TGT_NAME)
+ifeq ($(PLATFORM), j7)
+	@echo "        --build-arg BASE_URL_RT=\$$BASE_URL_RT \\"     >> $(TGT_NAME)
+endif
 ifeq ($(PLATFORM), pc)
 	@echo "        --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), j7)
-	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).\$$ROS_DISTRO ./docker_src"  >> $(TGT_NAME)
+	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).\$$ROS_DISTRO ./docker_src" >> $(TGT_NAME)
 else ifeq ($(PLATFORM), pc)
-	@echo "        -f \$$DOCKER_DIR/Dockerfile.viz.\$$ROS_DISTRO ./docker_src"  >> $(TGT_NAME)
+	@echo "        -f \$$DOCKER_DIR/Dockerfile.viz.\$$ROS_DISTRO ./docker_src" >> $(TGT_NAME)
 endif
 	@echo "    echo \"Docker build -t \$$DOCKER_TAG completed!\"" >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)
@@ -175,8 +183,9 @@ ifeq ($(PLATFORM), j7)
 	@echo "        --build-arg ROS_DISTRO=\$$ROS_DISTRO \\"       >> $(TGT_NAME)
 	@echo "        --build-arg SDK_VER=\$$SDK_VER \\"             >> $(TGT_NAME)
 	@echo "        --build-arg EDGEAI_VER=\$$EDGEAI_VER \\"       >> $(TGT_NAME)
-	@echo "        --build-arg BASE_URL=\$$BASE_URL \\"           >> $(TGT_NAME)
-	@echo "        --build-arg SDK_VER_STR=\$$SDK_VER_STR \\"     >> $(TGT_NAME)
+	@echo "        --build-arg BASE_URL_VA=\$$BASE_URL_VA \\"     >> $(TGT_NAME)
+	@echo "        --build-arg BASE_URL_RT=\$$BASE_URL_RT \\"     >> $(TGT_NAME)
+	@echo "        --build-arg SDK_VER_MAJOR=\$$SDK_VER_MAJOR \\" >> $(TGT_NAME)
 	@echo "        -f \$$DOCKER_DIR/Dockerfile.$(ARCH).ti_libs ./docker_src"  >> $(TGT_NAME)
 	@echo "     echo \"Docker build -t \$$DOCKER_TAG2 completed!\"" >> $(TGT_NAME)
 	@echo "fi"                                                >> $(TGT_NAME)
@@ -193,9 +202,9 @@ docker_run:
 	@echo "SDK_VER=$(SDK_VER)"                                >> $(TGT_NAME)
 	@echo "ROS_DISTRO=$(ROS_DISTRO)"                          >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-\$$SOC" >> $(TGT_NAME)
+	@echo "DOCKER_TAG=robotics-sdk:\$${SDK_VER}-\$${ROS_DISTRO}-\$${SOC}" >> $(TGT_NAME)
 else ifeq ($(PLATFORM), pc)
-	@echo "DOCKER_TAG=robotics-sdk:\$$SDK_VER-\$$ROS_DISTRO-viz" >> $(TGT_NAME)
+	@echo "DOCKER_TAG=robotics-sdk:\$${SDK_VER}-\$${ROS_DISTRO}-viz" >> $(TGT_NAME)
 endif
 	@echo ": \"\$${USE_PROXY:=$(USE_PROXY)}\""                >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
@@ -219,7 +228,7 @@ endif
 	@echo "docker run -it --rm \\"                            >> $(TGT_NAME)
 	@echo "    -v $(WORK_PATH_HOST):/root/$(WORK_DIR) \\"     >> $(TGT_NAME)
 ifeq ($(PLATFORM), j7)
-	@echo "    -v $(SDK_DIR):/opt/robotics_sdk \\"            >> $(TGT_NAME)
+	@echo "    -v \$${SDK_DIR}:/opt/robotics_sdk \\"          >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), j7)
 	@echo "    -v $(WORK_PATH_HOST)/.ros:/root/.ros \\"       >> $(TGT_NAME)
@@ -242,7 +251,7 @@ ifeq ($(PLATFORM), j7)
 ifeq ($(ROS_VER), 1)
 	@echo "    --env J7_IP_ADDR=\$$IP_ADDR \\"                >> $(TGT_NAME)
 endif
-	@echo "    --env-file \$$DOCKER_DIR/env_list.txt \\"      >> $(TGT_NAME)
+	@echo "    --env-file \$${DOCKER_DIR}/env_list.txt \\"    >> $(TGT_NAME)
 	@echo "    --device-cgroup-rule='c 235:* rmw' \\"         >> $(TGT_NAME)
 endif
 ifeq ($(PLATFORM), pc)

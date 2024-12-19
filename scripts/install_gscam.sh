@@ -14,19 +14,6 @@ fi
 
 CURRENT_DIR=$(pwd)
 
-# install gscam (for ROS1) and apply a patch
-WORK_PATH=$SDK_DIR/ros1/drivers
-cd $WORK_PATH
-if [[ ! -d "gscam" ]]; then
-    git clone --single-branch --branch master https://github.com/ros-drivers/gscam.git
-    cd gscam
-    git checkout -b ti_nv12 tags/1.0.1
-    git apply $WORK_PATH/patches/gscam_ti_nv12.patch
-    git add .
-    git add config/* launch/*
-    git commit -m "Customized for TI Jacinto Robotics SDK: Added pipleline that uses TI GStreamer plugins, and added NV12 encoding mode."
-fi
-
 # install gscam2 (for ROS2) and apply a patch
 WORK_PATH=$SDK_DIR/ros2/drivers
 cd $WORK_PATH

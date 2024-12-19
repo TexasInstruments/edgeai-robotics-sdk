@@ -1,9 +1,0 @@
-<launch>
-
-    <!-- viz_estop -->
-    <include file="$(find ti_viz_nodes)/launch/viz_estop.launch"/>
-
-    <!-- rviz -->
-    <node pkg="rviz" type="rviz" name="rviz_estop_ogmap" args="-d $(find ti_viz_nodes)/rviz/estop_ogmap.rviz" />
-
-</launch>

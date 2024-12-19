@@ -16,7 +16,7 @@ def finalize_node(context, *args, **kwargs):
     device_name = "/dev/video-usb-cam" + LaunchConfiguration('cam_id').perform(context)
     zed_sn_str  = LaunchConfiguration("zed_sn_str").perform(context)
     camera_mode = LaunchConfiguration("camera_mode").perform(context)
-    camera_info_base = "/opt/robotics_sdk/ros1/drivers/zed_capture/config"
+    camera_info_base = os.path.join(os.getenv('SDK_DIR', '/opt/robotics_sdk'), 'tools', 'camera_info')
     camera_info_left_yaml  = "file://" + os.path.join(camera_info_base, zed_sn_str+"_"+camera_mode+"_camera_info_left.yaml")
     camera_info_right_yaml = "file://" + os.path.join(camera_info_base, zed_sn_str+"_"+camera_mode+"_camera_info_right.yaml")
 

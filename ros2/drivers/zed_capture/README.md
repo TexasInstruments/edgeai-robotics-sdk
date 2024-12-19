@@ -31,19 +31,12 @@ This is a stereo camera ROS node for the ZED camera, based on the OpenCV VideoCa
 3. Build the ZED camera ROS node
     ```sh
     cd $ROS_WS
-    # ROS 1
-    catkin_make --source /opt/robotics_sdk/ros1 --force-cmake
-    source devel/setup.bash
-    # ROS 2
     colcon build --base-paths /opt/robotics_sdk/ros2 --cmake-force-configure
     source install/setup.bash
     ```
 
-4. Launch the ZED camera node: Update `zed_sn_str` in `launch/zed_capture.launch` (`launch/zed_capture_launch.py` in ROS 2. Remember to run `colcon build` after any modification in ROS 2), or pass as a lauch argument as follows:
+4. Launch the ZED camera node: Update `zed_sn_str` in `launch/zed_capture_launch.py`, or pass as a launch argument as follows:
     ```sh
-    # ROS 1
-    roslaunch zed_capture zed_capture.launch zed_sn_str:=SNxxxxx
-    # ROS 2
     ros2 launch zed_capture zed_capture_launch.py zed_sn_str:=SNxxxxx
     ```
 ## Stereo Camera Calibration
@@ -71,31 +64,3 @@ For cases where the ZED cameras needs to be recalibrated for some reason, we pro
 
 When `encoding` is set to 'yuv422', the pixel format YUV422::YUYV from the ZED camera is converted to YUV422::UYVY format, considering the compatibility with LDC hardware accelerator.
 
-## Data Collection Steps
-
-1. Connect the ZED camera to UBS 3 port (it is recommended to use a USB type-A to type-C adaptor on TDA4VM). Check if the camera is recognized with the command `ls /dev/video*`. If necessary, update `launch/zed_capture.launch` to change video device, camera mode, frame rate, and etc.
-
-2. On the first terminal, launch the ZED capture node with following and keep it running:
-    ```sh
-    roslaunch zed_capture zed_capture.launch zed_sn_str:=SNxxxxx
-    ```
-
-3. On the second terminal, to capture into ROS bag files, run one of two examples below
-
-    ```sh
-    # Collect 15 seconds of data and stop itself
-    roslaunch zed_capture recordbag.launch
-    # Save into a series of bag files, each keeping 15 seconds of data, until terminated with Ctrl+C
-    roslaunch zed_capture recordbag_split.launch
-    ```
-
-4. (Optional: to check the ROS topics) On 3rd terminal, run the following commands:
-    ```sh
-    rqt_image_view /camera/left/image_raw
-    ```
-
-By default, ROS bag files are stored under `${HOME}/.ros` folder.
-
-```{note}
-It is not recommended to combine the `zed_capture` node and ROSBAG capture into a single launch file, as it takes several seconds for the ZED camera to settle down its ISP tuning after the ZED camera node is started.
-```
